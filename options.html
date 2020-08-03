@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      button {
+        height: 30px;
+        width: 30px;
+        outline: none;
+        margin: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="buttonDiv">
+    </div>
+    <div>
+      <button id="changeColor"></button>
+      <p>Choose a different background color!</p>
+    </div>
+
+    <html xmlns="http://www.w3.org/1999/xhtml" lang="en" class=" js flexbox canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths js no-flexbox flexbox-legacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths"><head><title>
+      Class Planner
+    </title><link rel="shortcut icon" href="/iwe/img/favicon.ico" type="image/x-icon"><meta name="viewport" content="width=device-width"><link href="/iwe/css/themes/ui-lightness/jquery-ui-1.9.0.css?v=1.2" rel="stylesheet" type="text/css"><link href="/iwe/scripts/Plugins/Autocomplete/jquery.ui.autocomplete.css?v=1.2" rel="stylesheet" type="text/css"><link href="/iwe/scripts/Plugins/Combobox/ui.combobox.css?v=1.2" rel="stylesheet" type="text/css"><link href="/iwe/scripts/Plugins/Pagination/style.css?v=1.2" rel="stylesheet" type="text/css"><link href="/iwe/scripts/Plugins/Slider/css/ui.slider.extras.css?v=1.2" rel="stylesheet" type="text/css"><link href="/iwe/css/blocks.css?v=1.2" rel="stylesheet" type="text/css"><link href="/iwe/css/iwe_icon_fonts.css?v=1.2" rel="stylesheet" type="text/css">			
+    <!--
+    
+        <link href="/iwe/css/main.css?v=1.2" rel="stylesheet" type="text/css" /><link href="/iwe/css/fixed.css?v=1.2" rel="stylesheet" type="text/css" /><link href="/iwe/css/iwe.css?v=1.2" rel="stylesheet" type="text/css" /><link href="/iwe/css/sait.css?v=1.2" rel="stylesheet" type="text/css" />	
+    -->
+    
+        <link href="/iwe/css/ResponsiveTemplate.css?v=1.2b" rel="stylesheet" type="text/css">
+    
+        <!-- <script async="" src="//www.google-analytics.com/analytics.js"></script>
+        <script src="/iwe/scripts/jquery-1.8.2.min.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/scripts/UI/jquery-ui-1.9.0.min.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/scripts/UI/jquery.ui.core.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/scripts/UI/jquery.ui.widget.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/scripts/UI/jquery.ui.position.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/scripts/UI/jquery.ui.menu.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/scripts/Plugins/Autocomplete/jquery.ui.autocomplete.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/scripts/Plugins/Dialog/jquery.ui.dialog.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/scripts/Plugins/Combobox/ui.combobox.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/scripts/Plugins/Dropdown/dropdown.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/scripts/Plugins/Dropdown/dropdown335.js?v=1.2a" type="text/javascript"></script>
+        <script src="/iwe/scripts/Plugins/Pagination/jquery.paginate.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/scripts/Plugins/Slider/js/selectToUISlider.jQuery.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/scripts/Iwe/global.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/scripts/Iwe/plugins.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/scripts/modernizr-2.0.6-development-only.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/scripts/jquery.unobtrusive-ajax.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/scripts/jquery.validate.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/scripts/jquery.validate.unobtrusive.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/js/blocks.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/js/blocks-ie.js?v=1.2" type="text/javascript"></script> -->
+    
+        <!-- script src="/iwe/scripts/Plugins/Popover/popover.js?v=1.2" type="text/javascript"></script -->
+        <script src="/iwe/scripts/Plugins/Utils/bootstrap-utils.js?v=1.2" type="text/javascript"></script>
+          
+        <link rel="stylesheet" href="/iwe/css/jquery-ui-1.10.3.custom.css?v=1.2">
+        <script src="/iwe/scripts/UI/jquery-ui-1.10.3.custom.js?v=1.2"></script>
+        <script src="/iwe/scripts/Iwe/jquery.collapsible.min.js?v=1.2" type="text/javascript"></script>
+        <script src="/iwe/scripts/Iwe/jquery.jcarousel.js?v=1.2" type="text/javascript"></script>
+    
+    
+            <script language="JavaScript" type="text/javascript" src="/scripts/MyUCLACommon.js?v=1.2b"></script> 
+            <link rel="Stylesheet" href="/css/iweFixes.css?v=1.2j">
+    
+            <style type="text/css">
+                #enroll_appt_widget_section { padding: 2%; }
+                #EnrApptTermTable { width: 100%; }
+                #EnrApptTermTable > thead > tr > th { background-color: #EAEAEA; color: #7E7E7E; font-size: .8em; padding: 2px; }
+                #EnrApptTermTable > thead > tr > th + th { border-left: 1px solid white; }
+            </style>
+    
+        <script type="text/javascript">
+    
+            var menuData = {"name": "USER","newNotices": -1,"logoutURL": "/login/logout.aspx","superGroups": []};
+    
+                // to support original responsive menu
+                $(document).ready(function () {
+                $(".show-mega-menu").on("click", showMegaMenu);
+                $("#showHideUserInformationButton").clickover({ placement: 'bottom', html: true }).css({ cursor: "pointer" });
+            });
+    
+            function showMegaMenu() {
+                $("#main-nav").toggleClass("hide-medium-small")
+                return false; //don't follow the link
+            }
+    
+            //when clicking on a smallmenu, open the menu directly below it, or close all menus below it
+            $(document).on("click", "[id^='smallmenu_']", function () {
+                var thisID = $(this).attr('id');
+                $('.' + thisID).toggle();
+                $(this).find('.smallmenu_icon').toggleClass('icon-plus-sign').toggleClass('icon-minus-sign');
+                $("[class^='" + thisID + "_']").hide();
+                $("." + thisID + " .smallmenu_icon").removeClass('icon-minus-sign').addClass('icon-plus-sign');
+                return false; //don't follow the link
+            });
+        </script>
+        
+            
+        <link rel="stylesheet" href="/iwe/EnrollmentFlyout.css?v=1.2" media="screen">
+        <link rel="stylesheet" href="/classplanner/plan.css">
+        <script type="text/javascript" src="/scripts/DragHandler.js?v=1.2"></script>
+        <link rel="stylesheet" href="/classplanner/plan-extra.css?v=1.2b">
+        <link rel="Stylesheet" href="/scripts/spectrum/spectrum.css?v=1.2">
+        <script type="text/javascript" src="/scripts/spectrum/spectrum.js?v=1.2"></script>
+    
+        <style type="text/css">
+            .block1 { position: relative; }
+            .block2 { position: absolute; top: 5px; right: 5px; }
+            .visHidd { visibility: hidden !important; }
+        </style>
+    
+    
+            <script>
+                (function (i, s, o, g, r, a, m) {i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)}, i[r].l = 1 * new Date(); a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+                })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+    
+                ga('create', 'UA-709446-1', 'auto', { 'allowLinker': true });
+                ga('require', 'linker');
+                ga('linker:autoLink', ['studentweb.it.ucla.edu', 'my.ucla.edu']); //'sa.ucla.edu', 
+                ga('send', 'pageview');
+    
+            </script>
+      </head>
+    
+      <body class="ajax-none iweResponsive"><div id="WzTtDiV" style="visibility: hidden; position: absolute; overflow: hidden; padding: 0px; width: 2559px; left: -2560px; top: 0px;"></div>
+    
+            <script language="JavaScript" type="text/javascript" src="/scripts/wz_tooltip.4.12.js"></script> 
+            <div id="ie6Warning"></div>
+    
+        <form name="aspnetForm" method="post" action="./ClassPlan.aspx" id="aspnetForm">
+    <div>
+    
+    
+    
+    
+    </div>
+    
+    <script type="text/javascript">
+    //<![CDATA[
+    var theForm = document.forms['aspnetForm'];
+    if (!theForm) {
+        theForm = document.aspnetForm;
+    }
+    function __doPostBack(eventTarget, eventArgument) {
+        if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+            theForm.__EVENTTARGET.value = eventTarget;
+            theForm.__EVENTARGUMENT.value = eventArgument;
+            theForm.submit();
+        }
+    }
+    //]]>
+    </script>
+    
+    
+    <script src="/WebResource.axd?d=pynGkmcFUV13He1Qd6_TZCLXuNsekzk4faTC5dLymWnH8J_e1i1mQd5qWzki2J-MA4LvOmhbHYVcMO1KyAowyA2&amp;t=637100573640000000" type="text/javascript"></script>
+    
+    
+    <script src="ClassSearchWidget.js?v=1.2j" type="text/javascript"></script>
+    <script src="/ScriptResource.axd?d=uHIkleVeDJf4xS50Krz-yAfmFGhuAUVzo6Z0C2-urQ_XIcm6IzluPmnzFZdX8Ft-CZ2Zd6OnSCmRWvDaqH7dZyEceZXyHFbDzaDlFmQN85RZ6FADL9SybZR4Fvk7ebiJGV-IyY9bikdghXY3O93J2LJSTFuNqAHLG1_wZpZ6ysM1&amp;t=ffffffffecf19baa" type="text/javascript"></script>
+    <script src="/ScriptResource.axd?d=Jw6tUGWnA15YEa3ai3FadDN9BqHbKVk1JKSC7_gk1nhZ00c_nqE6gbB3eNU-8RYpL-7goam12dL427zk3ROuaJesKLMIIdrNb9CGWfEO7zGsROH_y8QZAJNPPKe26zMCzvbtYGnmmQFuMVFqx5yFXxGi5gWsMoYYwuwvMk7wifc1&amp;t=ffffffffecf19baa" type="text/javascript"></script>
+    <div>
+    
+      
+      
+      
+    </div>
+    
+        
+        <!-- <script type="text/javascript">
+            $(document).ready(function () {
+                tryLoadJQueryElements();
+    
+                // only do this once, and do it after the objects have been collapsed
+                var uncollapsers = $('.page_collapsible_show');
+                if (uncollapsers) {
+                    uncollapsers.collapsible('open');
+                }
+    
+                try {
+                    var prm_m = Sys.WebForms.PageRequestManager.getInstance();
+                    if (prm_m) {
+                        prm_m.add_beginRequest(BeginRequestHandler_mp);
+                        prm_m.add_endRequest(EndRequestHandler_mp);
+                    }
+                } catch (e) {
+                    //alert("Unable to attach events to PageRequestManager! " + e.message);
+                }
+    
+                // Add the jQuery center() method...
+                jQuery.fn.center = function () {
+                    this.css("position", "absolute");
+                    // consoleLog("vCenter ($(window).height()[" + $(window).height() + "] - this.height()[" + this.height() + "]) / 2 + $(window).scrollTop()[" + $(window).scrollTop() + "] -> " + (($(window).height() - this.height()) / 2 + $(window).scrollTop()));
+                    // consoleLog("hCenter ($(window).width()[" + $(window).width() + "] - this.width()[" + this.width() + "]) / 2 + $(window).scrollLeft()[" + $(window).scrollLeft() + "] -> " + (($(window).width() - this.width()) / 2 + $(window).scrollLeft()));
+                    var offLeft = 0;
+                    var offTop = 0;
+    
+    
+    
+                    var main = $("#main-content");
+                    if ($(this).closest(main).length > 0) {
+                        var contentOffset = main.offset();
+                        offLeft = contentOffset.left;
+                        offTop = contentOffset.top;
+                    }
+    
+                    this.css("top", Math.max(0, ($(window).height() - this.height()) / 2 + $(window).scrollTop()) - offTop + "px");
+                    this.css("left", Math.max(0, ($(window).width() - this.width()) / 2 + $(window).scrollLeft()) - offLeft + "px");
+                    return this;
+                };
+    
+                //$("body").prepend("<div id='PleaseWait' style='display:none;'><img border='0' src='/iwe/img/bg-spinner.gif' alt='loading' title='loading' /><br />Please wait...</div>");
+            });
+      </script> -->
+    
+        
+    
+        <script type="text/javascript">
+    //<![CDATA[
+    Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager1', 'aspnetForm', ['tctl00$UpdatePanel2','','tctl00$UpdatePanel1','','tctl00$main_wrapper',''], [], [], 90, 'ctl00');
+    //]]>
+    </script>
+    
+    
+        <div id="page-wrap">
+        
+          
+          
+          <div id="container" class="container">
+                    <div id="content-section-wrapper" class="col-2MR leftWide">
+    
+            <div id="ctl00_main_wrapper" class="row medium-collapse maincontentpanel">
+    
+                    
+    
+            <!-- Main Content -->
+                    <div id="main-content" role="main1" class="panel-9 cf maincontent">
+                        
+    
+    <!-- Begin Class Planner -->
+    <div class="classPlannerWrapper">
+    
+                <input type="hidden" name="ctl00$MainContent$commandField" id="ctl00_MainContent_commandField"><input type="hidden" name="ctl00$MainContent$commandFieldTracker" id="ctl00_MainContent_commandFieldTracker" value="6"><input type="hidden" name="ctl00$MainContent$planIDField" id="ctl00_MainContent_planIDField" value="2927592"><input type="hidden" name="ctl00$MainContent$returnMessage" id="ctl00_MainContent_returnMessage" value=""><input type="hidden" name="ctl00$MainContent$serverShowPopupAfterLoad" id="ctl00_MainContent_serverShowPopupAfterLoad"><input type="hidden" name="ctl00$MainContent$enrPanelDst" id="ctl00_MainContent_enrPanelDst"><input type="hidden" name="ctl00$MainContent$postbackScrollLoc" id="postbackScrollLoc"><input type="hidden" name="ctl00$MainContent$selectedTerm" id="ctl00_MainContent_selectedTerm" value="20F"><input type="hidden" name="ctl00$MainContent$selectedTermType" id="ctl00_MainContent_selectedTermType" value="classPlan">
+                
+    
+                <div class="classPlanner_Messages noprint"> 
+                </div>
+    
+    
+                <div id="ctl00_MainContent_classPlanPanel" class="contentBox" style="position: relative;">
+    
+                    <!-- Class Planner Calendar Section -->
+                    <div class="classPlanner_CalendarSection">
+                      <!-- <div id="plannerSectionCal" class="classPlanner_SectionTitle">
+                            <a onclick="shrink('gridDiv');" id="ctl00_MainContent_toggleGrid" class="planSectionToggle" href="javascript:__doPostBack('ctl00$MainContent$toggleGrid','')"><i class="icon-minus-sign"></i> Weekly Grid</a>
+                      </div> -->
+                        <div id="ctl00_MainContent_panelGrid">
+      
+                        <div id="gridDiv">
+                      <!-- <div class="classPlanner_SectionMenu plannerMenuLinks checkboxStateHolder studylistChecked planChecked">
+                          <span id="studylistShowHide"><span> <a class="uit-clickover-bottom" data-content="Toggle display of all enrolled/waitlisted classes on your study list.  Classes in which you are enrolled/waitlisted appear with a double border: <div style='border: double 3px red; vertical-align: middle; background-color: #ffcccc; width: 1em; height: 1em; display: inline-block;'></div>.<br /><br />Refreshed 1:02:06 AM  <a href='javascript: triggerPostback(&quot;22|-&quot;); void(0);'><span class='icon-refresh'></span> Refresh</a>" data-original-title="" title="" style="cursor: pointer;">Study List</a>:</span><span style="padding-left:5px; padding-right: 1.5em; position: relative;" class="showstudylist icontoggle gridsizeicons"><a style="position: absolute;" class="slUncheck" href="javascript: $('.checkboxStateHolder').toggleClass('studylistChecked'); triggerPostback('27|+'); void(0);"><span class="icon-check-empty"></span></a><a style="position: absolute;" class="slCheck" href="javascript: $('.checkboxStateHolder').toggleClass('studylistChecked'); triggerPostback('27|-'); void(0);"><span class="icon-check"></span></a></span></span>
+                          <span id="planShowHide"><span> <a class="uit-clickover-bottom" data-content="Toggle display of all classes in your plan. Does not include alternates.  Planned classes appear with a solid border: <div style='border: solid 1px red; vertical-align: middle; background-color: #ffcccc; width: 1em; height: 1em; display: inline-block;'></div>" data-original-title="" title="" style="cursor: pointer;">Plan</a>:</span><span style="padding-left:5px; padding-right: 1.5em; position: relative;" class="showplan icontoggle gridsizeicons"><a style="position: absolute;" class="planUncheck" href="javascript: $('.checkboxStateHolder').toggleClass('planChecked'); triggerPostback('36|+'); void(0);"><span class="icon-check-empty"></span></a><a class="planCheck" style="position: absolute;" href="javascript: $('.checkboxStateHolder').toggleClass('planChecked'); triggerPostback('36|-'); void(0);"><span class="icon-check"></span></a></span></span>
+                          <span id="alternatesShowHide"><span> <a class="uit-clickover-bottom" data-content="Toggle display of all classes listed as alternates to another class in your plan.  Alternates appear with a dashed border: <div style='border: dashed 1px red; vertical-align: middle; background-color: #ffcccc; width: 1em; height: 1em; display: inline-block;'></div>." data-original-title="" title="" style="cursor: pointer;">Alternates</a>:</span><span style="padding-left:5px; padding-right: 1.5em; position: relative;" class="showalternates icontoggle gridsizeicons"><a style="position: absolute;" class="altUncheck" href="javascript: $('.checkboxStateHolder').toggleClass('alternatesChecked'); triggerPostback('31|+'); void(0);"><span class="icon-check-empty"></span></a><a class="altCheck" style="position: absolute;" href="javascript: $('.checkboxStateHolder').toggleClass('alternatesChecked'); triggerPostback('31|-'); void(0);"><span class="icon-check"></span></a></span></span>
+                          <span id="gridSize"><span>Grid size:</span><span style="padding-left:5px;" class="gridsizeicons"><a href="javascript: triggerPostback('16|+'); void(0);"><span class="icon-plus"></span></a> <a href="javascript: triggerPostback('16|-'); void(0);"><span class="icon-minus"></span></a></span></span>
+                      </div> -->
+                      <div class="classPlanner_SectionData">
+                            
+                            <div id="ctl00_MainContent_weekGrid" style="margin-top: 10px;"><div class="PlannerGridBox"><table border="0" cellspacing="0" cellpadding="0" style="width: 100%; padding: 0px; margin: 0px;"><tbody><tr class="primary light headerBar classPlanner"><td style="width: 5%; padding: 1px 2px; margin: 0px;">&nbsp;</td><td style="width: 19%; padding: 1px 2px; text-align: center; margin: 0px;">Mon<span class="hide-xsmall">day</span></td><td style="width: 19%; padding: 1px 2px; text-align: center; margin: 0px;">Tue<span class="hide-xsmall">sday</span></td><td style="width: 19%; padding: 1px 2px; text-align: center; margin: 0px;">Wed<span class="hide-xsmall">nesday</span></td><td style="width: 19%; padding: 1px 2px; text-align: center; margin: 0px;">Thu<span class="hide-xsmall">rsday</span></td><td style="width: 19%; padding: 1px 2px; text-align: center; margin: 0px;">Fri<span class="hide-xsmall">day</span></td></tr></tbody></table><div style="width: 100%; height: 386px; " class="daybox"><div class="hourbox" style="top: 0px; width: 100%; height: 48px;"><div style="margin: 0px 95% 0px 0px;">8<sup style="font-size: .5em; " class="hide-small">AM</sup></div></div><div class="hourbox" style="top: 48px; width: 100%; height: 48px;"><div style="margin: 0px 95% 0px 0px;">9<sup style="font-size: .5em; " class="hide-small">00</sup></div></div><div class="hourbox" style="top: 96px; width: 100%; height: 48px;"><div style="margin: 0px 95% 0px 0px;">10<sup style="font-size: .5em; " class="hide-small">00</sup></div></div><div class="hourbox" style="top: 144px; width: 100%; height: 48px;"><div style="margin: 0px 95% 0px 0px;">11<sup style="font-size: .5em; " class="hide-small">00</sup></div></div><div class="hourbox" style="top: 192px; width: 100%; height: 48px;"><div style="margin: 0px 95% 0px 0px;">12<sup style="font-size: .5em; " class="hide-small">PM</sup></div></div><div class="hourbox" style="top: 240px; width: 100%; height: 48px;"><div style="margin: 0px 95% 0px 0px;">1<sup style="font-size: .5em; " class="hide-small">00</sup></div></div><div class="hourbox" style="top: 288px; width: 100%; height: 48px;"><div style="margin: 0px 95% 0px 0px;">2<sup style="font-size: .5em; " class="hide-small">00</sup></div></div><div class="hourbox" style="top: 336px; width: 100%; height: 48px;"><div style="margin: 0px 95% 0px 0px;">3<sup style="font-size: .5em; " class="hide-small">00</sup></div></div><div class="timebox" style="left: 5%; width: 19%; height: 384px;"><div style="background-color: #FAEBEB !important; color: #741D1D; border: double 3px #741D1D; top: 48px; left: 0%; width: calc(100% - 7px); height: 35px;" class="planneritembox smallitem">MATH 269A<br class="hide-small"><span class="hide-above-small"> </span>Lec 1<br class="hide-small"><span class="hide-above-small"> </span>Online - Recorded </div><div style="background-color: #EBFAF9 !important; color: #63D7D0; border: double 3px #63D7D0; top: 144px; left: 0%; width: calc(100% - 7px); height: 35px;" class="planneritembox smallitem">PHYSICS 110A<br class="hide-small"><span class="hide-above-small"> </span>Lec 1<br class="hide-small"><span class="hide-above-small"> </span>Online </div><div style="background-color: #FFEAE6 !important; color: #FC3004; border: double 3px #FC3004; top: 192px; left: 0%; width: calc(50% - 7px); height: 35px;" class="planneritembox smallitem">COMPTNG 40A<br class="hide-small"><span class="hide-above-small"> </span>Lec 1<br class="hide-small"><span class="hide-above-small"> </span><span class="icon-warning-sign planConflict"></span>Online - Recorded </div><div style="background-color: #FCEEE8 !important; color: #993A14; border: solid 1px #993A14; top: 192px; left: 50%; width: calc(50% - 3px); height: 38px;" class="planneritembox smallitem">PHYSICS 105A<br class="hide-small"><span class="hide-above-small"> </span>Lec 1<br class="hide-small"><span class="hide-above-small"> </span><span class="icon-warning-sign planConflict"></span>Online </div><div style="background-color: #EBFAFA !important; color: #99E5E6; border: double 3px #99E5E6; top: 288px; left: 0%; width: calc(100% - 7px); height: 35px;" class="planneritembox smallitem">MATH 182<br class="hide-small"><span class="hide-above-small"> </span>Lec 1<br class="hide-small"><span class="hide-above-small"> </span>Online </div></div><div class="timebox" style="left: 24%; width: 19%; height: 384px;"><div style="background-color: #F7E7FE !important; color: #A20ADC; border: solid 1px #A20ADC; top: 72px; left: 0%; width: calc(100% - 3px); height: 58px;" class="planneritembox">JAPAN 4<br class="hide-small"><span class="hide-above-small"> </span>Lec 1<br class="hide-small"><span class="hide-above-small"> </span><span class="icon-warning-sign planConflict"></span>Online </div><div style="background-color: #FFEAE6 !important; color: #FC3004; border: double 3px #FC3004; top: 192px; left: 0%; width: calc(100% - 7px); height: 35px;" class="planneritembox smallitem">COMPTNG 40A<br class="hide-small"><span class="hide-above-small"> </span>Dis 1A<br class="hide-small"><span class="hide-above-small"> </span>Online </div><div style="background-color: #EBFAFA !important; color: #99E5E6; border: double 3px #99E5E6; top: 288px; left: 0%; width: calc(50% - 7px); height: 35px;" class="planneritembox smallitem">MATH 182<br class="hide-small"><span class="hide-above-small"> </span>Dis 1A<br class="hide-small"><span class="hide-above-small"> </span><span class="icon-warning-sign planConflict"></span>Online </div><div style="background-color: #E8FCF1 !important; color: #31E57D; border: double 3px #31E57D; top: 288px; left: 50%; width: calc(50% - 7px); height: 83px;" class="planneritembox">PHYSICS 4AL<br class="hide-small"><span class="hide-above-small"> </span>Lab 8<br class="hide-small"><span class="hide-above-small"> </span><span class="icon-warning-sign planConflict"></span>Online </div></div><div class="timebox" style="left: 43%; width: 19%; height: 384px;"><div style="background-color: #FAEBEB !important; color: #741D1D; border: double 3px #741D1D; top: 48px; left: 0%; width: calc(100% - 7px); height: 35px;" class="planneritembox smallitem">MATH 269A<br class="hide-small"><span class="hide-above-small"> </span>Lec 1<br class="hide-small"><span class="hide-above-small"> </span>Online - Recorded </div><div style="background-color: #EBFAF9 !important; color: #63D7D0; border: double 3px #63D7D0; top: 144px; left: 0%; width: calc(100% - 7px); height: 35px;" class="planneritembox smallitem">PHYSICS 110A<br class="hide-small"><span class="hide-above-small"> </span>Lec 1<br class="hide-small"><span class="hide-above-small"> </span>Online </div><div style="background-color: #FFEAE6 !important; color: #FC3004; border: double 3px #FC3004; top: 192px; left: 0%; width: calc(50% - 7px); height: 35px;" class="planneritembox smallitem">COMPTNG 40A<br class="hide-small"><span class="hide-above-small"> </span>Lec 1<br class="hide-small"><span class="hide-above-small"> </span><span class="icon-warning-sign planConflict"></span>Online - Recorded </div><div style="background-color: #FCEEE8 !important; color: #993A14; border: solid 1px #993A14; top: 192px; left: 50%; width: calc(50% - 3px); height: 38px;" class="planneritembox smallitem">PHYSICS 105A<br class="hide-small"><span class="hide-above-small"> </span>Lec 1<br class="hide-small"><span class="hide-above-small"> </span><span class="icon-warning-sign planConflict"></span>Online </div><div style="background-color: #EBFAFA !important; color: #99E5E6; border: double 3px #99E5E6; top: 288px; left: 0%; width: calc(100% - 7px); height: 35px;" class="planneritembox smallitem">MATH 182<br class="hide-small"><span class="hide-above-small"> </span>Lec 1<br class="hide-small"><span class="hide-above-small"> </span>Online </div></div><div class="timebox" style="left: 62%; width: 19%; height: 384px;"><div style="background-color: #FAEBEB !important; color: #741D1D; border: double 3px #741D1D; top: 48px; left: 0%; width: calc(50% - 7px); height: 35px;" class="planneritembox smallitem">MATH 269A<br class="hide-small"><span class="hide-above-small"> </span>Dis 1A<br class="hide-small"><span class="hide-above-small"> </span><span class="icon-warning-sign planConflict"></span>Online </div><div style="background-color: #F7E7FE !important; color: #A20ADC; border: solid 1px #A20ADC; top: 72px; left: 50%; width: calc(50% - 3px); height: 58px;" class="planneritembox">JAPAN 4<br class="hide-small"><span class="hide-above-small"> </span>Lec 1<br class="hide-small"><span class="hide-above-small"> </span><span class="icon-warning-sign planConflict"></span>Online </div><div style="background-color: #FCEEE8 !important; color: #993A14; border: solid 1px #993A14; top: 96px; left: 0%; width: calc(50% - 3px); height: 38px;" class="planneritembox smallitem">PHYSICS 105A<br class="hide-small"><span class="hide-above-small"> </span>Dis 1A<br class="hide-small"><span class="hide-above-small"> </span><span class="icon-warning-sign planConflict"></span>Online </div><div style="background-color: #EBFAF9 !important; color: #63D7D0; border: double 3px #63D7D0; top: 144px; left: 0%; width: calc(100% - 7px); height: 35px;" class="planneritembox smallitem">PHYSICS 110A<br class="hide-small"><span class="hide-above-small"> </span>Dis 1A<br class="hide-small"><span class="hide-above-small"> </span>Online </div><div style="background-color: #FFEAE6 !important; color: #FC3004; border: double 3px #FC3004; top: 192px; left: 0%; width: calc(100% - 7px); height: 35px;" class="planneritembox smallitem">COMPTNG 40A<br class="hide-small"><span class="hide-above-small"> </span>Dis 1A<br class="hide-small"><span class="hide-above-small"> </span>Online </div><div style="background-color: #E8FCF1 !important; color: #31E57D; border: double 3px #31E57D; top: 288px; left: 0%; width: calc(100% - 7px); height: 83px;" class="planneritembox">PHYSICS 4AL<br class="hide-small"><span class="hide-above-small"> </span>Lab 8<br class="hide-small"><span class="hide-above-small"> </span><span class="icon-warning-sign planConflict"></span>Online </div></div><div class="timebox" style="left: 81%; width: 19%; height: 384px;"><div style="background-color: #FAEBEB !important; color: #741D1D; border: double 3px #741D1D; top: 48px; left: 0%; width: calc(100% - 7px); height: 35px;" class="planneritembox smallitem">MATH 269A<br class="hide-small"><span class="hide-above-small"> </span>Lec 1<br class="hide-small"><span class="hide-above-small"> </span>Online - Recorded </div><div style="background-color: #F7E7FE !important; color: #A20ADC; border: solid 1px #A20ADC; top: 96px; left: 0%; width: calc(100% - 3px); height: 38px;" class="planneritembox smallitem">JAPAN 4<br class="hide-small"><span class="hide-above-small"> </span>Dis 1B<br class="hide-small"><span class="hide-above-small"> </span>Online </div><div style="background-color: #EBFAF9 !important; color: #63D7D0; border: double 3px #63D7D0; top: 144px; left: 0%; width: calc(100% - 7px); height: 35px;" class="planneritembox smallitem">PHYSICS 110A<br class="hide-small"><span class="hide-above-small"> </span>Lec 1<br class="hide-small"><span class="hide-above-small"> </span>Online </div><div style="background-color: #FFEAE6 !important; color: #FC3004; border: double 3px #FC3004; top: 192px; left: 0%; width: calc(50% - 7px); height: 35px;" class="planneritembox smallitem">COMPTNG 40A<br class="hide-small"><span class="hide-above-small"> </span>Lec 1<br class="hide-small"><span class="hide-above-small"> </span><span class="icon-warning-sign planConflict"></span>Online - Recorded </div><div style="background-color: #FCEEE8 !important; color: #993A14; border: solid 1px #993A14; top: 192px; left: 50%; width: calc(50% - 3px); height: 38px;" class="planneritembox smallitem">PHYSICS 105A<br class="hide-small"><span class="hide-above-small"> </span>Lec 1<br class="hide-small"><span class="hide-above-small"> </span><span class="icon-warning-sign planConflict"></span>Online </div><div style="background-color: #EBFAFA !important; color: #99E5E6; border: double 3px #99E5E6; top: 288px; left: 0%; width: calc(100% - 7px); height: 35px;" class="planneritembox smallitem">MATH 182<br class="hide-small"><span class="hide-above-small"> </span>Lec 1<br class="hide-small"><span class="hide-above-small"> </span>Online </div></div></div></div></div>
+                        </div>
+                        </div>
+                        
+    </div>
+                    </div>
+                    <!-- End Class Planner Calendar Section -->
+    
+    
+                </div><input type="hidden" name="ctl00$MainContent$winPosList" id="ctl00_MainContent_winPosList">
+    
+    <script type="text/javascript">
+    
+        function shrink(elementID) {
+            $('#' + elementID).hide(300);
+        }
+    
+      function showAbout() {
+          $('#AboutDragger').toggle(); //.center().css("background-color", "").zIndex(zCounter++);
+      }
+      function showMsg() {
+          $('#ResponseMessageDragger').show().center().css("background-color", "").zIndex(zCounter++);
+      }
+    
+        var statusMsg = $get('ctl00_PageContents_planStatusLabel');
+        if (statusMsg) {
+            if (statusMsg.innerHTML == "This plan is empty.") {
+                showAbout();
+            }
+        }
+    </script>
+    <div id="texty"></div>
+    
+    <div id="ctl00_MainContent_XXX">
+    
+    </div>
+    
+    </div>    
+    <!-- End Class Planner -->
+    
+    
+    
+                
+              </div>
+            <!-- End Main Content-->
+    
+                    <!-- Right Side Bar -->
+<!--                     
+                        <div id="right-sidebar" class="panel-3">
+        <div class="widget_container">
+    
+        
+    
+        <style type="text/css">
+            div.pteassigned+div.pteassigned { margin-top: 1em; }
+            .message .boxformelement { width: 100%; max-width: 500px; }
+            .message > header > .boxHeaderButtons { float: right; }
+            .message > header > .boxHeaderButtons > a + a { margin-left: 3px; }
+            .message label + input { margin-left: .5em; }
+            #panelSearch { padding: 5px 0; }
+            div.colorswatch { display: inline-block; border: 1px solid #808080; width: 1em; height: 1em; margin-right: .5em; }
+            
+            div.opSelectPanel > div { display: inline-block; vertical-align: middle; text-align: center; margin: 0; padding: 2px; width: calc(8% - 2px); }
+            div.opSelectPanel > div:first-child { width: calc(64% - 2px); text-align: left; }
+            div.opSelectPanel > div:last-child { width: calc(25% - 2px); text-align: right; }
+            div.opSelectPanel > div > select { width: 100%; max-width: 100%; }
+            
+            input.idChooserBox { margin: .5em .5em .5em 0; }
+            
+        </style>
+    
+                            
+    </div>
+                            
+                            
+    
+    
+                        </div>
+                     -->
+                    <!-- End Right Side Bar -->
+    
+                </div>
+            </div>
+          </div>
+          <div id="footer-push">
+          </div>
+        </div>
+        
+    
+    
+    
+
+</body></html>
+  </body>
+
+
+  <script src="options.js"></script>
+</html>
