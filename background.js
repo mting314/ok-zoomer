@@ -2,40 +2,40 @@
 
 const url = chrome.runtime.getURL('data.json')
 
-async function launch () {
+async function launch() {
   const response = await fetch('data.json');
   const json = await response.json();
   chrome.alarms.clearAll()
   chrome.storage.sync.set({ leeway: 10 }, function () {
   })
-  
+
   // const data = await fetch(url)
   await chrome.storage.sync.set({ classes: await json.classes }, function () {
-      chrome.storage.sync.get('classes', function (result) {
-        result.classes.forEach(element => {
-          createClassAlarm(element)
-        });
-        chrome.alarms.getAll(function (result) {
-          console.log('printing all alarms:', result)
-        });
+    chrome.storage.sync.get('classes', function (result) {
+      result.classes.forEach(element => {
+        createClassAlarm(element)
       });
-
-      // chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
-      //   chrome.declarativeContent.onPageChanged.addRules([{
-      //     conditions: [new chrome.declarativeContent.PageStateMatcher({
-      //       pageUrl: {hostEquals: 'developer.chrome.com'},
-      //     })],
-      //     actions: [new chrome.declarativeContent.ShowPageAction()]
-      //   }]);
-      // });
-      
+      chrome.alarms.getAll(function (result) {
+        console.log('printing all alarms:', result)
+      });
     });
-  
+
+    // chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
+    //   chrome.declarativeContent.onPageChanged.addRules([{
+    //     conditions: [new chrome.declarativeContent.PageStateMatcher({
+    //       pageUrl: {hostEquals: 'developer.chrome.com'},
+    //     })],
+    //     actions: [new chrome.declarativeContent.ShowPageAction()]
+    //   }]);
+    // });
+
+  });
+
 }
 
 chrome.runtime.onInstalled.addListener(launch)
 
-function parseDayOfWeek (weekday) {
+function parseDayOfWeek(weekday) {
   var weekdayDict = {
     M: 1,
     T: 2,
@@ -52,7 +52,7 @@ function parseDayOfWeek (weekday) {
   }
 }
 
-async function createClassAlarm (classObject) {
+async function createClassAlarm(classObject) {
   var now = new Date()
   var classTime = classObject.time.split(':')
   var classHour = parseInt(classTime[0])
@@ -62,7 +62,7 @@ async function createClassAlarm (classObject) {
     var dayDifference = (((classDay - now.getDay()) % 7) + 7) % 7
     var timeToRing = now.getTime() + dayDifference * 24 * 60 * 60000
     var target = new Date(timeToRing)
-    
+
     target.setHours(classHour)
     target.setMinutes(classMinute)
     console.log(target - now)
@@ -90,7 +90,7 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
       title: 'Get out of my way',
       iconUrl: 'images/dollar_10.jpg'
     }]
-  }, function (notificationId) {})
+  }, function (notificationId) { })
 })
 
 /* Respond to the user's clicking one of the buttons */
@@ -125,6 +125,6 @@ chrome.notifications.onClosed.addListener(function () {
 
 /* Handle the user's rejection
 * (simple ignore if you just want to hide the notification) */
-function saySorry () {
+function saySorry() {
   alert('Sorry to bother you !')
 }
