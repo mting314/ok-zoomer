@@ -11,7 +11,11 @@
   "content_scripts": [
     {
       "matches": ["https://ucla.zoom.us/*"],
-      "js": ["contentScript.js", "findElement.js"]
+      "js": ["injectZoom.js", "findElement.js"]
+    },
+    {
+      "matches": ["https://be.my.ucla.edu/ClassPlanner/ClassPlan.aspx"],
+      "js": ["injectPlanner.js", "findElement.js"]
     }
   ],
   "page_action": {
