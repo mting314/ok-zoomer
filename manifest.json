@@ -15,7 +15,8 @@
     },
     {
       "matches": ["https://be.my.ucla.edu/ClassPlanner/ClassPlan.aspx"],
-      "js": ["injectPlanner.js", "findElement.js"]
+      "js": ["injectPlanner.js", "findElement.js"],
+      "css" : ["classplanner/tooltip.css"]
     }
   ],
   "page_action": {

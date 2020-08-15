@@ -1,5 +1,7 @@
 {"classes":[
-    
-    { "name":"PHYSICS 110A", "days":"MTWRFSQ", "time":"00:45", "url":"https://ucla.zoom.us/j/298904370"},
-    { "name":"MATH 131A", "days":"MTR", "time":"11:00", "url":"https://ucla.zoom.us/j/96327732311?uname=Anthony%20Lee"}
+    { "name":"PHYSICS 110A", "days":"MTWRF", "type":"Lecture", "time":"14:00", "url":"https://ucla.zoom.us/j/298904370"},
+    { "name":"Math 131A", "days":"MTR", "type":"Lec 3", "time":"11:00", "endtime":"12:50", "url":"https://ucla.zoom.us/j/96327732311?uname=Anthony%20Lee", "password":"685671"},
+    { "name":"Math 131A", "days":"W", "type":"Dis 3A", "time":"11:00", "endtime":"12:50", "url":"https://ucla.zoom.us/j/95951515325?uname=Anthony%20Lee", "password":"math131a"},
+    { "name":"PHILOS 31", "days":"W", "type":"Dis 2B", "time":"10:30", "endtime":"12:50", "url":"https://ucla.zoom.us/j/99316457968?pwd=VWNPYzNTQ0g2empHZEx1R0NKTERVdz09", "password":"forallx"},
+    { "name":"PHILOS 31", "days":"TR", "type":"Lec 2", "time":"10:45", "endtime":"12:50", "url":"https://ucla.zoom.us/j/99316457968?pwd=VWNPYzNTQ0g2empHZEx1R0NKTERVdz09", "password":"forallx"}
 ]}
