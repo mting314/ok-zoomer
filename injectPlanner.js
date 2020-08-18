@@ -44,18 +44,19 @@ function updateClipboard(newClip) {
 					break;
 				}
 				if (item.childNodes[0].wholeText.toUpperCase() == myclass.name.toUpperCase()) {
-					
+
 
 					var text = item.childNodes[0].wholeText;
-					
+
 					var link = document.createElement('a');
 					link.href = myclass.url;
 					if (myclass.password) {
 						link.className = "tooltip"
-						link.onclick = function(){ updateClipboard(myclass.password) };
+						link.onclick = function () {
+							updateClipboard(myclass.password)
+						};
 						// var tooltiptext = document.createTextNode(text);
-					}
-					else {
+					} else {
 						link.appendChild(document.createTextNode(text));
 					}
 
