@@ -35,44 +35,34 @@ function updateClipboard(newClip) {
 		// 	}
 		// }
 		var benis = document.getElementsByClassName('planneritembox');
-		console.log(benis);
 		result.classes.forEach(myclass => {
+			console.log(myclass)
 			for (let item of benis) {
-				console.log(myclass.name.toUpperCase());
-
 				if (item.childNodes[0].tagName == 'A') {
-					break;
+					continue;
 				}
 				if (item.childNodes[0].wholeText.toUpperCase() == myclass.name.toUpperCase()) {
+					if (!item.childNodes[3] || item.childNodes[3].wholeText.toUpperCase() == myclass.type.toUpperCase()) {
 
+						var text = item.childNodes[0].wholeText;
 
-					var text = item.childNodes[0].wholeText;
-
-					var link = document.createElement('a');
-					link.href = myclass.url;
-					if (myclass.password) {
-						link.className = "tooltip"
-						link.onclick = function () {
-							updateClipboard(myclass.password)
-						};
-						// var tooltiptext = document.createTextNode(text);
-					} else {
+						var link = document.createElement('a');
+						link.href = myclass.url;
+						link.target = "_blank"
+						if (myclass.password) {
+							// link.className = "tooltip"
+							link.onclick = function () {
+								updateClipboard(myclass.password)
+							};
+							// var tooltiptext = document.createTextNode(text);
+						}
 						link.appendChild(document.createTextNode(text));
-					}
 
-					item.insertBefore(link, item.childNodes[0])
+						item.replaceChild(link, item.childNodes[0])
+					}
 				}
 			}
 		});
 
 	});
 })();
-
-
-// just place a div at top right
-// var div = document.createElement('div');
-// div.style.position = 'fixed';
-// div.style.top = 0;
-// div.style.right = 0;
-// div.textContent = 'Injected!';
-// document.body.appendChild(div);
