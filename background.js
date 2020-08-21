@@ -56,31 +56,32 @@ function parseDayOfWeek(weekday) {
 }
 
 async function createClassAlarm(classObject) {
-  var now = new Date()
-  var classTime = classObject.time.split(':')
-  var classHour = parseInt(classTime[0])
-  var classMinute = parseInt(classTime[1])
+  console.log(classObject);
   for (var i = 0; i < classObject.days.length; i++) {
-    var classDay = await parseDayOfWeek(classObject.days.charAt(i));
-    var dayDifference = (((classDay - now.getDay()) % 7) + 7) % 7
-    var timeToRing = now.getTime() + dayDifference * 24 * 60 * 60000
-    var target = new Date(timeToRing)
-
-    target.setHours(classHour, classMinute, 0)
     await chrome.storage.sync.get('leeway', function (result) {
+      var now = new Date()
+      var classTime = classObject.time.split(':')
+      var classHour = parseInt(classTime[0])
+      var classMinute = parseInt(classTime[1])
+      console.log(classObject.days.charAt(i));
+      var classDay = parseDayOfWeek(classObject.days.charAt(i));
+      var dayDifference = (((classDay - now.getDay()) % 7) + 7) % 7
+      var timeToRing = now.getTime() + dayDifference * 24 * 60 * 60000
+      var target = new Date(timeToRing)
+
+      target.setHours(classHour, classMinute, 0)
+
       if (dayDifference == 0) {
-        console.log("how long since the class?" + classObject.name, now - target)
-        console.log("how much is the leeway? ", result.leeway * 60 * 1000)
         if (now.getTime() - target.getTime() > result.leeway * 60 * 1000) {
           target.setDate(target.getDate() + 7)
         }
       }
       console.log(classObject.name + ' ' + classObject.days.charAt(i), target)
       chrome.alarms.create(classObject.name + ' ' + classObject.days.charAt(i), {
-      when: target.getTime()
+        when: target.getTime()
+      });
     });
-    });
-    
+
   }
 }
 
