@@ -66,21 +66,21 @@ async function createClassAlarm(classObject) {
     var timeToRing = now.getTime() + dayDifference * 24 * 60 * 60000
     var target = new Date(timeToRing)
 
-    target.setHours(classHour)
-    target.setMinutes(classMinute)
-    console.log(target - now)
+    target.setHours(classHour, classMinute, 0)
     await chrome.storage.sync.get('leeway', function (result) {
       if (dayDifference == 0) {
         console.log("how long since the class?" + classObject.name, now - target)
-        if (0 < now.getTime() - target.getTime() < result * 60 * 1000) {
+        console.log("how much is the leeway? ", result.leeway * 60 * 1000)
+        if (now.getTime() - target.getTime() > result.leeway * 60 * 1000) {
           target.setDate(target.getDate() + 7)
         }
       }
-    });
-    console.log(classObject.name + ' ' + classObject.days.charAt(i), target)
-    chrome.alarms.create(classObject.name + ' ' + classObject.days.charAt(i), {
+      console.log(classObject.name + ' ' + classObject.days.charAt(i), target)
+      chrome.alarms.create(classObject.name + ' ' + classObject.days.charAt(i), {
       when: target.getTime()
-    })
+    });
+    });
+    
   }
 }
 
