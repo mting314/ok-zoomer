@@ -6,18 +6,21 @@ async function launch() {
   const response = await fetch('data.json');
   const json = await response.json();
   chrome.alarms.clearAll()
-  chrome.storage.sync.set({ leeway: 10 }, function () {
-  })
+  chrome.storage.sync.set({
+    leeway: 10
+  }, function () {})
 
   // const data = await fetch(url)
-  await chrome.storage.sync.set({ classes: await json.classes }, function () {
+  await chrome.storage.sync.set({
+    classes: await json.classes
+  }, function () {
     chrome.storage.sync.get('classes', function (result) {
       result.classes.forEach(element => {
         createClassAlarm(element)
       });
-      chrome.alarms.getAll(function (result) {
-        console.log('printing all alarms:', result)
-      });
+      // chrome.alarms.getAll(function (result) {
+      //   console.log('printing all alarms:', result)
+      // });
     });
 
     // chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
@@ -67,13 +70,17 @@ async function createClassAlarm(classObject) {
     target.setMinutes(classMinute)
     console.log(target - now)
     await chrome.storage.sync.get('leeway', function (result) {
-      console.log(target - now)
-      if (now.getTime() - target.getTime() > result * 60 * 1000) {
-        target.setDate(target.getDate() + 7)
+      if (dayDifference == 0) {
+        console.log("how long since the class?" + classObject.name, now - target)
+        if (0 < now.getTime() - target.getTime() < result * 60 * 1000) {
+          target.setDate(target.getDate() + 7)
+        }
       }
     });
     console.log(classObject.name + ' ' + classObject.days.charAt(i), target)
-    chrome.alarms.create(classObject.name + ' ' + classObject.days.charAt(i), { when: target.getTime() })
+    chrome.alarms.create(classObject.name + ' ' + classObject.days.charAt(i), {
+      when: target.getTime()
+    })
   }
 }
 
@@ -90,7 +97,7 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
       title: 'Get out of my way',
       iconUrl: 'images/dollar_10.jpg'
     }]
-  }, function (notificationId) { })
+  }, function (notificationId) {})
 })
 
 /* Respond to the user's clicking one of the buttons */
@@ -101,7 +108,9 @@ chrome.notifications.onButtonClicked.addListener(function (notifId, btnIdx) {
     if (btnIdx === 0) {
       console.log(currentClass.url)
       // window.open(currentClass['url']);
-      chrome.tabs.create({ url: currentClass.url }, function (tab) {
+      chrome.tabs.create({
+        url: currentClass.url
+      }, function (tab) {
         console.log(tab)
       })
     } else if (btnIdx === 1) {
@@ -124,7 +133,5 @@ chrome.notifications.onClosed.addListener(function () {
 })
 
 /* Handle the user's rejection
-* (simple ignore if you just want to hide the notification) */
-function saySorry() {
-  alert('Sorry to bother you !')
-}
+ * (simple ignore if you just want to hide the notification) */
+function saySorry() {}
