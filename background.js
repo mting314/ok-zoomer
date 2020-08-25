@@ -51,37 +51,41 @@ function parseDayOfWeek(weekday) {
   if (weekday in weekdayDict) {
     return weekdayDict[weekday]
   } else {
-    throw 'Invalid day of the week'
+    throw 'Invalid day of the week';
   }
 }
 
-async function createClassAlarm(classObject) {
-  console.log(classObject);
-  for (var i = 0; i < classObject.days.length; i++) {
-    await chrome.storage.sync.get('leeway', function (result) {
-      var now = new Date()
-      var classTime = classObject.time.split(':')
-      var classHour = parseInt(classTime[0])
-      var classMinute = parseInt(classTime[1])
-      console.log(classObject.days.charAt(i));
-      var classDay = parseDayOfWeek(classObject.days.charAt(i));
-      var dayDifference = (((classDay - now.getDay()) % 7) + 7) % 7
-      var timeToRing = now.getTime() + dayDifference * 24 * 60 * 60000
-      var target = new Date(timeToRing)
+function createSingleAlarm(classObject, classDayChar) {
+  chrome.storage.sync.get('leeway', function (result) {
+    var now = new Date()
+    var classTime = classObject.time.split(':')
+    var classHour = parseInt(classTime[0])
+    var classMinute = parseInt(classTime[1])
 
-      target.setHours(classHour, classMinute, 0)
+   
+    var classDay = parseDayOfWeek(classDayChar);
+    var dayDifference = (((classDay - now.getDay()) % 7) + 7) % 7
 
-      if (dayDifference == 0) {
-        if (now.getTime() - target.getTime() > result.leeway * 60 * 1000) {
-          target.setDate(target.getDate() + 7)
-        }
+    var timeToRing = now.getTime() + dayDifference * 24 * 60 * 60000
+    var target = new Date(timeToRing)
+
+    target.setHours(classHour, classMinute, 0)
+    if (dayDifference == 0) {
+      if (now.getTime() - target.getTime() > result.leeway * 60 * 1000) {
+        target.setDate(target.getDate() + 7)
       }
-      console.log(classObject.name + ' ' + classObject.days.charAt(i), target)
-      chrome.alarms.create(classObject.name + ' ' + classObject.days.charAt(i), {
-        when: target.getTime()
-      });
-    });
+    }
 
+    console.log([classObject.name, classObject.type, classDayChar, target].join(' '))
+    chrome.alarms.create([classObject.name, classDayChar].join(' '), {
+      when: target.getTime()
+    });
+  });
+}
+
+async function createClassAlarm(classObject) {
+  for (var i = 0; i < classObject.days.length; i++) {
+    createSingleAlarm(classObject, classObject.days.charAt(i));
   }
 }
 
@@ -104,7 +108,6 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
 /* Respond to the user's clicking one of the buttons */
 chrome.notifications.onButtonClicked.addListener(function (notifId, btnIdx) {
   chrome.storage.sync.get('classes', function (result) {
-    console.log(notifId)
     var currentClass = findElement(result.classes, 'name', notifId)
     if (btnIdx === 0) {
       console.log(currentClass.url)

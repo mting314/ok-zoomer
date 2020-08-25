@@ -7,37 +7,17 @@ function updateClipboard(newClip) {
 	});
 }
 
+
+
 (function () {
 	const regex = /.+?(?=<)/
 
 	chrome.storage.sync.get("classes", function (result) {
-		console.log(result.classes)
-		// var benis = document.getElementsByClassName('planneritembox')
-		// var classNames = [];
-		// for (var i = 0; i < result.classes.length; i++) {
-		// 	console.log(result.classes[i].name);
-		// 	classNames.push(result.classes[i].name);
-		// }
-		// console.log(benis);
-		// for (var i = 0; i < benis.length; i++) {
-		// 	console.log(benis[i]);
-		// 	if (classNames.includes(benis[i].innerHTML.match(regex)[0].toUpperCase())) {
-		// 		var matchedClass = benis[i].innerHTML.match(regex)[0].toUpperCase()
-		// 		console.log("Found a match: " + benis[i].innerHTML.match(regex)[0]);
-		// 		// TODO: Don't use innerHTML!
-		// 		var link = document.createElement("a")
-		// 		link.href = benis[i];
-		// 		var newtext = document.createTextNode("click here!");
-		// 		link.appendChild(newtext);
-		// 		benis[i].appendChild(link); 
-		// 		console.log(benis[i].innerHTML);
-		// 		//benis[i].innerHTML = benis[i].innerHTML.replace(regex, findElement(result.classes, 'name', matchedClass)['time'])
-		// 	}
-		// }
-		var benis = document.getElementsByClassName('planneritembox');
+		var plannerBoxes = document.getElementsByClassName('planneritembox');
 		result.classes.forEach(myclass => {
-			console.log(myclass)
-			for (let item of benis) {
+			for (let item of plannerBoxes) {
+
+				// don't overwrite if already has link
 				if (item.childNodes[0].tagName == 'A') {
 					continue;
 				}
@@ -47,6 +27,11 @@ function updateClipboard(newClip) {
 						var text = item.childNodes[0].wholeText;
 
 						var link = document.createElement('a');
+						item.parentNode.insertBefore(link, item)
+
+						//item.style.border = "3px solid rgb(252, 48, 4)";
+						item.style.outline = "thick solid #0000FF;"
+						item.style.outlineOffset = "-5px";
 						link.href = myclass.url;
 						link.target = "_blank"
 						if (myclass.password) {
@@ -56,13 +41,36 @@ function updateClipboard(newClip) {
 							};
 							// var tooltiptext = document.createTextNode(text);
 						}
-						link.appendChild(document.createTextNode(text));
+						//link.appendChild(document.createTextNode(text));
 
-						item.replaceChild(link, item.childNodes[0])
+						link.appendChild(item);
 					}
 				}
 			}
 		});
+
+		// check items in planner we missed
+		for (let item of plannerBoxes) {
+			console.log(item.parentElement);
+			if (!(item.parentElement.tagName == 'A')) {
+				var warning = document.createElement('a')
+
+				warning.style = 'float: right; cursor: pointer;';
+				warning.href = '#';
+				warning.className = 'uit-clickover-bottom';
+				warning.setAttribute("data-content", "<div id=&quot;popover_header&quot; class=&quot;warning light&quot;><div class=&quot;icon-warning-sign&quot;></div><span>Warning: Time Conflict</span></div><ul class=&quot;bulleted_list&quot;><li>PHILOS  31</li></ul>");
+				warning.setAttribute("data-original-title", "")
+				warning.setAttribute("title", "")
+				warning.setAttribute("data-clickover-open", "1")
+
+				var warningSpan = document.createElement('span');
+				warningSpan.className = "icon-warning-sign"
+				item.appendChild(document.createTextNode("Missed one!"));
+				warning.appendChild(warningSpan)
+
+				item.appendChild(warning)
+			}
+		}
 
 	});
 })();
