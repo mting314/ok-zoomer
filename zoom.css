@@ -1,0 +1,8 @@
+.password {
+  color: rgb(228, 26, 26)
+}
+
+span:hover {
+  background-color: yellow;
+  cursor: pointer;
+}

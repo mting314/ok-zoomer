@@ -13,6 +13,7 @@ javascript: (function () {
 	l('//code.jquery.com/jquery-3.2.1.min.js', 'jquery')
 })();
 
+
 (function () {
 	chrome.storage.sync.get("classes", function (result) {
 
@@ -21,7 +22,33 @@ javascript: (function () {
 		console.log(currentClass);
 		var className = JSON.stringify(currentClass.name).replace(/\"/g, "")
 		var classType = JSON.stringify(currentClass.type).replace(/\"/g, "")
+
+		var classPassword;
+		if (currentClass.password) {
+			classPassword = JSON.stringify(currentClass.password).replace(/\"/g, "")
+		} else {
+			classPassword = "No Password!"
+		}
+
 		document.getElementsByClassName("_2XjT-0pJ")[0].innerHTML = "<h1>Joining " + [className, classType].join(' ') + "</h1>" + document.getElementsByClassName("_2XjT-0pJ")[0].innerHTML
+		var password = document.createElement('p');
+
+		var passwordText = ["Password is ", classPassword, ". Password has been copied to your clipboard."]
+		var node1 = document.createTextNode(passwordText[0])
+		var node2 = document.createElement("span");
+		node2.className = "password";
+		node2.appendChild(document.createTextNode(passwordText[1]))
+		var node3 = document.createTextNode(passwordText[2])
+
+
+		password.appendChild(node1)
+		password.appendChild(node2)
+		password.appendChild(node3)
+		console.log(password)
+		document.getElementsByTagName("h1")[0].insertAdjacentElement('afterend', password);
+
+		navigator.clipboard.writeText(classPassword);
+
 	});
 	// just place a div at top right
 	// var div = document.createElement('div');
