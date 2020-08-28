@@ -35,9 +35,16 @@ javascript: (function () {
 
 		var passwordText = ["Password is ", classPassword, ". Password has been copied to your clipboard."]
 		var node1 = document.createTextNode(passwordText[0])
+
 		var node2 = document.createElement("span");
 		node2.className = "password";
-		node2.appendChild(document.createTextNode(passwordText[1]))
+		passwordAnchor = document.createElement('a')
+		passwordAnchor.onclick = function() {
+			navigator.clipboard.writeText(classPassword);
+		}
+		passwordAnchor.appendChild(document.createTextNode(passwordText[1]))
+		node2.appendChild(passwordAnchor)
+
 		var node3 = document.createTextNode(passwordText[2])
 
 

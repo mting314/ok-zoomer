@@ -32,9 +32,14 @@
   display: grid;
 }
 
+.linkedbox {
+  outline-offset: -3px;
+}
+
 .otherday {
   width: 100%;
   height: 4px;
+  opacity: 0.5;
   position: absolute;
   border-top: 3px dashed red;
 }
@@ -42,6 +47,7 @@
 .thisday {
   width: 100%;
   height: 4px;
+  opacity: 0.5;
   position: absolute;
   border-top: 3px solid red;
 }
@@ -52,4 +58,9 @@
   left: 0%;
   top: 0px;
   position: absolute;
+}
+
+.currentClass {
+  outline: 5px solid yellow !important;
+  outline-offset: -5px !important;
 }
