@@ -16,18 +16,23 @@ function classInProgress(classDiv, targetHeight) {
 
 
   var now = new Date();
-  // now.setHours(11);
+  now.setHours(11);
+  // now.setDate(now.getDate()-3);
   if (8 <= now.getHours() && now.getHours() < 8 + hourCount) {
     var currentDay = now.getDay();
+
     if (currentDay != 6 && currentDay != 0) {
-      var eightAM = new Date();
+      var eightAM = new Date(now.getTime());
       eightAM.setHours(8, 0, 0, 0);
       var minutesFrom8 = (now - eightAM) / 60000;
 
-      var targetHeight = 48 / 60 * minutesFrom8;
       var start = hourCount;
-      
-      while (start < hourCount + currentDay - 1) {
+      var hourboxHeight = parseInt(document.getElementsByClassName("hourbox")[0].style.height, 10);
+      var targetHeight = hourboxHeight / 60 * minutesFrom8;
+      console.log(hourboxHeight);
+
+      var endBox = hourCount + currentDay - 1;
+      while (start <= endBox) {
         var containingDiv = document.createElement("div");
 
         var injectingCol = currentGrid.childNodes[start];
@@ -38,7 +43,7 @@ function classInProgress(classDiv, targetHeight) {
 
         injectingHR.className = "oof";
 
-        if (start < hourCount + currentDay - 2) {
+        if (start < endBox) {
           containingDiv.className = "otherday";
         } else {
           containingDiv.className = "thisday";
@@ -48,7 +53,7 @@ function classInProgress(classDiv, targetHeight) {
 
         start++;
       }
-      currentGrid.childNodes[hourCount + currentDay - 2].childNodes.forEach(
+      currentGrid.childNodes[endBox].childNodes.forEach(
         function (currentValue) {
           if (currentValue.className == "planneritembox" && classInProgress(currentValue, targetHeight)) {
             currentValue.classList.add("currentClass");

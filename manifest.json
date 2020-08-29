@@ -1,6 +1,6 @@
 {
   "name": "Ok, Zoomer",
-  "version": "1.0",
+  "version": "0.0.0.1",
   "description": "Build an Extension!",
   "permissions": ["activeTab", "declarativeContent", "storage", "alarms", "notifications", "tabs"],
   "options_page": "options/options.html",
@@ -16,8 +16,8 @@
     },
     {
       "matches": ["https://be.my.ucla.edu/ClassPlanner/ClassPlan.aspx"],
-      "js": ["injectPlanner.js", "findElement.js", "highlightCurrent.js"],
-      "css" : ["classplanner/tooltip.css"]
+      "js": ["injectplanner/injectPlanner.js", "findElement.js", "injectplanner/highlightCurrent.js"],
+      "css" : ["injectplanner/tooltip.css"]
     }
   ],
   "page_action": {
