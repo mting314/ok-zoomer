@@ -19,8 +19,8 @@ var getParams = function (url) {
 
 function getElementIndex(node) {
   var index = 0;
-  while ( (node = node.previousElementSibling) ) {
-      index++;
+  while ((node = node.previousElementSibling)) {
+    index++;
   }
   return index;
 }
@@ -46,7 +46,9 @@ function addClass(obj) {
     searchKey: "sorry,Ican't"
   }
 
-  if (obj.parent().parent().parent().index() === 1) {paramData.class_prim_act_fl = 'y'}
+  if (obj.parent().parent().parent().index() === 1) {
+    paramData.class_prim_act_fl = 'y'
+  }
 
   // var paramData = "{'term_cd':'" + classParams.term_cd + "','subj_area_cd':'" + classParams.subj_area_cd + "','crs_catlg_no':'" + classParams.crs_catlg_no + "'}"
   $.ajax({
@@ -60,7 +62,7 @@ function addClass(obj) {
         // start retry
 
         paramData.searchKey = getLastWord(res.d.errorMessage);
-        
+
         $.ajax({
           type: "POST",
           url: "/ClassPlanner/ClassSearch.asmx/getTierData",
@@ -68,11 +70,16 @@ function addClass(obj) {
           contentType: "application/json; charset=utf-8",
           dataType: "json",
           success: function (newres) {
-            console.log(newres);
-            var result = prompt("Add this class to the planner?\r\n" + newres.d.svcRes.ResultTiers[0].subj_area_cd + " " + newres.d.svcRes.ResultTiers[0].class_section + "\r\nIf so, optionally enter a Zoom link:", "https://ucla.zoom.us/j/");
+            selectedClass = newres.d.svcRes.ResultTiers[0];
+            var result = prompt("Add this class to the planner?\r\n" + selectedClass.subj_area_cd + " " + selectedClass.class_section + "\r\nIf so, optionally enter a Zoom link:", "https://ucla.zoom.us/j/");
             if (result != null) {
+              delete selectedClass.anchor_tags;
+              delete selectedClass.info_tooltip_data;
               chrome.runtime.sendMessage({
-                toAdd: {classinfo: newres.d.svcRes.ResultTiers[0], url: result}
+                toAdd: {
+                  classinfo: newres.d.svcRes.ResultTiers[0],
+                  url: result
+                }
               }, function (response) {
                 console.log(response.farewell);
               });
@@ -103,9 +110,17 @@ function addClass(obj) {
     classLinks.forEach(link => {
       var found = false;
       result.classes.forEach(myclass => {
-        if (link.getAttribute('title').includes(myclass.id)) {
-          console.log(link.getAttribute('title'), "starts at ", myclass.time);
+        if (link.getAttribute('title').includes(myclass.classinfo.srs_crs_no)) {
           found = true;
+          var zoomLink = document.createElement('a')
+          zoomLink.href = myclass.url;
+
+
+          var warningSpan = document.createElement('span');
+          warningSpan.className = "icon-heart"
+
+          zoomLink.appendChild(warningSpan)
+          link.parentNode.parentNode.childNodes[13].appendChild(zoomLink);
           return;
         }
       });

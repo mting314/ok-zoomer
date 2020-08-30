@@ -2,7 +2,7 @@
   "name": "Ok, Zoomer",
   "version": "0.0.0.1",
   "description": "Build an Extension!",
-  "permissions": ["activeTab", "declarativeContent", "storage", "alarms", "notifications", "tabs"],
+  "permissions": ["activeTab", "declarativeContent", "storage", "unlimitedStorage", "alarms", "notifications", "tabs"],
   "options_page": "options/options.html",
   "background": {
     "scripts": ["background.js", "findElement.js"],

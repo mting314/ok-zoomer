@@ -64,3 +64,7 @@
   outline: 5px solid yellow !important;
   outline-offset: -5px !important;
 }
+
+.icon-zoom-link:before {
+	content: "\f004";
+}
