@@ -82,6 +82,7 @@ function addClass(obj) {
                 }
               }, function (response) {
                 console.log(response.farewell);
+                location.reload();
               });
             }
           }

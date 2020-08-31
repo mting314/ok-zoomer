@@ -24,7 +24,7 @@ function fillClasses(plannerBoxes, callback) {
 						var text = item.childNodes[0].wholeText;
 						var link = document.createElement('a');
 
-						item.style.outline = "3px groove " + item.style.borderColor
+						item.style.outline = "5px groove " + item.style.borderColor
 						// item.style.outlineOffset = "-3px";
 						link.href = myclass.url;
 						link.target = "_blank"
@@ -48,43 +48,43 @@ function fillClasses(plannerBoxes, callback) {
 	});
 }
 
-function catchMissed(plannerBoxes) {
-	// check items in planner we missed
-	for (let item of plannerBoxes) {
-		var hasATag = false;
-		item.childNodes.forEach(
-			function (currentValue) {
-				if (currentValue.tagName == "A") {
-					hasATag = true;
-					return;
-				}
-			}
-		)
-		if (!hasATag) {
-			var warning = document.createElement('a')
+// function catchMissed(plannerBoxes) {
+// 	// check items in planner we missed
+// 	for (let item of plannerBoxes) {
+// 		var hasATag = false;
+// 		item.childNodes.forEach(
+// 			function (currentValue) {
+// 				if (currentValue.tagName == "A") {
+// 					hasATag = true;
+// 					return;
+// 				}
+// 			}
+// 		)
+// 		if (!hasATag) {
+// 			var warning = document.createElement('a')
 
-			warning.style = 'float: right; cursor: pointer;';
-			warning.href = '#';
-			warning.className = 'uit-clickover-bottom';
-			warning.setAttribute("data-content", "<div id=&quot;popover_header&quot; class=&quot;warning light&quot;><div class=&quot;icon-warning-sign&quot;></div><span>Warning: Time Conflict</span></div><ul class=&quot;bulleted_list&quot;><li>PHILOS  31</li></ul>");
-			warning.setAttribute("data-original-title", "")
-			warning.setAttribute("title", "")
-			warning.setAttribute("data-clickover-open", "1")
+// 			warning.style = 'float: right; cursor: pointer;';
+// 			warning.href = '#';
+// 			warning.className = 'uit-clickover-bottom';
+// 			warning.setAttribute("data-content", "<div id=&quot;popover_header&quot; class=&quot;warning light&quot;><div class=&quot;icon-warning-sign&quot;></div><span>Warning: Time Conflict</span></div><ul class=&quot;bulleted_list&quot;><li>PHILOS  31</li></ul>");
+// 			warning.setAttribute("data-original-title", "")
+// 			warning.setAttribute("title", "")
+// 			warning.setAttribute("data-clickover-open", "1")
 
-			var warningSpan = document.createElement('span');
-			warningSpan.className = "icon-warning-sign"
-			item.appendChild(document.createTextNode("Missed one!"));
-			warning.appendChild(warningSpan)
+// 			var warningSpan = document.createElement('span');
+// 			warningSpan.className = "icon-warning-sign"
+// 			item.appendChild(document.createTextNode("Missed one!"));
+// 			warning.appendChild(warningSpan)
 
-			item.appendChild(warning);
-		}
-	}
-}
+// 			item.appendChild(warning);
+// 		}
+// 	}
+// }
 
 (function () {
 	var plannerBoxes = document.getElementsByClassName('planneritembox');
 	fillClasses(plannerBoxes, function () {
-		catchMissed(plannerBoxes);
+		// catchMissed(plannerBoxes);
 
 
 
