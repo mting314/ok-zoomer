@@ -2,7 +2,40 @@
 
 const url = chrome.runtime.getURL('data.json')
 
+function addClass(array, toAdd)
+   {
+    array.push(toAdd);
+    //then call the set to update with modified value
+    chrome.storage.sync.set({
+      classes:array
+    }, function() {
+        console.log("added to list with new values");
+    });
+    }
+
 async function launch() {
+  chrome.runtime.onMessage.addListener(
+    function (request, sender, sendResponse) {
+      console.log(sender.tab ?
+        "from a content script:" + sender.tab.url :
+        "from the extension");
+        console.log(JSON.stringify(request.toAdd));
+
+        chrome.storage.sync.get({
+          classes:[] //put defaultvalues if any
+      },
+      function(data) {
+         console.log(data.classes);
+         addClass(data.classes, request.toAdd); //storing the storage value in a variable and passing to update function
+      }
+      );  
+
+        sendResponse({
+          farewell: "goodbye"
+        });
+    });
+
+
   const response = await fetch('data.json');
   const json = await response.json();
   chrome.alarms.clearAll()
@@ -14,7 +47,7 @@ async function launch() {
   await chrome.storage.sync.set({
     classes: await json.classes
   }, function () {
-    chrome.storage.sync.get('classes', function (result) {
+    chrome.storage.sync.get({classes:[]}, function (result) {
       result.classes.forEach(element => {
         createClassAlarm(element)
       });
@@ -58,11 +91,11 @@ function parseDayOfWeek(weekday) {
 function createSingleAlarm(classObject, classDayChar) {
   chrome.storage.sync.get('leeway', function (result) {
     var now = new Date()
-    var classTime = classObject.time.split(':')
+    var classTime = classObject.meet_items[0].meet_strt_tm.split(':')
     var classHour = parseInt(classTime[0])
     var classMinute = parseInt(classTime[1])
 
-   
+
     var classDay = parseDayOfWeek(classDayChar);
     var dayDifference = (((classDay - now.getDay()) % 7) + 7) % 7
 
@@ -75,17 +108,21 @@ function createSingleAlarm(classObject, classDayChar) {
         target.setDate(target.getDate() + 7)
       }
     }
-
-    console.log([classObject.name, classObject.type, classDayChar, target].join(' '))
-    chrome.alarms.create([classObject.name, classDayChar].join(' '), {
+    var count = 0;
+    while (count < 12) {
+    console.log([classObject.subj_area_cd, classObject.disp_catlg_no, classDayChar, target].join(' ').replace(/\s+/g, ' ').trim())
+    chrome.alarms.create([classObject.subj_area_cd, classObject.disp_catlg_no, classDayChar].join(' ').replace(/\s+/g, ' ').trim(), {
       when: target.getTime()
     });
+    target.setDate(target.getDate() + 7);
+    count++;
+  }
   });
 }
 
 async function createClassAlarm(classObject) {
-  for (var i = 0; i < classObject.days.length; i++) {
-    createSingleAlarm(classObject, classObject.days.charAt(i));
+  for (var i = 0; i < classObject.meet_days.length; i++) {
+    createSingleAlarm(classObject, classObject.meet_days.charAt(i));
   }
 }
 

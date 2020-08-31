@@ -33,7 +33,7 @@
 }
 
 .linkedbox {
-  outline-offset: -3px;
+  outline-offset: -5px;
 }
 
 .otherday {
@@ -63,4 +63,8 @@
 .currentClass {
   outline: 5px solid yellow !important;
   outline-offset: -5px !important;
+}
+
+.icon-zoom-link:before {
+	content: "\f004";
 }
