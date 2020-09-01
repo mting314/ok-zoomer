@@ -3,7 +3,7 @@
   "version": "0.0.0.1",
   "description": "Build an Extension!",
   "permissions": ["activeTab", "declarativeContent", "storage", "unlimitedStorage", "alarms", "notifications", "tabs"],
-  "options_page": "options/options.html",
+  "options_page": "crud-bstable/index.html",
   "background": {
     "scripts": ["background.js", "findElement.js"],
     "persistent": false
@@ -35,5 +35,6 @@
     "48": "images/get_started48.png",
     "128": "images/get_started128.png"
   },
+  "web_accessible_resources": ["images/dollar_10.jpg", "fonts/*"],
   "manifest_version": 2
 }

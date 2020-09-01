@@ -2,16 +2,25 @@
 
 const url = chrome.runtime.getURL('data.json')
 
-function addClass(array, toAdd)
-   {
-    array.push(toAdd);
-    //then call the set to update with modified value
-    chrome.storage.sync.set({
-      classes:array
-    }, function() {
-        console.log("added to list with new values");
-    });
-    }
+function addClass(array, toAdd) {
+  array.push(toAdd);
+  //then call the set to update with modified value
+  chrome.storage.sync.set({
+    classes: array
+  }, function () {
+    console.log("added to class list with new values");
+  });
+}
+
+function addPersonal(array, toAdd) {
+  array.push(toAdd);
+  //then call the set to update with modified value
+  chrome.storage.sync.set({
+    personal: array
+  }, function () {
+    console.log("added to personal list with new values");
+  });
+}
 
 async function launch() {
   chrome.runtime.onMessage.addListener(
@@ -19,20 +28,51 @@ async function launch() {
       console.log(sender.tab ?
         "from a content script:" + sender.tab.url :
         "from the extension");
-        console.log(JSON.stringify(request.toAdd));
-
+      console.log(JSON.stringify(request.toAdd));
+      if (request.type === "class") {
         chrome.storage.sync.get({
-          classes:[] //put defaultvalues if any
-      },
-      function(data) {
-         console.log(data.classes);
-         addClass(data.classes, request.toAdd); //storing the storage value in a variable and passing to update function
+            classes: [] //put defaultvalues if any
+          },
+          function (data) {
+            console.log(data.classes);
+            addClass(data.classes, request.toAdd); //storing the storage value in a variable and passing to update function
+          }
+        );
+      } else if (request.type === "personal") {
+        chrome.storage.sync.get({
+            personal: [] //put defaultvalues if any
+          },
+          function (data) {
+            console.log(data.personal);
+            addPersonal(data.personal, request.toAdd); //storing the storage value in a variable and passing to update function
+          }
+        );
       }
-      );  
 
-        sendResponse({
-          farewell: "goodbye"
-        });
+      sendResponse({
+        farewell: "goodbye"
+      });
+    });
+
+  chrome.runtime.onMessage.addListener(
+    function (request, sender, sendResponse) {
+      console.log(sender.tab ?
+        "from a content script:" + sender.tab.url :
+        "from the extension");
+      console.log(JSON.stringify(request.toAdd));
+
+      chrome.storage.sync.get({
+          classes: [] //put defaultvalues if any
+        },
+        function (data) {
+          console.log(data.classes);
+          addClass(data.classes, request.toAdd); //storing the storage value in a variable and passing to update function
+        }
+      );
+
+      sendResponse({
+        farewell: "goodbye"
+      });
     });
 
 
@@ -46,26 +86,18 @@ async function launch() {
   // const data = await fetch(url)
   await chrome.storage.sync.set({
     classes: await json.classes
-  }, function () {
-    chrome.storage.sync.get({classes:[]}, function (result) {
-      result.classes.forEach(element => {
-        createClassAlarm(element)
-      });
-      // chrome.alarms.getAll(function (result) {
-      //   console.log('printing all alarms:', result)
-      // });
-    });
-
-    // chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
-    //   chrome.declarativeContent.onPageChanged.addRules([{
-    //     conditions: [new chrome.declarativeContent.PageStateMatcher({
-    //       pageUrl: {hostEquals: 'developer.chrome.com'},
-    //     })],
-    //     actions: [new chrome.declarativeContent.ShowPageAction()]
-    //   }]);
-    // });
-
   });
+
+  //   // chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
+  //   //   chrome.declarativeContent.onPageChanged.addRules([{
+  //   //     conditions: [new chrome.declarativeContent.PageStateMatcher({
+  //   //       pageUrl: {hostEquals: 'developer.chrome.com'},
+  //   //     })],
+  //   //     actions: [new chrome.declarativeContent.ShowPageAction()]
+  //   //   }]);
+  //   // });
+
+  // });
 
 }
 
@@ -110,13 +142,13 @@ function createSingleAlarm(classObject, classDayChar) {
     }
     var count = 0;
     while (count < 12) {
-    console.log([classObject.subj_area_cd, classObject.disp_catlg_no, classDayChar, target].join(' ').replace(/\s+/g, ' ').trim())
-    chrome.alarms.create([classObject.subj_area_cd, classObject.disp_catlg_no, classDayChar].join(' ').replace(/\s+/g, ' ').trim(), {
-      when: target.getTime()
-    });
-    target.setDate(target.getDate() + 7);
-    count++;
-  }
+      console.log([classObject.subj_area_cd, classObject.disp_catlg_no, classDayChar, target].join(' ').replace(/\s+/g, ' ').trim())
+      chrome.alarms.create([classObject.subj_area_cd, classObject.disp_catlg_no, classDayChar].join(' ').replace(/\s+/g, ' ').trim(), {
+        when: target.getTime()
+      });
+      target.setDate(target.getDate() + 7);
+      count++;
+    }
   });
 }
 

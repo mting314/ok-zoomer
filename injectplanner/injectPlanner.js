@@ -16,11 +16,9 @@ function fillClasses(plannerBoxes, callback) {
 				if (item.childNodes[0].tagName == 'A') {
 					continue;
 				}
-				console.log(myclass.classinfo.class_section.toUpperCase())
 				if (item.childNodes[0].wholeText.toUpperCase() == [myclass.classinfo.subj_area_cd, myclass.classinfo.disp_catlg_no].join(' ').replace(/\s+/g, ' ').trim()) {
 					
 					if (!item.childNodes[3] || item.childNodes[3].wholeText.toUpperCase() == myclass.classinfo.class_section.toUpperCase()) {
-						console.log("found match", [myclass.classinfo.subj_area_cd, myclass.classinfo.disp_catlg_no].join(' ').replace(/\s+/g, ' ').trim(), myclass.classinfo.class_section.toUpperCase())
 						var text = item.childNodes[0].wholeText;
 						var link = document.createElement('a');
 

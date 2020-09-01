@@ -29,7 +29,6 @@ function classInProgress(classDiv, targetHeight) {
       var start = hourCount;
       var hourboxHeight = parseInt(document.getElementsByClassName("hourbox")[0].style.height, 10);
       var targetHeight = hourboxHeight / 60 * minutesFrom8;
-      console.log(hourboxHeight);
 
       var endBox = hourCount + currentDay - 1;
       while (start <= endBox) {

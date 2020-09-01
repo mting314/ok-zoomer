@@ -51,6 +51,7 @@ function addClass(obj) {
   }
 
   // var paramData = "{'term_cd':'" + classParams.term_cd + "','subj_area_cd':'" + classParams.subj_area_cd + "','crs_catlg_no':'" + classParams.crs_catlg_no + "'}"
+  console.log(paramData)
   $.ajax({
     type: "POST",
     url: "/ClassPlanner/ClassSearch.asmx/getTierData",
@@ -73,13 +74,22 @@ function addClass(obj) {
             selectedClass = newres.d.svcRes.ResultTiers[0];
             var result = prompt("Add this class to the planner?\r\n" + selectedClass.subj_area_cd + " " + selectedClass.class_section + "\r\nIf so, optionally enter a Zoom link:", "https://ucla.zoom.us/j/");
             if (result != null) {
+              var password;
+              if (result === "") {
+                password = ""
+              } else {
+                password = prompt("What is the password for the class: " + selectedClass.subj_area_cd + " " + selectedClass.class_section + "\r\nat the link " + result);
+              }
+
               delete selectedClass.anchor_tags;
               delete selectedClass.info_tooltip_data;
               chrome.runtime.sendMessage({
                 toAdd: {
                   classinfo: newres.d.svcRes.ResultTiers[0],
-                  url: result
-                }
+                  url: result,
+                  password: password
+                },
+                type: "class"
               }, function (response) {
                 console.log(response.farewell);
                 location.reload();
@@ -93,9 +103,42 @@ function addClass(obj) {
 
 }
 
+function extractPersonal(entryRow) {
+  var personalEntry = {
+    name: "",
+    days: "",
+    time: ""
+  };
+  console.log(entryRow.cells[1]);
+  // the personal entry description/name is the 2nd child node of the 2nd td of the row
+  try {
+    personalEntry.name = entryRow.cells[1].childNodes[1].wholeText;
+  } catch (err) {
+    console.log(err);
+  }
+
+  try {
+    // the personal entry Days is the text node within the anchor tag of the 3rd td of the row
+    personalEntry.days = entryRow.cells[2].childNodes[1].childNodes[0].wholeText;
+  } catch (err) {
+    console.log(err);
+  }
+
+
+  try {
+    // the personal entry time is the only child node of the 4th td of the row
+    personalEntry.time = entryRow.cells[3].childNodes[0].wholeText;
+  } catch (err) {
+    console.log(err);
+  }
+
+  console.log(personalEntry);
+  return personalEntry;
+}
+
 (function () {
 
-
+  // inject links to class planner tables
   var anchors = document.getElementsByTagName("a");
 
   var classLinks = []
@@ -104,7 +147,6 @@ function addClass(obj) {
       classLinks.push(anchors[i]);
     }
   }
-  console.log(classLinks);
 
 
   chrome.storage.sync.get('classes', function (result) {
@@ -117,10 +159,10 @@ function addClass(obj) {
           zoomLink.href = myclass.url;
 
 
-          var warningSpan = document.createElement('span');
-          warningSpan.className = "icon-heart"
+          var zoomIcon = document.createElement('span');
+          zoomIcon.className = "moon-icon-zoom"
 
-          zoomLink.appendChild(warningSpan)
+          zoomLink.appendChild(zoomIcon)
           link.parentNode.parentNode.childNodes[13].appendChild(zoomLink);
           return;
         }
@@ -136,10 +178,22 @@ function addClass(obj) {
     $('.addclass').on('click', function (e, manual) {
       if (typeof manual === 'undefined' || manual === false) {
         $('a.addclass').not(this).trigger('click', true);
-        console.log('Triggered', this.textContent.trim());
-        // console.log($(this).parent().parent().children()[1]);
         addClass($(this));
       }
     });
   });
+
+
+  // inject to Personal Entries table
+
+  var tableList = $(".iweBodyTable");
+  var tableBodies = tableList[tableList.length - 2].tBodies;
+  // start at 2 because 0 is the header row and 1 is some invisible row
+  for (var i = 2, body; body = tableBodies[i]; i++) {
+    //iterate through tbodies
+    // console.log(body.getElementsByTagName('tr')[0]);
+    extractPersonal(body.getElementsByTagName('tr')[0]);
+
+  }
+
 })();
