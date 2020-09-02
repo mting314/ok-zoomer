@@ -1,6 +1,6 @@
-// Basic example
-var example1 = new BSTable("table1");
-example1.init();
+// // Basic example
+// var example1 = new BSTable("table1");
+// example1.init();
 
 // Example with a add new row button & only some columns editable & removed actions column label
 var example2 = new BSTable("table2", {
@@ -14,21 +14,6 @@ var example2 = new BSTable("table2", {
   }
 });
 example2.init();
-
-// Example with dynamic table that requires BSTable refresh
-// TODO Create method to randomly seed a random amount of rows in the table
-var example3 = new BSTable("table3", {
-  editableColumns: "0,1,2",
-  $addButton: $('#table3-new-row-button'),
-  onEdit: function () {
-    dynamicTableValuesExample()
-    console.log("EDITED");
-  },
-  advanced: {
-    columnLabel: ''
-  }
-});
-example3.init();
 
 
 

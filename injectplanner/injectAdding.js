@@ -159,10 +159,22 @@ function extractPersonal(entryRow) {
           found = true;
           var zoomLink = document.createElement('a')
           zoomLink.href = myclass.url;
-
+          zoomLink.className = "zoom-link";
+          zoomLink.target = "_blank";
 
           var zoomIcon = document.createElement('span');
           zoomIcon.className = "moon-icon-zoom"
+
+          var path1 = document.createElement('span');
+          path1.className = "path1"
+          var path2 = document.createElement('span');
+          path2.className = "path2"
+          var path3 = document.createElement('span');
+          path3.className = "path3"
+
+          zoomIcon.appendChild(path1);
+          zoomIcon.appendChild(path2);
+          zoomIcon.appendChild(path3);
 
           zoomLink.appendChild(zoomIcon)
           link.parentNode.parentNode.childNodes[13].appendChild(zoomLink);
@@ -171,8 +183,11 @@ function extractPersonal(entryRow) {
       });
       if (!found) {
         var addLink = document.createElement("a");
-        addLink.appendChild(document.createTextNode("Add to Ok, Zoomer?"))
+        var plusSpan = document.createElement("span")
+        plusSpan.className = "icon-plus";
+        addLink.appendChild(plusSpan);
         addLink.className = "addclass";
+        addLink.href = "#"
         link.parentNode.parentNode.childNodes[13].appendChild(addLink);
       }
     });
@@ -182,6 +197,7 @@ function extractPersonal(entryRow) {
         $('a.addclass').not(this).trigger('click', true);
         addClass($(this));
       }
+      return false;
     });
   });
 

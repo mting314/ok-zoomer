@@ -1,7 +1,5 @@
 'use strict'
 
-const url = chrome.runtime.getURL('data.json')
-
 function addClass(array, toAdd) {
   array.push(toAdd);
   //then call the set to update with modified value
@@ -75,17 +73,15 @@ async function launch() {
       });
     });
 
-
-  const response = await fetch('data.json');
-  const json = await response.json();
+  //clear all alarms
   chrome.alarms.clearAll()
   chrome.storage.sync.set({
     leeway: 10
   }, function () {})
 
-  // const data = await fetch(url)
+  // clear all classes
   await chrome.storage.sync.set({
-    classes: await json.classes
+    classes: []
   });
 
   //   // chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {

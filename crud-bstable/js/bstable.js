@@ -62,7 +62,6 @@ class BSTable {
    * @since 1.0.0
    */
   init() {
-    console.log(this);
     this.table.find('thead tr').append('<th name="bstable-actions">' + this.options.advanced.columnLabel + '</th>');  // Append column to header
     this.table.find('tbody tr').append(this.actionsColumnHTML);
 
