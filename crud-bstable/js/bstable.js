@@ -62,6 +62,7 @@ class BSTable {
    * @since 1.0.0
    */
   init() {
+    console.log(this);
     this.table.find('thead tr').append('<th name="bstable-actions">' + this.options.advanced.columnLabel + '</th>');  // Append column to header
     this.table.find('tbody tr').append(this.actionsColumnHTML);
 
@@ -184,6 +185,9 @@ class BSTable {
       console.log(cont);
     
     });
+
+    console.log("row accepted:", $row[0])
+
     this._actionsModeNormal(button);
     this.options.onEdit($row);
   }

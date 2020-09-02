@@ -83,6 +83,8 @@ function addClass(obj) {
 
               delete selectedClass.anchor_tags;
               delete selectedClass.info_tooltip_data;
+
+              // TODO: sendmessage seems to break pretty often. I think there are fixes out there?
               chrome.runtime.sendMessage({
                 toAdd: {
                   classinfo: newres.d.svcRes.ResultTiers[0],
