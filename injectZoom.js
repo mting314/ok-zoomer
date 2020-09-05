@@ -8,7 +8,9 @@ document.body.style.backgroundColor = "orange";
 		var currentClass = findElement(result.classes, 'url', currentURL)
 		console.log(currentClass);
 		
-		var className = JSON.stringify(currentClass.classinfo.subj_area_cd).replace(/\"/g, "")
+		//var className = JSON.stringify(currentClass.classinfo.subj_area_cd).replace(/\"/g, "")
+		var className = JSON.stringify(extractClassName(currentClass)).replace(/\"/g, "")
+
 		var classSection = JSON.stringify(currentClass.classinfo.class_section).replace(/\"/g, "")
 
 		var classPassword, passwordText;

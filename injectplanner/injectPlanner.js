@@ -45,39 +45,6 @@ function fillClasses(plannerBoxes, callback) {
 	});
 }
 
-// function catchMissed(plannerBoxes) {
-// 	// check items in planner we missed
-// 	for (let item of plannerBoxes) {
-// 		var hasATag = false;
-// 		item.childNodes.forEach(
-// 			function (currentValue) {
-// 				if (currentValue.tagName == "A") {
-// 					hasATag = true;
-// 					return;
-// 				}
-// 			}
-// 		)
-// 		if (!hasATag) {
-// 			var warning = document.createElement('a')
-
-// 			warning.style = 'float: right; cursor: pointer;';
-// 			warning.href = '#';
-// 			warning.className = 'uit-clickover-bottom';
-// 			warning.setAttribute("data-content", "<div id=&quot;popover_header&quot; class=&quot;warning light&quot;><div class=&quot;icon-warning-sign&quot;></div><span>Warning: Time Conflict</span></div><ul class=&quot;bulleted_list&quot;><li>PHILOS  31</li></ul>");
-// 			warning.setAttribute("data-original-title", "")
-// 			warning.setAttribute("title", "")
-// 			warning.setAttribute("data-clickover-open", "1")
-
-// 			var warningSpan = document.createElement('span');
-// 			warningSpan.className = "icon-warning-sign"
-// 			item.appendChild(document.createTextNode("Missed one!"));
-// 			warning.appendChild(warningSpan)
-
-// 			item.appendChild(warning);
-// 		}
-// 	}
-// }
-
 (function () {
 	var plannerBoxes = document.getElementsByClassName('planneritembox');
 	fillClasses(plannerBoxes, function () {

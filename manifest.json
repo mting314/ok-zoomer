@@ -5,19 +5,19 @@
   "permissions": ["activeTab", "declarativeContent", "storage", "unlimitedStorage", "alarms", "notifications", "tabs"],
   "options_page": "crud-bstable/index.html",
   "background": {
-    "scripts": ["background.js", "findElement.js"],
+    "scripts": ["background.js", "utils.js"],
     "persistent": false
   },
   "content_scripts": [
     {
       "matches": ["https://ucla.zoom.us/*"],
-      "js": ["injectZoom.js", "findElement.js"],
+      "js": ["injectZoom.js", "utils.js"],
       "css": ["zoom.css"]
     },
     {
       "matches": ["https://be.my.ucla.edu/ClassPlanner/ClassPlan.aspx"],
-      "js": ["jquery-1.8.2.min.js", "injectplanner/injectPlanner.js", "findElement.js", "injectplanner/highlightCurrent.js", "injectplanner/injectAdding.js"],
-      "css" : ["injectplanner/tooltip.css"]
+      "js": ["jquery-1.8.2.min.js", "injectplanner/injectPlanner.js", "utils.js", "injectplanner/highlightCurrent.js", "injectplanner/injectAdding.js"],
+      "css" : ["injectplanner/planner.css"]
     }
   ],
   "page_action": {

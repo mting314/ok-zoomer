@@ -93,6 +93,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.zoomer-plus:hover { color: #945CFC; }
+
+.addclass {
+  float: right;
+}
+
 .moon-icon-zoom {
   float: right;
 }

@@ -138,8 +138,8 @@ function createSingleAlarm(classObject, classDayChar) {
     }
     var count = 0;
     while (count < 12) {
-      console.log([classObject.subj_area_cd, classObject.disp_catlg_no, classDayChar, target].join(' ').replace(/\s+/g, ' ').trim())
-      chrome.alarms.create([classObject.subj_area_cd, classObject.disp_catlg_no, classDayChar].join(' ').replace(/\s+/g, ' ').trim(), {
+      console.log([extractClassName(classObject), classDayChar, target].join(' '))
+      chrome.alarms.create(extractClassName(classObject) + " " + classDayChar, {
         when: target.getTime()
       });
       target.setDate(target.getDate() + 7);

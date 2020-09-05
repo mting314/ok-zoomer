@@ -11,7 +11,7 @@ chrome.storage.sync.get('classes', function (result) {
     row.appendChild(rowIndex);
 
     var className = row.insertCell();
-    className.appendChild(document.createTextNode(classObject.classinfo.subj_area_cd));
+    className.appendChild(document.createTextNode(extractClassName(classObject)));
 
     var section = row.insertCell();
     section.appendChild(document.createTextNode(classObject.classinfo.class_section));

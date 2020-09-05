@@ -72,13 +72,13 @@ function addClass(obj) {
           dataType: "json",
           success: function (newres) {
             selectedClass = newres.d.svcRes.ResultTiers[0];
-            var result = prompt("Add this class to the planner?\r\n" + selectedClass.subj_area_cd + " " + selectedClass.class_section + "\r\nIf so, optionally enter a Zoom link:", "https://ucla.zoom.us/j/");
+            var result = prompt("Add this class to the planner?\r\n" + extractClassName(selectedClass) + " " + selectedClass.class_section + "\r\nIf so, optionally enter a Zoom link:", "https://ucla.zoom.us/j/");
             if (result != null) {
               var password;
               if (result === "") {
                 password = ""
               } else {
-                password = prompt("What is the password for the class: " + selectedClass.subj_area_cd + " " + selectedClass.class_section + "\r\nat the link " + result);
+                password = prompt("What is the password for the class: " + extractClassName(selectedClass) + " " + selectedClass.class_section + "\r\nat the link " + result);
               }
 
               delete selectedClass.anchor_tags;
@@ -185,6 +185,7 @@ function extractPersonal(entryRow) {
         var addLink = document.createElement("a");
         var plusSpan = document.createElement("span")
         plusSpan.className = "icon-plus";
+        plusSpan.classList.add("zoomer-plus");
         addLink.appendChild(plusSpan);
         addLink.className = "addclass";
         addLink.href = "#"
