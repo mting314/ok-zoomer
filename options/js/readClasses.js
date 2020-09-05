@@ -31,7 +31,8 @@ chrome.storage.sync.get('classes', function (result) {
       if (classObject.password) {
         passwordText = document.createTextNode(classObject.password)
       } else {
-        // TODO: is there a better way of doing this? Causes problems right now with 
+        // TODO: is there a better way of doing this? Causes problems right now with editing table
+        // idea: instead, with a later script come in and replace all empty cells with red "N/A"?
         passwordText = document.createElement("span")
         passwordText.className = "no-password";
         passwordText.appendChild(document.createTextNode("No Password"))

@@ -127,7 +127,6 @@ function extractPersonal(entryRow) {
     console.log(err);
   }
 
-
   try {
     // the personal entry time is the only child node of the 4th td of the row
     personalEntry.time = entryRow.cells[3].childNodes[0].wholeText;
@@ -164,6 +163,10 @@ function addPersonal(obj) {
   }
 }
 
+function equalEntries(first, second) {
+  return (first.name == second.name && first.days == second.days && first.time == second.time);
+}
+
 function createZoomLink(url) {
   var zoomLink = document.createElement('a')
   zoomLink.href = url;
@@ -187,6 +190,18 @@ function createZoomLink(url) {
   zoomLink.appendChild(zoomIcon)
 
   return zoomLink;
+}
+
+function createAddLink(type) {
+  var addLink = document.createElement("a");
+  var plusSpan = document.createElement("span")
+  plusSpan.className = "icon-plus";
+  plusSpan.classList.add("zoomer-plus");
+  addLink.appendChild(plusSpan);
+  addLink.className = type;
+  addLink.href = "#"
+
+  return addLink;
 }
 
 (function () {
@@ -214,13 +229,7 @@ function createZoomLink(url) {
         }
       });
       if (!found) {
-        var addLink = document.createElement("a");
-        var plusSpan = document.createElement("span")
-        plusSpan.className = "icon-plus";
-        plusSpan.classList.add("zoomer-plus");
-        addLink.appendChild(plusSpan);
-        addLink.className = "addclass";
-        addLink.href = "#"
+        var addLink = createAddLink("addclass")
         link.parentNode.parentNode.childNodes[13].appendChild(addLink);
       }
     });
@@ -236,49 +245,39 @@ function createZoomLink(url) {
 
 
   // inject to Personal Entries table
+  chrome.storage.sync.get('personal', function (result) {
+    var counter = 0;
+    while ($(`tr#ctl00_MainContent_personalEntryListView_ctrl${counter}_iItemRow`).length != 0) {
+      var personalRow = $(`tr#ctl00_MainContent_personalEntryListView_ctrl${counter}_iItemRow`)[0]
+      console.log(personalRow)
 
-  var tableList = $(".iweBodyTable");
-  var tableBodies = tableList[tableList.length - 2].tBodies;
-  // start at 2 because 0 is the header row and 1 is some invisible row
-  // for (var i = 2, body; body = tableBodies[i]; i++) {
-  var counter = 0;
-  while ($(`tr#ctl00_MainContent_personalEntryListView_ctrl${counter}_iItemRow`).length != 0) {
-    var personalRow = $(`tr#ctl00_MainContent_personalEntryListView_ctrl${counter}_iItemRow`)[0]
-    //iterate through tbodies
-    // console.log(body.getElementsByTagName('tr')[0]);
-    // chrome.runtime.sendMessage({
-    //   toAdd: {
-    //     entryInfo: newres.d.svcRes.ResultTiers[0],
-    //     url: result,
-    //     password: password
-    //   },
-    //   type: "personal"
-    // }, function (response) {
-    //   console.log(response.farewell);
-    //   location.reload();
-    // });
+      // check if already in planner
 
-    var addLink = document.createElement("a");
-    var plusSpan = document.createElement("span")
-    plusSpan.className = "icon-plus";
-    plusSpan.classList.add("zoomer-plus");
-    addLink.appendChild(plusSpan);
-    addLink.className = "addpersonal";
-    addLink.href = "#"
 
-    personalRow.cells[1].appendChild(addLink);
-
-    counter++;
-  }
-
-  $('.addpersonal').on('click', function (e, manual) {
-    if (typeof manual === 'undefined' || manual === false) {
-      $('a.addpersonal').not(this).trigger('click', true);
-      console.log($(this)[0]);
-      addPersonal($(this)[0])
+      var found = false;
+      result.personal.forEach(personalEntry => {
+        if (equalEntries(personalEntry.entryInfo, extractPersonal(personalRow))) {
+          found = true;
+          var zoomLink = createZoomLink(personalEntry.url)
+          personalRow.cells[1].appendChild(zoomLink);
+          return;
+        }
+      });
+      if (!found) {
+        console.log("did not find a row for", personalRow);
+        var addLink = createAddLink("addpersonal")
+        personalRow.cells[1].appendChild(addLink);
+      }
+      counter++;
     }
-    return false;
+    $('.addpersonal').on('click', function (e, manual) {
+      if (typeof manual === 'undefined' || manual === false) {
+        $('a.addpersonal').not(this).trigger('click', true);
+        console.log($(this)[0]);
+        addPersonal($(this)[0])
+      }
+      return false;
+    });
+
   });
-
-
 })();
