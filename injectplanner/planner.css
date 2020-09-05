@@ -95,11 +95,7 @@
 
 .zoomer-plus:hover { color: #945CFC; }
 
-.addclass {
-  float: right;
-}
-
-.moon-icon-zoom {
+.addclass, .addpersonal, .moon-icon-zoom {
   float: right;
 }
 

@@ -45,13 +45,15 @@ function addClass(obj) {
     id: 'kRnfwF2eOadis08vDX5eZCmwt+Cd17YQA+uPMRwtPEg=',
     searchKey: "sorry,Ican't"
   }
-
+  // check if this row is the "first" in a class's individual table
+  // essentially, this checks if a class is a "primary" one, i.e. a 
+  // lecture parenting a discussion. We need to set this flag because 
+  // it affects whether our query returns the parent (lecture) section
+  // or the child (discussion) section
   if (obj.parent().parent().parent().index() === 1) {
     paramData.class_prim_act_fl = 'y'
   }
 
-  // var paramData = "{'term_cd':'" + classParams.term_cd + "','subj_area_cd':'" + classParams.subj_area_cd + "','crs_catlg_no':'" + classParams.crs_catlg_no + "'}"
-  console.log(paramData)
   $.ajax({
     type: "POST",
     url: "/ClassPlanner/ClassSearch.asmx/getTierData",
@@ -111,7 +113,6 @@ function extractPersonal(entryRow) {
     days: "",
     time: ""
   };
-  console.log(entryRow.cells[1]);
   // the personal entry description/name is the 2nd child node of the 2nd td of the row
   try {
     personalEntry.name = entryRow.cells[1].childNodes[1].wholeText;
@@ -134,8 +135,58 @@ function extractPersonal(entryRow) {
     console.log(err);
   }
 
-  console.log(personalEntry);
   return personalEntry;
+}
+
+function addPersonal(obj) {
+  var personalRow = obj.parentNode.parentNode
+  var personalObject = extractPersonal(personalRow);
+  console.log(personalObject);
+  var result = prompt("Add this Personal Entry to the Ok, Zoomer?\r\n" + personalObject.name + "\r\nIf so, optionally enter a Zoom link:", "https://ucla.zoom.us/j/");
+  if (result != null) {
+    var password;
+    if (result === "") {
+      password = ""
+    } else {
+      password = prompt("What is the password for the Personal Entry: " + personalObject.name + "\r\nat the link " + result);
+    }
+    chrome.runtime.sendMessage({
+      toAdd: {
+        entryInfo: personalObject,
+        url: result,
+        password: password
+      },
+      type: "personal"
+    }, function (response) {
+      console.log(response.farewell);
+      location.reload();
+    });
+  }
+}
+
+function createZoomLink(url) {
+  var zoomLink = document.createElement('a')
+  zoomLink.href = url;
+  zoomLink.className = "zoom-link";
+  zoomLink.target = "_blank";
+
+  var zoomIcon = document.createElement('span');
+  zoomIcon.className = "moon-icon-zoom"
+
+  var path1 = document.createElement('span');
+  path1.className = "path1"
+  var path2 = document.createElement('span');
+  path2.className = "path2"
+  var path3 = document.createElement('span');
+  path3.className = "path3"
+
+  zoomIcon.appendChild(path1);
+  zoomIcon.appendChild(path2);
+  zoomIcon.appendChild(path3);
+
+  zoomLink.appendChild(zoomIcon)
+
+  return zoomLink;
 }
 
 (function () {
@@ -157,26 +208,7 @@ function extractPersonal(entryRow) {
       result.classes.forEach(myclass => {
         if (link.getAttribute('title').includes(myclass.classinfo.srs_crs_no)) {
           found = true;
-          var zoomLink = document.createElement('a')
-          zoomLink.href = myclass.url;
-          zoomLink.className = "zoom-link";
-          zoomLink.target = "_blank";
-
-          var zoomIcon = document.createElement('span');
-          zoomIcon.className = "moon-icon-zoom"
-
-          var path1 = document.createElement('span');
-          path1.className = "path1"
-          var path2 = document.createElement('span');
-          path2.className = "path2"
-          var path3 = document.createElement('span');
-          path3.className = "path3"
-
-          zoomIcon.appendChild(path1);
-          zoomIcon.appendChild(path2);
-          zoomIcon.appendChild(path3);
-
-          zoomLink.appendChild(zoomIcon)
+          var zoomLink = createZoomLink(myclass.url)
           link.parentNode.parentNode.childNodes[13].appendChild(zoomLink);
           return;
         }
@@ -208,11 +240,45 @@ function extractPersonal(entryRow) {
   var tableList = $(".iweBodyTable");
   var tableBodies = tableList[tableList.length - 2].tBodies;
   // start at 2 because 0 is the header row and 1 is some invisible row
-  for (var i = 2, body; body = tableBodies[i]; i++) {
+  // for (var i = 2, body; body = tableBodies[i]; i++) {
+  var counter = 0;
+  while ($(`tr#ctl00_MainContent_personalEntryListView_ctrl${counter}_iItemRow`).length != 0) {
+    var personalRow = $(`tr#ctl00_MainContent_personalEntryListView_ctrl${counter}_iItemRow`)[0]
     //iterate through tbodies
     // console.log(body.getElementsByTagName('tr')[0]);
-    extractPersonal(body.getElementsByTagName('tr')[0]);
+    // chrome.runtime.sendMessage({
+    //   toAdd: {
+    //     entryInfo: newres.d.svcRes.ResultTiers[0],
+    //     url: result,
+    //     password: password
+    //   },
+    //   type: "personal"
+    // }, function (response) {
+    //   console.log(response.farewell);
+    //   location.reload();
+    // });
 
+    var addLink = document.createElement("a");
+    var plusSpan = document.createElement("span")
+    plusSpan.className = "icon-plus";
+    plusSpan.classList.add("zoomer-plus");
+    addLink.appendChild(plusSpan);
+    addLink.className = "addpersonal";
+    addLink.href = "#"
+
+    personalRow.cells[1].appendChild(addLink);
+
+    counter++;
   }
+
+  $('.addpersonal').on('click', function (e, manual) {
+    if (typeof manual === 'undefined' || manual === false) {
+      $('a.addpersonal').not(this).trigger('click', true);
+      console.log($(this)[0]);
+      addPersonal($(this)[0])
+    }
+    return false;
+  });
+
 
 })();

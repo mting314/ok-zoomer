@@ -26,7 +26,7 @@ async function launch() {
       console.log(sender.tab ?
         "from a content script:" + sender.tab.url :
         "from the extension");
-      console.log(JSON.stringify(request.toAdd));
+      console.log(request.type, JSON.stringify(request.toAdd));
       if (request.type === "class") {
         chrome.storage.sync.get({
             classes: [] //put defaultvalues if any
@@ -52,26 +52,26 @@ async function launch() {
       });
     });
 
-  chrome.runtime.onMessage.addListener(
-    function (request, sender, sendResponse) {
-      console.log(sender.tab ?
-        "from a content script:" + sender.tab.url :
-        "from the extension");
-      console.log(JSON.stringify(request.toAdd));
+  // chrome.runtime.onMessage.addListener(
+  //   function (request, sender, sendResponse) {
+  //     console.log(sender.tab ?
+  //       "from a content script:" + sender.tab.url :
+  //       "from the extension");
+  //     console.log(JSON.stringify(request.toAdd));
 
-      chrome.storage.sync.get({
-          classes: [] //put defaultvalues if any
-        },
-        function (data) {
-          console.log(data.classes);
-          addClass(data.classes, request.toAdd); //storing the storage value in a variable and passing to update function
-        }
-      );
+  //     chrome.storage.sync.get({
+  //         classes: [] //put defaultvalues if any
+  //       },
+  //       function (data) {
+  //         console.log(data.classes);
+  //         addClass(data.classes, request.toAdd); //storing the storage value in a variable and passing to update function
+  //       }
+  //     );
 
-      sendResponse({
-        farewell: "goodbye"
-      });
-    });
+  //     sendResponse({
+  //       farewell: "goodbye"
+  //     });
+  //   });
 
   //clear all alarms
   chrome.alarms.clearAll()
@@ -82,6 +82,10 @@ async function launch() {
   // clear all classes
   await chrome.storage.sync.set({
     classes: []
+  });
+  // clear all personal entries
+  await chrome.storage.sync.set({
+    personal: []
   });
 
   //   // chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
