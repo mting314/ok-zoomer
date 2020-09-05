@@ -55,10 +55,9 @@ function classInProgress(classDiv, targetHeight) {
           start++;
         }
         currentGrid.childNodes[endBox].childNodes.forEach(
-          function (currentValue) {
-            console.log(currentValue);
-            if (currentValue.className.includes("planneritembox") && classInProgress(currentValue, targetHeight)) {
-              currentValue.classList.add("currentClass");
+          function (classDiv) {
+            if (classDiv.className.includes("planneritembox") && classInProgress(classDiv, targetHeight)) {
+              classDiv.classList.add("currentClass");
             }
           }
         )

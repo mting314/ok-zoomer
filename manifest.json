@@ -3,7 +3,7 @@
   "version": "0.0.0.1",
   "description": "Build an Extension!",
   "permissions": ["activeTab", "declarativeContent", "storage", "unlimitedStorage", "alarms", "notifications", "tabs"],
-  "options_page": "crud-bstable/index.html",
+  "options_page": "options/index.html",
   "background": {
     "scripts": ["background.js", "utils.js"],
     "persistent": false
@@ -16,7 +16,7 @@
     },
     {
       "matches": ["https://be.my.ucla.edu/ClassPlanner/ClassPlan.aspx"],
-      "js": ["jquery-1.8.2.min.js", "injectplanner/injectPlanner.js", "utils.js", "injectplanner/highlightCurrent.js", "injectplanner/injectAdding.js"],
+      "js": ["jquery-3.4.1.min.js", "injectplanner/injectPlanner.js", "utils.js", "injectplanner/highlightCurrent.js", "injectplanner/injectAdding.js"],
       "css" : ["injectplanner/planner.css"]
     }
   ],
