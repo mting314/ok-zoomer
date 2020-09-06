@@ -1,57 +1,107 @@
 document.body.style.backgroundColor = "orange";
 
+function copyTextToClipboard(text) {
+	//Create a textbox field where we can insert text to. 
+	var copyFrom = document.createElement("textarea");
 
-(function () {
-	chrome.storage.sync.get("classes", function (result) {
+	//Set the text content to be the text you wished to copy.
+	copyFrom.textContent = text;
 
-		var currentURL = window.location.href.substring(0, window.location.href.indexOf('#'));
-		var currentClass = findElement(result.classes, 'url', currentURL)
-		console.log(currentClass);
-		
-		//var className = JSON.stringify(currentClass.classinfo.subj_area_cd).replace(/\"/g, "")
-		var className = JSON.stringify(extractClassName(currentClass)).replace(/\"/g, "")
+	//Append the textbox field into the body as a child. 
+	//"execCommand()" only works when there exists selected text, and the text is inside 
+	//document.body (meaning the text is part of a valid rendered HTML element).
+	document.body.appendChild(copyFrom);
 
-		var classSection = JSON.stringify(currentClass.classinfo.class_section).replace(/\"/g, "")
+	//Select all the text!
+	copyFrom.select();
 
-		var classPassword, passwordText;
-		if (currentClass.password) {
-			classPassword = JSON.stringify(currentClass.password).replace(/\"/g, "");
-			navigator.clipboard.writeText(classPassword);
-		} else {
-			classPassword = "No Password!"
-		}
+	//Execute command
+	document.execCommand('copy');
 
-		document.getElementsByClassName("_2XjT-0pJ")[0].innerHTML = "<h1>Joining " + [className, classSection].join(' ') + "</h1>" + document.getElementsByClassName("_2XjT-0pJ")[0].innerHTML
-		var password = document.createElement('p');
+	//(Optional) De-select the text using blur(). 
+	copyFrom.blur();
 
+	//Remove the textbox field from the document.body, so no other JavaScript nor 
+	//other elements can get access to this.
+	document.body.removeChild(copyFrom);
+}
+
+function createClassText(currentClass) {
+	var className = JSON.stringify(extractClassName(currentClass)).replace(/\"/g, "");
+
+	var classSection = JSON.stringify(currentClass.classInfo.class_section).replace(/\"/g, "");
+
+	var fullName = [className, classSection].join(' ');
+
+
+	var classPassword;
+	if (currentClass.password) {
+		classPassword = currentClass.password;
+		copyTextToClipboard(JSON.stringify(classPassword).replace(/\"/g, ""));
+	}
+
+	return [fullName, classPassword];
+}
+
+function createPersonalText(currentPersonal) {
+	var fullName = currentPersonal.entryInfo.name;
+
+	var entryPassword;
+	if (currentPersonal.password) {
+		entryPassword = currentPersonal.password;
+		copyTextToClipboard(JSON.stringify(entryPassword).replace(/\"/g, ""));
+	}
+
+	return [fullName, entryPassword];
+}
+
+function createPasswordText(classPassword) {
+	var password = $("<p></p>")
+	if (!classPassword) {
+		password.append("No password for this Zoom Link!");
+	} else {
 		passwordText = ["Password is ", classPassword, ". Password has been copied to your clipboard."]
-		var node1 = document.createTextNode(passwordText[0])
 
 		var node2 = document.createElement("span");
 		node2.className = "password";
 		passwordAnchor = document.createElement('a')
-		passwordAnchor.onclick = function() {
+		passwordAnchor.onclick = function () {
 			navigator.clipboard.writeText(classPassword);
 		}
 		passwordAnchor.appendChild(document.createTextNode(passwordText[1]))
 		node2.appendChild(passwordAnchor)
 
-		var node3 = document.createTextNode(passwordText[2])
+		password.append(passwordText[0], node2, passwordText[2])
+	}
+	return password;
+}
 
+(function () {
+	// TODO: what if same Zoom link for lecture class, and for OH personal entry? Maybe pass a URL parameter to differentiate?
+	chrome.storage.sync.get("classes", function (result1) {
+		chrome.storage.sync.get("personal", function (result2) {
 
-		password.appendChild(node1)
-		password.appendChild(node2)
-		password.appendChild(node3)
-		console.log(password)
-		document.getElementsByTagName("h1")[0].insertAdjacentElement('afterend', password);
+			var currentURL = window.location.href.substring(0, window.location.href.indexOf('#'));
+			var currentClass = findElement(result1.classes, 'url', currentURL);
+			var currentPersonal = findElement(result2.personal, 'url', currentURL);
+			console.log(currentClass, currentPersonal);
+			var info;
+			if (currentClass) {
+				info = createClassText(currentClass)
+			} else if (currentPersonal) {
+				info = createPersonalText(currentPersonal)
+			}
 
+			if (info[1]) {
+				$("._2XjT-0pJ").prepend(createPasswordText(info[1]));
+			}
+
+			if (info[0]) {
+				var helperText = $("<h1></h1>").text(`Joining ${info[0]}`);
+				$("._2XjT-0pJ").prepend(helperText);
+			}
+
+		});
 	});
-	// just place a div at top right
-	// var div = document.createElement('div');
-	// div.style.position = 'fixed';
-	// div.style.top = 0;
-	// div.style.right = 0;
-	// div.textContent = 'Injected!';
-	// document.body.appendChild(div);
 
 })();

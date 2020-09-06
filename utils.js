@@ -6,8 +6,8 @@ function findElement(arr, propName, propValue) {
 }
 
 function extractClassName(classObject) {
-  if (classObject.classinfo) {
-    return [classObject.classinfo.subj_area_cd, classObject.classinfo.disp_catlg_no].join(' ').replace(/\s+/g, ' ').trim()
+  if (classObject.classInfo) {
+    return [classObject.classInfo.subj_area_cd, classObject.classInfo.disp_catlg_no].join(' ').replace(/\s+/g, ' ').trim()
   } else {
     return [classObject.subj_area_cd, classObject.disp_catlg_no].join(' ').replace(/\s+/g, ' ').trim()
   }

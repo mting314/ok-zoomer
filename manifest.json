@@ -11,7 +11,7 @@
   "content_scripts": [
     {
       "matches": ["https://ucla.zoom.us/*"],
-      "js": ["injectZoom.js", "utils.js"],
+      "js": ["jquery-3.4.1.min.js", "injectZoom.js", "utils.js"],
       "css": ["zoom.css"]
     },
     {

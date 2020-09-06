@@ -4,7 +4,7 @@ chrome.storage.sync.get('classes', function (result) {
   if (result.classes != undefined && result.classes.length != 0) {
 
     for (const [index, classObject] of result.classes.entries()) {
-      console.log(classObject.classinfo);
+      console.log(classObject.classInfo);
       var row = document.createElement('tr');
 
       var rowIndex = document.createElement('th');
@@ -15,13 +15,13 @@ chrome.storage.sync.get('classes', function (result) {
       className.appendChild(document.createTextNode(extractClassName(classObject)));
 
       var section = row.insertCell();
-      section.appendChild(document.createTextNode(classObject.classinfo.class_section));
+      section.appendChild(document.createTextNode(classObject.classInfo.class_section));
 
       var days = row.insertCell();
-      days.appendChild(document.createTextNode(classObject.classinfo.meet_days));
+      days.appendChild(document.createTextNode(classObject.classInfo.meet_days));
 
       var time = row.insertCell();
-      time.appendChild(document.createTextNode(removeTags(classObject.classinfo.meet_times)));
+      time.appendChild(document.createTextNode(removeTags(classObject.classInfo.meet_times)));
 
       var zoomLink = row.insertCell();
       zoomLink.appendChild(document.createTextNode(classObject.url));
@@ -59,7 +59,7 @@ chrome.storage.sync.get('personal', function (result) {
   if (result.personal != undefined && result.personal.length != 0) {
 
     for (const [index, personalObject] of result.personal.entries()) {
-      console.log(personalObject.classinfo);
+      console.log(personalObject.classInfo);
       var row = document.createElement('tr');
 
       var rowIndex = document.createElement('th');

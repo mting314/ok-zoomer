@@ -89,7 +89,7 @@ function addClass(obj) {
               // TODO: sendmessage seems to break pretty often. I think there are fixes out there?
               chrome.runtime.sendMessage({
                 toAdd: {
-                  classinfo: newres.d.svcRes.ResultTiers[0],
+                  classInfo: newres.d.svcRes.ResultTiers[0],
                   url: result,
                   password: password
                 },
@@ -209,30 +209,66 @@ function createAddLink(type) {
   // inject links to class planner tables
   var anchors = document.getElementsByTagName("a");
 
-  var classLinks = []
-  for (var i = 0; i < anchors.length; i++) {
-    if (anchors[i].getAttribute('title') && anchors[i].getAttribute('title').includes("Class Detail for")) {
-      classLinks.push(anchors[i]);
-    }
-  }
+  // TODO: replace this with the jquery method 
+  // ctl00_MainContent_planClassListView_courseListView_ctrl2_sectionListView_ctrl1_thisTBody
+
+  // var classLinks = []
+  // for (var i = 0; i < anchors.length; i++) {
+  //   if (anchors[i].getAttribute('title') && anchors[i].getAttribute('title').includes("Class Detail for")) {
+  //     classLinks.push(anchors[i]);
+  //   }
+  // }
 
 
   chrome.storage.sync.get('classes', function (result) {
-    classLinks.forEach(link => {
-      var found = false;
-      result.classes.forEach(myclass => {
-        if (link.getAttribute('title').includes(myclass.classinfo.srs_crs_no)) {
-          found = true;
-          var zoomLink = createZoomLink(myclass.url)
-          link.parentNode.parentNode.childNodes[13].appendChild(zoomLink);
-          return;
+    var classIndex = 0;
+    while ($(`#ctl00_MainContent_planClassListView_courseListView_ctrl${classIndex}_sectionListView_ctrl0_thisRow`).length != 0) {
+      var sectionIndex = 0;
+      while ($(`#ctl00_MainContent_planClassListView_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).length != 0) {
+        var currentClassRow = $(`#ctl00_MainContent_planClassListView_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`)[0];
+        console.log(currentClassRow);
+        var found = false;
+        result.classes.forEach(myclass => {
+          if (currentClassRow.cells[1].childNodes[1].getAttribute('title').includes(myclass.classInfo.srs_crs_no)) {
+            found = true;
+            var zoomLink = createZoomLink(myclass.url)
+            currentClassRow.cells[6].appendChild(zoomLink);
+            return;
+          }
+        });
+        if (!found) {
+          var addLink = createAddLink("addclass")
+          currentClassRow.cells[6].appendChild(addLink);
         }
-      });
-      if (!found) {
-        var addLink = createAddLink("addclass")
-        link.parentNode.parentNode.childNodes[13].appendChild(addLink);
+        sectionIndex++;
       }
-    });
+      classIndex += 2; // for some reason the class table counter increments by 2 ¯\_(ツ)_/¯
+    }
+
+    var classIndex = 0;
+    while ($(`#ctl00_MainContent_enrolledNotPlanList_courseListView_ctrl${classIndex}_sectionListView_ctrl0_thisRow`).length != 0) {
+      var sectionIndex = 0;
+      while ($(`#ctl00_MainContent_enrolledNotPlanList_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).length != 0) {
+        var currentClassRow = $(`#ctl00_MainContent_enrolledNotPlanList_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`)[0];
+        var found = false;
+        result.classes.forEach(myclass => {
+          if (currentClassRow.cells[1].childNodes[1].getAttribute('title').includes(myclass.classInfo.srs_crs_no)) {
+            found = true;
+            var zoomLink = createZoomLink(myclass.url)
+            currentClassRow.cells[6].appendChild(zoomLink);
+            return;
+          }
+        });
+        if (!found) {
+          var addLink = createAddLink("addclass")
+          currentClassRow.cells[6].appendChild(addLink);
+        }
+        sectionIndex++;
+      }
+      classIndex += 2; // for some reason the class table counter increments by 2 ¯\_(ツ)_/¯
+    }
+
+
 
     $('.addclass').on('click', function (e, manual) {
       if (typeof manual === 'undefined' || manual === false) {
@@ -249,11 +285,8 @@ function createAddLink(type) {
     var counter = 0;
     while ($(`tr#ctl00_MainContent_personalEntryListView_ctrl${counter}_iItemRow`).length != 0) {
       var personalRow = $(`tr#ctl00_MainContent_personalEntryListView_ctrl${counter}_iItemRow`)[0]
-      console.log(personalRow)
 
       // check if already in planner
-
-
       var found = false;
       result.personal.forEach(personalEntry => {
         if (equalEntries(personalEntry.entryInfo, extractPersonal(personalRow))) {
@@ -264,7 +297,6 @@ function createAddLink(type) {
         }
       });
       if (!found) {
-        console.log("did not find a row for", personalRow);
         var addLink = createAddLink("addpersonal")
         personalRow.cells[1].appendChild(addLink);
       }
