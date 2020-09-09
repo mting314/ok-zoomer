@@ -1,6 +1,6 @@
 function editClass(editedRow) {
   chrome.storage.sync.get('classes', function (result) {
-    var classIndex = parseInt(editedRow.find("td#classTableIndex").text())
+    var classIndex = parseInt(editedRow.find("td#classTableIndex").text())-1;
 
     var classObject = result.classes[classIndex]
     classObject.url = editedRow.find("td#classURL").text()
@@ -12,7 +12,7 @@ function editClass(editedRow) {
       type: "editClass",
     }, function (response) {
       console.log(response.farewell);
-      location.reload();
+      location.reload()
     });
 
   });
@@ -20,7 +20,7 @@ function editClass(editedRow) {
 
 function editPersonal(editedRow) {
   chrome.storage.sync.get('personal', function (result) {
-    var personalIndex = parseInt(editedRow.find("td#personalTableIndex").text())
+    var personalIndex = parseInt(editedRow.find("td#personalTableIndex").text())-1;
 
     var personalObject = result.personal[personalIndex]
     personalObject.url = editedRow.find("td#personalURL").text()
@@ -32,7 +32,7 @@ function editPersonal(editedRow) {
       type: "editPersonal",
     }, function (response) {
       console.log(response.farewell);
-      location.reload();
+      location.reload()
     });
 
   });
@@ -55,7 +55,7 @@ chrome.storage.sync.get('classes', function (result) {
 
     for (const [index, classObject] of result.classes.entries()) {
       console.log(classObject.classInfo);
-      var row = $('<tr>').append(`<td id="classTableIndex">${index.toString()}</td>
+      var row = $('<tr>').append(`<td id="classTableIndex">${(index+1).toString()}</td>
       <td id="className">${extractClassName(classObject)}</td>
       <td id="classSection">${classObject.classInfo.class_section}</td>
       <td id="classMeetDays">${classObject.classInfo.meet_days}</td>
@@ -129,7 +129,7 @@ chrome.storage.sync.get('personal', function (result) {
 
     for (const [index, personalObject] of result.personal.entries()) {
       console.log(personalObject)
-      var row = $('<tr>').append(`<td id="personalTableIndex">${index.toString()}</td>
+      var row = $('<tr>').append(`<td id="personalTableIndex">${(index+1).toString()}</td>
       <td id="personalName">${personalObject.entryInfo.name}</td>
       <td id="personalMeetDays">${personalObject.entryInfo.days}</td>
       <td id="personalMeetTime">${removeTags(personalObject.entryInfo.time)}</td>

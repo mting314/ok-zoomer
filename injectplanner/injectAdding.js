@@ -115,21 +115,24 @@ function extractPersonal(entryRow) {
   };
   // the personal entry description/name is the 2nd child node of the 2nd td of the row
   try {
-    personalEntry.name = entryRow.cells[1].childNodes[1].wholeText;
+    //personalEntry.name = entryRow.cells[1].childNodes[1].wholeText;
+    personalEntry.name = entryRow.find("td:eq(1)").text()
   } catch (err) {
     console.log(err);
   }
 
   try {
     // the personal entry Days is the text node within the anchor tag of the 3rd td of the row
-    personalEntry.days = entryRow.cells[2].childNodes[1].childNodes[0].wholeText;
+    // personalEntry.days = entryRow.cells[2].childNodes[1].childNodes[0].wholeText;
+    personalEntry.days = entryRow.find("td:eq(2) a").text()
   } catch (err) {
     console.log(err);
   }
 
   try {
     // the personal entry time is the only child node of the 4th td of the row
-    personalEntry.time = entryRow.cells[3].childNodes[0].wholeText;
+    // personalEntry.time = entryRow.cells[3].childNodes[0].wholeText;
+    personalEntry.days = entryRow.find("td:eq(3)").text()
   } catch (err) {
     console.log(err);
   }
@@ -138,7 +141,7 @@ function extractPersonal(entryRow) {
 }
 
 function addPersonal(obj) {
-  var personalRow = obj.parentNode.parentNode
+  var personalRow = obj.parent().parent();
   var personalObject = extractPersonal(personalRow);
   console.log(personalObject);
   var result = prompt("Add this Personal Entry to the Ok, Zoomer?\r\n" + personalObject.name + "\r\nIf so, optionally enter a Zoom link:", "https://ucla.zoom.us/j/");
@@ -207,61 +210,48 @@ function createAddLink(type) {
 (function () {
 
   // inject links to class planner tables
-  var anchors = document.getElementsByTagName("a");
-
-  // TODO: replace this with the jquery method 
-  // ctl00_MainContent_planClassListView_courseListView_ctrl2_sectionListView_ctrl1_thisTBody
-
-  // var classLinks = []
-  // for (var i = 0; i < anchors.length; i++) {
-  //   if (anchors[i].getAttribute('title') && anchors[i].getAttribute('title').includes("Class Detail for")) {
-  //     classLinks.push(anchors[i]);
-  //   }
-  // }
-
-
   chrome.storage.sync.get('classes', function (result) {
     var classIndex = 0;
     while ($(`#ctl00_MainContent_planClassListView_courseListView_ctrl${classIndex}_sectionListView_ctrl0_thisRow`).length != 0) {
       var sectionIndex = 0;
       while ($(`#ctl00_MainContent_planClassListView_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).length != 0) {
-        var currentClassRow = $(`#ctl00_MainContent_planClassListView_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`)[0];
-        console.log(currentClassRow);
+        var currentClassRow = $(`#ctl00_MainContent_planClassListView_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).first();
         var found = false;
         result.classes.forEach(myclass => {
-          if (currentClassRow.cells[1].childNodes[1].getAttribute('title').includes(myclass.classInfo.srs_crs_no)) {
+          if (currentClassRow.find("td:eq(1) a").attr('title').includes(myclass.classInfo.srs_crs_no)) {
             found = true;
             var zoomLink = createZoomLink(myclass.url)
-            currentClassRow.cells[6].appendChild(zoomLink);
+            currentClassRow.find("td:eq(6)").append(zoomLink);
             return;
           }
         });
         if (!found) {
           var addLink = createAddLink("addclass")
-          currentClassRow.cells[6].appendChild(addLink);
+          currentClassRow.find("td:eq(6)").append(addLink);
         }
         sectionIndex++;
       }
       classIndex += 2; // for some reason the class table counter increments by 2 ¯\_(ツ)_/¯
     }
 
+    // inject links to tables for classes in study list but not in plan
     var classIndex = 0;
     while ($(`#ctl00_MainContent_enrolledNotPlanList_courseListView_ctrl${classIndex}_sectionListView_ctrl0_thisRow`).length != 0) {
       var sectionIndex = 0;
       while ($(`#ctl00_MainContent_enrolledNotPlanList_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).length != 0) {
-        var currentClassRow = $(`#ctl00_MainContent_enrolledNotPlanList_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`)[0];
+        var currentClassRow = $(`#ctl00_MainContent_enrolledNotPlanList_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).first();
         var found = false;
         result.classes.forEach(myclass => {
-          if (currentClassRow.cells[1].childNodes[1].getAttribute('title').includes(myclass.classInfo.srs_crs_no)) {
+          if (currentClassRow.find("td:eq(1) a").attr('title').includes(myclass.classInfo.srs_crs_no)) {
             found = true;
             var zoomLink = createZoomLink(myclass.url)
-            currentClassRow.cells[6].appendChild(zoomLink);
+            currentClassRow.find("td:eq(6)").append(zoomLink);
             return;
           }
         });
         if (!found) {
           var addLink = createAddLink("addclass")
-          currentClassRow.cells[6].appendChild(addLink);
+          currentClassRow.find("td:eq(6)").append(addLink);
         }
         sectionIndex++;
       }
@@ -284,7 +274,7 @@ function createAddLink(type) {
   chrome.storage.sync.get('personal', function (result) {
     var counter = 0;
     while ($(`tr#ctl00_MainContent_personalEntryListView_ctrl${counter}_iItemRow`).length != 0) {
-      var personalRow = $(`tr#ctl00_MainContent_personalEntryListView_ctrl${counter}_iItemRow`)[0]
+      var personalRow = $(`tr#ctl00_MainContent_personalEntryListView_ctrl${counter}_iItemRow`).first()
 
       // check if already in planner
       var found = false;
@@ -292,13 +282,15 @@ function createAddLink(type) {
         if (equalEntries(personalEntry.entryInfo, extractPersonal(personalRow))) {
           found = true;
           var zoomLink = createZoomLink(personalEntry.url)
-          personalRow.cells[1].appendChild(zoomLink);
+          // personalRow.cells[1].appendChild(zoomLink);
+          personalRow.find("td:eq(1)").append(zoomLink)
           return;
         }
       });
       if (!found) {
         var addLink = createAddLink("addpersonal")
-        personalRow.cells[1].appendChild(addLink);
+        // personalRow.cells[1].appendChild(addLink);
+        personalRow.find("td:eq(1)").append(addLink)
       }
       counter++;
     }
@@ -306,7 +298,7 @@ function createAddLink(type) {
       if (typeof manual === 'undefined' || manual === false) {
         $('a.addpersonal').not(this).trigger('click', true);
         console.log($(this)[0]);
-        addPersonal($(this)[0])
+        addPersonal($(this))
       }
       return false;
     });
