@@ -1,5 +1,6 @@
 document.body.style.backgroundColor = "orange";
 
+// https://stackoverflow.com/a/18455088
 function copyTextToClipboard(text) {
 	//Create a textbox field where we can insert text to. 
 	var copyFrom = document.createElement("textarea");

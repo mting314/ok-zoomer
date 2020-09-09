@@ -93,7 +93,7 @@ function addClass(obj) {
                   url: result,
                   password: password
                 },
-                type: "class"
+                type: "addClass"
               }, function (response) {
                 console.log(response.farewell);
                 location.reload();
@@ -155,7 +155,7 @@ function addPersonal(obj) {
         url: result,
         password: password
       },
-      type: "personal"
+      type: "addPersonal"
     }, function (response) {
       console.log(response.farewell);
       location.reload();

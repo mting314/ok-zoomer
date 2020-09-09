@@ -1,45 +1,105 @@
-var classTable = new BSTable("table1");
+function editClass(editedRow) {
+  chrome.storage.sync.get('classes', function (result) {
+    var classIndex = parseInt(editedRow.find("td#classTableIndex").text())
+
+    var classObject = result.classes[classIndex]
+    classObject.url = editedRow.find("td#classURL").text()
+    classObject.password = editedRow.find("td#classPassword").text()
+
+    chrome.runtime.sendMessage({
+      newObject: classObject,
+      index: classIndex,
+      type: "editClass",
+    }, function (response) {
+      console.log(response.farewell);
+      location.reload();
+    });
+
+  });
+}
+
+function editPersonal(editedRow) {
+  chrome.storage.sync.get('personal', function (result) {
+    var personalIndex = parseInt(editedRow.find("td#personalTableIndex").text())
+
+    var personalObject = result.personal[personalIndex]
+    personalObject.url = editedRow.find("td#personalURL").text()
+    personalObject.password = editedRow.find("td#personalPassword").text()
+
+    chrome.runtime.sendMessage({
+      newObject: personalObject,
+      index: personalIndex,
+      type: "editPersonal",
+    }, function (response) {
+      console.log(response.farewell);
+      location.reload();
+    });
+
+  });
+}
+
+var classTable = new BSTable("table1", {
+  editableColumns: "5,6",
+  onEdit: function (editedRow) {
+    console.log("Oof!");
+    console.log(typeof editedRow[0]);
+    editClass($(editedRow[0]));
+  },
+  advanced: {
+    columnLabel: ''
+  }
+});
 
 chrome.storage.sync.get('classes', function (result) {
   if (result.classes != undefined && result.classes.length != 0) {
 
     for (const [index, classObject] of result.classes.entries()) {
       console.log(classObject.classInfo);
-      var row = document.createElement('tr');
-
-      var rowIndex = document.createElement('th');
-      rowIndex.appendChild(document.createTextNode(index.toString()));
-      row.appendChild(rowIndex);
-
-      var className = row.insertCell();
-      className.appendChild(document.createTextNode(extractClassName(classObject)));
-
-      var section = row.insertCell();
-      section.appendChild(document.createTextNode(classObject.classInfo.class_section));
-
-      var days = row.insertCell();
-      days.appendChild(document.createTextNode(classObject.classInfo.meet_days));
-
-      var time = row.insertCell();
-      time.appendChild(document.createTextNode(removeTags(classObject.classInfo.meet_times)));
-
-      var zoomLink = row.insertCell();
-      zoomLink.appendChild(document.createTextNode(classObject.url));
-
-      var password = row.insertCell();
-      var passwordText;
-      if (classObject.password) {
-        passwordText = document.createTextNode(classObject.password)
-      } else {
-        // TODO: is there a better way of doing this? Causes problems right now with editing table
-        // idea: instead, with a later script come in and replace all empty cells with red "N/A"?
-        passwordText = document.createElement("span")
-        passwordText.className = "no-password";
-        passwordText.appendChild(document.createTextNode("No Password"))
-      }
-      password.appendChild(passwordText);
-
+      var row = $('<tr>').append(`<td id="classTableIndex">${index.toString()}</td>
+      <td id="className">${extractClassName(classObject)}</td>
+      <td id="classSection">${classObject.classInfo.class_section}</td>
+      <td id="classMeetDays">${classObject.classInfo.meet_days}</td>
+      <td id="classMeetTime">${removeTags(classObject.classInfo.meet_times)}</td>
+      <td id="classURL">${classObject.url}</td>
+      <td id="classPassword">${classObject.password}</td>`);
       classTable.table.append(row);
+
+
+      // var row = document.createElement('tr');
+
+      // var rowIndex = document.createElement('th');
+      // rowIndex.appendChild(document.createTextNode(index.toString()));
+      // row.appendChild(rowIndex);
+
+      // var className = row.insertCell();
+      // className.appendChild(document.createTextNode(extractClassName(classObject)));
+
+      // var section = row.insertCell();
+      // section.appendChild(document.createTextNode(classObject.classInfo.class_section));
+
+      // var days = row.insertCell();
+      // days.appendChild(document.createTextNode(classObject.classInfo.meet_days));
+
+      // var time = row.insertCell();
+      // time.appendChild(document.createTextNode(removeTags(classObject.classInfo.meet_times)));
+
+      // var zoomLink = row.insertCell();
+      // zoomLink.appendChild(document.createTextNode(classObject.url));
+
+      // var password = row.insertCell();
+      // var passwordText;
+      // if (classObject.password) {
+      //   passwordText = document.createTextNode(classObject.password)
+      // } else {
+      //   // TODO: is there a better way of doing this? Causes problems right now with editing table
+      //   // idea: instead, with a later script come in and replace all empty cells with red "N/A"?
+      //   passwordText = document.createElement("span")
+      //   passwordText.className = "no-password";
+      //   passwordText.appendChild(document.createTextNode("No Password"))
+      // }
+      // password.appendChild(passwordText);
+
+      // classTable.table.append(row);
     }
     classTable.init();
   } else {
@@ -53,45 +113,62 @@ chrome.storage.sync.get('classes', function (result) {
   }
 });
 
-var personalTable = new BSTable("table4");
-
+var personalTable = new BSTable("table4", {
+  editableColumns: "4,5",
+  onEdit: function (editedRow) {
+    console.log("Oof!");
+    console.log(typeof editedRow[0]);
+    editPersonal($(editedRow[0]));
+  },
+  advanced: {
+    columnLabel: ''
+  }
+});
 chrome.storage.sync.get('personal', function (result) {
   if (result.personal != undefined && result.personal.length != 0) {
 
     for (const [index, personalObject] of result.personal.entries()) {
-      console.log(personalObject.classInfo);
-      var row = document.createElement('tr');
-
-      var rowIndex = document.createElement('th');
-      rowIndex.appendChild(document.createTextNode(index.toString()));
-      row.appendChild(rowIndex);
-
-      var personalName = row.insertCell();
-      personalName.appendChild(document.createTextNode(personalObject.entryInfo.name));
-
-
-      var days = row.insertCell();
-      days.appendChild(document.createTextNode(personalObject.entryInfo.days));
-
-      var time = row.insertCell();
-      time.appendChild(document.createTextNode(removeTags(personalObject.entryInfo.time)));
-
-      var zoomLink = row.insertCell();
-      zoomLink.appendChild(document.createTextNode(personalObject.url));
-
-      var password = row.insertCell();
-      var passwordText;
-      if (personalObject.password) {
-        passwordText = document.createTextNode(personalObject.password)
-      } else {
-        passwordText = document.createElement("span")
-        passwordText.className = "no-password";
-        passwordText.appendChild(document.createTextNode("No Password"))
-      }
-      // password.appendChild(document.createTextNode(classObject.password ? classObject.password : "No Password"));
-      password.appendChild(passwordText);
-
+      console.log(personalObject)
+      var row = $('<tr>').append(`<td id="personalTableIndex">${index.toString()}</td>
+      <td id="personalName">${personalObject.entryInfo.name}</td>
+      <td id="personalMeetDays">${personalObject.entryInfo.days}</td>
+      <td id="personalMeetTime">${removeTags(personalObject.entryInfo.time)}</td>
+      <td id="personalURL">${personalObject.url}</td>
+      <td id="personalPassword">${personalObject.password}</td>`);
       personalTable.table.append(row);
+
+      // var row = document.createElement('tr');
+
+      // var rowIndex = document.createElement('th');
+      // rowIndex.appendChild(document.createTextNode(index.toString()));
+      // row.appendChild(rowIndex);
+
+      // var personalName = row.insertCell();
+      // personalName.appendChild(document.createTextNode(personalObject.entryInfo.name));
+
+
+      // var days = row.insertCell();
+      // days.appendChild(document.createTextNode(personalObject.entryInfo.days));
+
+      // var time = row.insertCell();
+      // time.appendChild(document.createTextNode(removeTags(personalObject.entryInfo.time)));
+
+      // var zoomLink = row.insertCell();
+      // zoomLink.appendChild(document.createTextNode(personalObject.url));
+
+      // var password = row.insertCell();
+      // var passwordText;
+      // if (personalObject.password) {
+      //   passwordText = document.createTextNode(personalObject.password)
+      // } else {
+      //   passwordText = document.createElement("span")
+      //   passwordText.className = "no-password";
+      //   passwordText.appendChild(document.createTextNode("No Password"))
+      // }
+      // // password.appendChild(document.createTextNode(classObject.password ? classObject.password : "No Password"));
+      // password.appendChild(passwordText);
+
+      // personalTable.table.append(row);
     }
     personalTable.init();
   } else {

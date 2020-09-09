@@ -10,6 +10,17 @@ function addClass(array, toAdd) {
   });
 }
 
+function editClass(array, index, newObject) {
+  var oldClass = array[index];
+  array[index] = newObject;
+  //then call the set to update with modified value
+  chrome.storage.sync.set({
+    classes: array
+  }, function () {
+    console.log(`changed ${oldClass} to ${newObject}`);
+  });
+}
+
 function addPersonal(array, toAdd) {
   array.push(toAdd);
   //then call the set to update with modified value
@@ -20,6 +31,17 @@ function addPersonal(array, toAdd) {
   });
 }
 
+function editPersonal(array, index, newObject) {
+  var oldPersonal = array[index];
+  array[index] = newObject;
+  //then call the set to update with modified value
+  chrome.storage.sync.set({
+    personal: array
+  }, function () {
+    console.log(`changed ${oldPersonal} to ${newObject}`);
+  });
+}
+
 async function launch() {
   chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
@@ -27,7 +49,7 @@ async function launch() {
         "from a content script:" + sender.tab.url :
         "from the extension");
       console.log(request.type, JSON.stringify(request.toAdd));
-      if (request.type === "class") {
+      if (request.type === "addClass") {
         chrome.storage.sync.get({
             classes: [] //put defaultvalues if any
           },
@@ -36,7 +58,7 @@ async function launch() {
             addClass(data.classes, request.toAdd); //storing the storage value in a variable and passing to update function
           }
         );
-      } else if (request.type === "personal") {
+      } else if (request.type === "addPersonal") {
         chrome.storage.sync.get({
             personal: [] //put defaultvalues if any
           },
@@ -51,6 +73,37 @@ async function launch() {
         farewell: "goodbye"
       });
     });
+
+    chrome.runtime.onMessage.addListener(
+      function (request, sender, sendResponse) {
+        console.log(sender.tab ?
+          "from a content script:" + sender.tab.url :
+          "from the extension");
+        console.log(request.type, request.index ,JSON.stringify(request.newObject));
+        if (request.type === "editClass") {
+          chrome.storage.sync.get({
+              classes: [] //put defaultvalues if any
+            },
+            function (data) {
+              console.log(data.classes);
+              editClass(data.classes, request.index, request.newObject); //storing the storage value in a variable and passing to update function
+            }
+          );
+        } else if (request.type === "editPersonal") {
+          chrome.storage.sync.get({
+              personal: [] //put defaultvalues if any
+            },
+            function (data) {
+              console.log(data.personal);
+              editPersonal(data.personal, request.index, request.newObject); //storing the storage value in a variable and passing to update function
+            }
+          );
+        }
+  
+        sendResponse({
+          farewell: "goodbye"
+        });
+      });
 
   //clear all alarms
   chrome.alarms.clearAll()
