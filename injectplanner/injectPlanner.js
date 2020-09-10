@@ -61,6 +61,7 @@ function fillPersonal(plannerBoxes) {
 					}
 					// TODO: What if two personal entries share name? TBH might not be a way around it, but yeah.
 					// Maybe if there's a way to extract date/time info from planner position?
+					// I'll just have to hope that 
 					if (item.childNodes[0].wholeText.toUpperCase() == personalEntry.entryInfo.name.toUpperCase()) {
 
 						var link = document.createElement('a');

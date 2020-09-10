@@ -1,6 +1,6 @@
 function editClass(editedRow) {
   chrome.storage.sync.get('classes', function (result) {
-    var classIndex = parseInt(editedRow.find("td#classTableIndex").text())-1;
+    var classIndex = parseInt(editedRow.find("td#classTableIndex").text()) - 1;
 
     var classObject = result.classes[classIndex]
     classObject.url = editedRow.find("td#classURL").text()
@@ -20,7 +20,7 @@ function editClass(editedRow) {
 
 function editPersonal(editedRow) {
   chrome.storage.sync.get('personal', function (result) {
-    var personalIndex = parseInt(editedRow.find("td#personalTableIndex").text())-1;
+    var personalIndex = parseInt(editedRow.find("td#personalTableIndex").text()) - 1;
 
     var personalObject = result.personal[personalIndex]
     personalObject.url = editedRow.find("td#personalURL").text()
@@ -38,12 +38,38 @@ function editPersonal(editedRow) {
   });
 }
 
+function deleteClass(deletedRow) {
+  var classIndex = parseInt(deletedRow.find("td#classTableIndex").text()) - 1;
+
+  chrome.runtime.sendMessage({
+    index: classIndex,
+    type: "deleteClass",
+  }, function (response) {
+    console.log(response.farewell);
+    location.reload()
+  });
+
+}
+
+function deletePersonal(deletedRow) {
+  var personalIndex = parseInt(deletedRow.find("td#personalTableIndex").text()) - 1;
+  chrome.runtime.sendMessage({
+    index: personalIndex,
+    type: "deletePersonal",
+  }, function (response) {
+    console.log(response.farewell);
+    location.reload()
+  });
+}
+
 var classTable = new BSTable("table1", {
   editableColumns: "5,6",
   onEdit: function (editedRow) {
-    console.log("Oof!");
-    console.log(typeof editedRow[0]);
     editClass($(editedRow[0]));
+  },
+  onBeforeDelete: function (deletedRow) {
+    console.log(deletedRow);
+    deleteClass(deletedRow);
   },
   advanced: {
     columnLabel: ''
@@ -116,9 +142,12 @@ chrome.storage.sync.get('classes', function (result) {
 var personalTable = new BSTable("table4", {
   editableColumns: "4,5",
   onEdit: function (editedRow) {
-    console.log("Oof!");
-    console.log(typeof editedRow[0]);
     editPersonal($(editedRow[0]));
+  },
+  // TODO: Add confirm delete? Scary how fast you're able to delete a row
+  onBeforeDelete: function (deletedRow) {
+    console.log($(deletedRow[0]));
+    deletePersonal(deletedRow);
   },
   advanced: {
     columnLabel: ''

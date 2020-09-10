@@ -85,23 +85,20 @@ function createPasswordText(classPassword) {
 			var currentURL = window.location.href.substring(0, window.location.href.indexOf('#'));
 			var currentClass = findElement(result1.classes, 'url', currentURL);
 			var currentPersonal = findElement(result2.personal, 'url', currentURL);
-			console.log(currentClass, currentPersonal);
-			var info;
-			if (currentClass) {
-				info = createClassText(currentClass)
-			} else if (currentPersonal) {
-				info = createPersonalText(currentPersonal)
-			}
 
-			if (info[1]) {
-				$("._2XjT-0pJ").prepend(createPasswordText(info[1]));
-			}
-
-			if (info[0]) {
+			// only inject if we actually found a matching class or personal entry
+			if (currentClass || currentPersonal) {
+				var info;
+				if (currentClass) {
+					info = createClassText(currentClass)
+				} else if (currentPersonal) {
+					info = createPersonalText(currentPersonal)
+				}
+				// only inject if the class's name is not undefined, i.e. we found a matching class
 				var helperText = $("<h1></h1>").text(`Joining ${info[0]}`);
+				$("._2XjT-0pJ").prepend(createPasswordText(info[1]));
 				$("._2XjT-0pJ").prepend(helperText);
 			}
-
 		});
 	});
 

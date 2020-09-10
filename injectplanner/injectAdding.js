@@ -1,3 +1,6 @@
+// I'm keeping a lot of old DOM code in here even after moving lots of stuff to JQuery, I'm just afraid
+// that some systems might not support JQuery or whatever and that I'll have to switch back
+
 function getLastWord(words) {
   var n = words.split(" ");
   return n[n.length - 1];
@@ -132,11 +135,11 @@ function extractPersonal(entryRow) {
   try {
     // the personal entry time is the only child node of the 4th td of the row
     // personalEntry.time = entryRow.cells[3].childNodes[0].wholeText;
-    personalEntry.days = entryRow.find("td:eq(3)").text()
+    personalEntry.time = entryRow.find("td:eq(3)").text()
   } catch (err) {
     console.log(err);
   }
-
+  console.log(personalEntry);
   return personalEntry;
 }
 
@@ -170,39 +173,56 @@ function equalEntries(first, second) {
   return (first.name == second.name && first.days == second.days && first.time == second.time);
 }
 
+// TODO: As of right now, when changing class info the zoom link on class planner page still remembers
+// its old link if you don't refresh. Probably should change? Acutally maybe not, that requires accessing
+// the database, which could be worse than just having the link be injected and hard coded in the HTML
 function createZoomLink(url) {
-  var zoomLink = document.createElement('a')
-  zoomLink.href = url;
-  zoomLink.className = "zoom-link";
-  zoomLink.target = "_blank";
+  var zoomLink = $(`<a href="${url}" class = "zoom-link" target="_blank"></a>`);
 
-  var zoomIcon = document.createElement('span');
-  zoomIcon.className = "moon-icon-zoom"
+  // var zoomLink = document.createElement('a')
+  // zoomLink.href = url;
+  // zoomLink.className = "zoom-link";
+  // zoomLink.target = "_blank";
 
-  var path1 = document.createElement('span');
-  path1.className = "path1"
-  var path2 = document.createElement('span');
-  path2.className = "path2"
-  var path3 = document.createElement('span');
-  path3.className = "path3"
+  var zoomIcon = $(`<span class="moon-icon-zoom"></span>`);
+  // var zoomIcon = document.createElement('span');
+  // zoomIcon.className = "moon-icon-zoom"
 
-  zoomIcon.appendChild(path1);
-  zoomIcon.appendChild(path2);
-  zoomIcon.appendChild(path3);
+  // for some reason making that little zoom icon (with the camera) requires three paths, check css
+  var pathList = [];
+  for (var i = 1; i <= 3; i++) {
+    pathList.push($(`<span class="path${i.toString()}"></span>`))
+  }
 
-  zoomLink.appendChild(zoomIcon)
+  // zoomIcon.append(pathList);
+  
+  // var path1 = document.createElement('span');
+  // path1.className = "path1"
+  // var path2 = document.createElement('span');
+  // path2.className = "path2"
+  // var path3 = document.createElement('span');
+  // path3.className = "path3"
+
+  // zoomIcon.appendChild(path1);
+  // zoomIcon.appendChild(path2);
+  // zoomIcon.appendChild(path3);
+
+  zoomLink.append(zoomIcon.append(pathList));
 
   return zoomLink;
 }
 
 function createAddLink(type) {
-  var addLink = document.createElement("a");
-  var plusSpan = document.createElement("span")
-  plusSpan.className = "icon-plus";
-  plusSpan.classList.add("zoomer-plus");
-  addLink.appendChild(plusSpan);
-  addLink.className = type;
-  addLink.href = "#"
+  var addLink = $(`<a href="#" class="${type}"><span class="icon-plus zoomer-plus"></span></a>`)
+
+
+  // var addLink = document.createElement("a");
+  // var plusSpan = document.createElement("span")
+  // plusSpan.className = "icon-plus";
+  // plusSpan.classList.add("zoomer-plus");
+  // addLink.appendChild(plusSpan);
+  // addLink.className = type;
+  // addLink.href = "#"
 
   return addLink;
 }
@@ -220,14 +240,12 @@ function createAddLink(type) {
         result.classes.forEach(myclass => {
           if (currentClassRow.find("td:eq(1) a").attr('title').includes(myclass.classInfo.srs_crs_no)) {
             found = true;
-            var zoomLink = createZoomLink(myclass.url)
-            currentClassRow.find("td:eq(6)").append(zoomLink);
+            currentClassRow.find("td:eq(6)").append(createZoomLink(myclass.url));
             return;
           }
         });
         if (!found) {
-          var addLink = createAddLink("addclass")
-          currentClassRow.find("td:eq(6)").append(addLink);
+          currentClassRow.find("td:eq(6)").append(createAddLink("addclass"));
         }
         sectionIndex++;
       }
@@ -244,20 +262,17 @@ function createAddLink(type) {
         result.classes.forEach(myclass => {
           if (currentClassRow.find("td:eq(1) a").attr('title').includes(myclass.classInfo.srs_crs_no)) {
             found = true;
-            var zoomLink = createZoomLink(myclass.url)
-            currentClassRow.find("td:eq(6)").append(zoomLink);
+            currentClassRow.find("td:eq(6)").append(createZoomLink(myclass.url));
             return;
           }
         });
         if (!found) {
-          var addLink = createAddLink("addclass")
-          currentClassRow.find("td:eq(6)").append(addLink);
+          currentClassRow.find("td:eq(6)").append(createAddLink("addclass"));
         }
         sectionIndex++;
       }
       classIndex += 2; // for some reason the class table counter increments by 2 ¯\_(ツ)_/¯
     }
-
 
 
     $('.addclass').on('click', function (e, manual) {
@@ -281,16 +296,14 @@ function createAddLink(type) {
       result.personal.forEach(personalEntry => {
         if (equalEntries(personalEntry.entryInfo, extractPersonal(personalRow))) {
           found = true;
-          var zoomLink = createZoomLink(personalEntry.url)
           // personalRow.cells[1].appendChild(zoomLink);
-          personalRow.find("td:eq(1)").append(zoomLink)
+          personalRow.find("td:eq(1)").append(createZoomLink(personalEntry.url))
           return;
         }
       });
       if (!found) {
-        var addLink = createAddLink("addpersonal")
         // personalRow.cells[1].appendChild(addLink);
-        personalRow.find("td:eq(1)").append(addLink)
+        personalRow.find("td:eq(1)").append(createAddLink("addpersonal"))
       }
       counter++;
     }

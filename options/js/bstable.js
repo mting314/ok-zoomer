@@ -168,8 +168,9 @@ class BSTable {
   // Remove the row
     var $row = $(button).parents('tr');       // access the row
     this.options.onBeforeDelete($row);
+    this.options.onDelete($row);
     $row.remove();
-    this.options.onDelete();
+    // this.options.onDelete();
   }
   _rowAccept(button) {
   // Accept the changes to the row

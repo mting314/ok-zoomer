@@ -5,7 +5,7 @@
   "permissions": ["activeTab", "declarativeContent", "storage", "unlimitedStorage", "alarms", "notifications", "tabs"],
   "options_page": "options/index.html",
   "background": {
-    "scripts": ["background.js", "utils.js"],
+    "scripts": ["background/background.js", "background/manageOptions.js", "background/manageDatabase.js", "utils.js"],
     "persistent": false
   },
   "content_scripts": [
