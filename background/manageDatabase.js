@@ -1,5 +1,106 @@
-// helper functions for adding or editing items in the class or personal entry arrays
+function activateListeners() {
+  // listen for addition requests
+  chrome.runtime.onMessage.addListener(
+    function (request, sender, sendResponse) {
+      console.log(sender.tab ?
+        "from a content script:" + sender.tab.url :
+        "from the extension");
+      console.log(request.type, JSON.stringify(request.toAdd));
+      if (request.type === "addClass") {
+        chrome.storage.sync.get({
+            classes: []
+          },
+          function (data) {
+            console.log(data.classes);
+            addClass(data.classes, request.toAdd); //storing the storage value in a variable and passing to update function
+          }
+        );
+      } else if (request.type === "addPersonal") {
+        chrome.storage.sync.get({
+            personal: []
+          },
+          function (data) {
+            console.log(data.personal);
+            addPersonal(data.personal, request.toAdd);
+          }
+        );
+      }
 
+      sendResponse({
+        farewell: "finished processing addition request"
+      });
+    });
+
+  // listen for edit requests
+  chrome.runtime.onMessage.addListener(
+    function (request, sender, sendResponse) {
+      console.log(sender.tab ?
+        "from a content script:" + sender.tab.url :
+        "from the extension");
+      console.log(request.type, request.index, JSON.stringify(request.newObject));
+      if (request.type === "editClass") {
+        chrome.storage.sync.get({
+            classes: []
+          },
+          function (data) {
+            console.log(data.classes);
+            editClass(data.classes, request.index, request.newObject);
+          }
+        );
+      } else if (request.type === "editPersonal") {
+        chrome.storage.sync.get({
+            personal: []
+          },
+          function (data) {
+            console.log(data.personal);
+            editPersonal(data.personal, request.index, request.newObject);
+          }
+        );
+      }
+
+      sendResponse({
+        farewell: "finished processing edit request"
+      });
+    });
+
+  // listen for deletion request
+  chrome.runtime.onMessage.addListener(
+    function (request, sender, sendResponse) {
+      console.log(sender.tab ?
+        "from a content script:" + sender.tab.url :
+        "from the extension");
+      console.log(request.type, request.index, JSON.stringify(request.newObject));
+      if (request.type === "deleteClass") {
+        chrome.storage.sync.get({
+            classes: []
+          },
+          function (data) {
+            console.log(data.classes);
+            deleteClass(data.classes, request.index); //storing the storage value in a variable and passing to update function
+          }
+        );
+      } else if (request.type === "deletePersonal") {
+        chrome.storage.sync.get({
+            personal: []
+          },
+          function (data) {
+            console.log(data.personal);
+            // nothing personnel, kiddo
+            deletePersonal(data.personal, request.index);
+          }
+        );
+      }
+
+      sendResponse({
+        farewell: "finished processing deletion (is that a word?) request"
+      });
+    });
+}
+
+
+// --------------------------------------------------
+// -- helper functions for adding or editing items in the class or personal entry arrays
+// --------------------------------------------------
 function addClass(array, toAdd) {
   array.push(toAdd);
   //then call the set to update with modified value

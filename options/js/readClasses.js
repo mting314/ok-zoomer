@@ -62,7 +62,7 @@ function deletePersonal(deletedRow) {
   });
 }
 
-var classTable = new BSTable("table1", {
+var classTable = new BSTable("Class Zooms", "table1", {
   editableColumns: "5,6",
   onEdit: function (editedRow) {
     editClass($(editedRow[0]));
@@ -70,9 +70,6 @@ var classTable = new BSTable("table1", {
   onBeforeDelete: function (deletedRow) {
     console.log(deletedRow);
     deleteClass(deletedRow);
-  },
-  advanced: {
-    columnLabel: ''
   }
 });
 
@@ -139,7 +136,7 @@ chrome.storage.sync.get('classes', function (result) {
   }
 });
 
-var personalTable = new BSTable("table4", {
+var personalTable = new BSTable("Personal Entries", "table4", {
   editableColumns: "4,5",
   onEdit: function (editedRow) {
     editPersonal($(editedRow[0]));
@@ -148,9 +145,6 @@ var personalTable = new BSTable("table4", {
   onBeforeDelete: function (deletedRow) {
     console.log($(deletedRow[0]));
     deletePersonal(deletedRow);
-  },
-  advanced: {
-    columnLabel: ''
   }
 });
 chrome.storage.sync.get('personal', function (result) {
