@@ -20,6 +20,7 @@ function classInProgress(classDiv, targetHeight) {
 
     var now = new Date();
     now.setHours(11);
+    now.setDate(now.getDate()-2);
     if (8 <= now.getHours() && now.getHours() < 8 + hourCount) {
       var currentDay = now.getDay();
 
