@@ -1,17 +1,23 @@
 {
   "name": "Ok, Zoomer",
-  "version": "1.0",
+  "version": "0.0.0.1",
   "description": "Build an Extension!",
-  "permissions": ["activeTab", "declarativeContent", "storage", "alarms", "notifications", "tabs"],
-  "options_page": "options.html",
+  "permissions": ["activeTab", "declarativeContent", "storage", "unlimitedStorage", "alarms", "notifications", "tabs"],
+  "options_page": "options/index.html",
   "background": {
-    "scripts": ["background.js", "findElement.js"],
+    "page": "background/background.html",
     "persistent": false
   },
   "content_scripts": [
     {
       "matches": ["https://ucla.zoom.us/*"],
-      "js": ["contentScript.js", "findElement.js"]
+      "js": ["jquery-3.4.1.min.js", "injectZoom.js", "utils.js"],
+      "css": ["zoom.css"]
+    },
+    {
+      "matches": ["https://be.my.ucla.edu/ClassPlanner/ClassPlan.aspx"],
+      "js": ["jquery-3.4.1.min.js", "injectplanner/injectPlanner.js", "utils.js", "injectplanner/highlightCurrent.js", "injectplanner/injectAdding.js"],
+      "css" : ["injectplanner/planner.css"]
     }
   ],
   "page_action": {
@@ -29,5 +35,6 @@
     "48": "images/get_started48.png",
     "128": "images/get_started128.png"
   },
+  "web_accessible_resources": ["images/dollar_10.jpg", "fonts/*"],
   "manifest_version": 2
 }
