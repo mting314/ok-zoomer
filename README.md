@@ -24,24 +24,24 @@ After installing the extension, the simplest way to add a class to Ok, Zoomer is
 ![link prompt](readme-images/FirstPrompt.PNG)  
 This is just asking for the link you want to associate with this class/personal entry. Leaving it empty will simply not associate a link with this class/personal entry.
 3. The next prompt will simply ask you if that Zoom link has a password.  
-![password prompt](readme-images\SecondPrompt.PNG)
+![password prompt](readme-images/SecondPrompt.PNG)
 4. After clicking OK again, the page should refresh, and that plus button you click should be replaced with a little Zoom Icon.  
-![add class result](readme-images\AddClassResult.PNG)
+![add class result](readme-images/AddClassResult.PNG)
 And clicking that icon will bring you straight to that class's corresponding Zoom link!
 
 ### Linked Planner Boxes
 After adding a certain class to Ok, Zoomer, you might see something change in your class planner grid:
-![thick borders](readme-images\ThiccBorders.PNG)
+![thick borders](readme-images/ThiccBorders.PNG)
 This indicates that this box has been turned into a link, so you can click on that planner box, bringing you straight to that class's (or personal entry's) Zoom.  
 
 Combine this with the second added feature:
-![highlighted](readme-images\highlighted.PNG)
+![highlighted](readme-images/highlighted.PNG)
 which does what some standard calendar apps does and displays a little line indicating the current time and day, and highlighting classes that it detects are currently occuring.
 
 This means that it's really easy to see which classes are going on, and just click on that class to get there really fast! (Also should work with personal entries).
 
 ## The Options Page
-![options](readme-images\Options.PNG)
+![options](readme-images/Options.PNG)
 This is a pretty simple view of the basic class info (I tried to imitate the Class Planner's format as much as possible).
 
 The most important feature on this page are those little edit and delete buttons on each entry. __As of right now, you're only allowed to edit the Zoom links and passwords.__ I consider class info to sort of be fixed (partially because I glean the class info directly from the UCLA's database, but mostly because it would be really hard to modify alarms ¯\\_(ツ)_/¯ ).
@@ -51,7 +51,7 @@ From here, another important thing to note is the actual options screen.
 As of right now, __there is only a single slider that turns on and off the alarms__. 
 
 ## Alarms
-![notifications](readme-images\Notification.PNG)
+![notifications](readme-images/Notification.PNG)
 
 (Ignore those stupid icons for now, I'll decide on something better later).
 
@@ -63,12 +63,12 @@ For personal entries, __the app will just default to 10 weeks.__
 
 ## Mini feature: Enhanced Zoom Pre-Lobby
 If you join a ucla.zoom.us lobby whose URL matches any URL stored in Ok, Zoomer, the extension will inject some additional info based on that matched URL's class or personal entry:
-![injected zoom](readme-images\InjectedZoom.PNG) 
+![injected zoom](readme-images/InjectedZoom.PNG) 
 Not only will this info be displayed for you, but as the text says, if that class has an associated password, it will immediately be copied to your clipboard upon arriving at that URL. The password text is also clickable, and clicking will copy the password again, just in case.
 
 ## More interesting notes
 1. In the process of developing this extension, I discovered how to query some database UCLA has that contains LOTS of class information. I can't be the first person who has discovered this, but this is what it looks like. 
-![example class database](readme-images\Database.PNG)
+![example class database](readme-images/Database.PNG)
 And all I needed to get this info was essentially to be logged into the class planner, and a class ID number (that 9 digit ID you can see as `srs_crs_no`). This is also how I can know precisely what day a class begins and ends. I'm honestly not sure, but I think there could be some fun and maybe even useful apps you could make.
 
 2. 
