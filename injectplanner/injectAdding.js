@@ -28,7 +28,7 @@ function getElementIndex(node) {
   return index;
 }
 
-function addClass(obj) {
+function addClass(port, obj) {
 
   var classLink = obj.parent().parent().children()[1]
   var classParams = getParams(classLink.childNodes[1].href)
@@ -91,19 +91,29 @@ function addClass(obj) {
               delete selectedClass.info_tooltip_data;
               delete selectedClass.meet_location_tooltip;
 
-              // TODO: sendmessage seems to break pretty often. I think there are fixes out there?
-              chrome.runtime.sendMessage({
+              // chrome.runtime.sendMessage({
+              //   toAdd: {
+              //     classInfo: newres.d.svcRes.ResultTiers[0],
+              //     url: result,
+              //     zoomerID: randomID(),
+              //     password: password
+              //   },
+              //   type: "addClass"
+              // }, function (response) {
+              //   console.log(response.farewell);
+              //   location.reload();
+              // });
+              var msg = {
                 toAdd: {
                   classInfo: newres.d.svcRes.ResultTiers[0],
                   url: result,
                   zoomerID: randomID(),
-                  password: password
+                  password: password,
                 },
                 type: "addClass"
-              }, function (response) {
-                console.log(response.farewell);
-                location.reload();
-              });
+              }
+              port.postMessage(msg);
+              console.log("sending message:", msg);
             }
           }
         });
@@ -146,7 +156,7 @@ function extractPersonal(entryRow) {
   return personalEntry;
 }
 
-function addPersonal(obj) {
+function addPersonal(port, obj) {
   var personalRow = obj.parent().parent();
   var personalObject = extractPersonal(personalRow);
   console.log(personalObject);
@@ -158,7 +168,19 @@ function addPersonal(obj) {
     } else {
       password = prompt("What is the password for the Personal Entry: " + personalObject.name + "\r\nat the link " + result);
     }
-    chrome.runtime.sendMessage({
+    // chrome.runtime.sendMessage({
+    //   toAdd: {
+    //     entryInfo: personalObject,
+    //     url: result,
+    //     zoomerID: randomID(),
+    //     password: password
+    //   },
+    //   type: "addPersonal"
+    // }, function (response) {
+    //   console.log(response.farewell);
+    //   location.reload();
+    // });
+    var msg = {
       toAdd: {
         entryInfo: personalObject,
         url: result,
@@ -166,10 +188,9 @@ function addPersonal(obj) {
         password: password
       },
       type: "addPersonal"
-    }, function (response) {
-      console.log(response.farewell);
-      location.reload();
-    });
+    }
+    port.postMessage(msg);
+    console.log("sending message:", msg);
   }
 }
 
@@ -199,7 +220,7 @@ function createZoomLink(url) {
   }
 
   // zoomIcon.append(pathList);
-  
+
   // var path1 = document.createElement('span');
   // path1.className = "path1"
   // var path2 = document.createElement('span');
@@ -232,7 +253,15 @@ function createAddLink(type) {
 }
 
 (function () {
-
+  var port = chrome.runtime.connect({
+    name: "knockknock"
+  });
+  // reload page after background listener executed port's command
+  port.onMessage.addListener(function (msg) {
+    if (msg.type == "reload") {
+      location.reload();
+    }
+  });
   // inject links to class planner tables
   chrome.storage.sync.get('classes', function (result) {
     var classIndex = 0;
@@ -282,7 +311,7 @@ function createAddLink(type) {
     $('.addclass').on('click', function (e, manual) {
       if (typeof manual === 'undefined' || manual === false) {
         $('a.addclass').not(this).trigger('click', true);
-        addClass($(this));
+        addClass(port, $(this));
       }
       return false;
     });
@@ -315,7 +344,7 @@ function createAddLink(type) {
       if (typeof manual === 'undefined' || manual === false) {
         $('a.addpersonal').not(this).trigger('click', true);
         console.log($(this)[0]);
-        addPersonal($(this))
+        addPersonal(port, $(this))
       }
       return false;
     });

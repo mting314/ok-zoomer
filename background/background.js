@@ -22,20 +22,13 @@ async function launch() {
     alarms: false
   });
 
-  //   // chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
-  //   //   chrome.declarativeContent.onPageChanged.addRules([{
-  //   //     conditions: [new chrome.declarativeContent.PageStateMatcher({
-  //   //       pageUrl: {hostEquals: 'developer.chrome.com'},
-  //   //     })],
-  //   //     actions: [new chrome.declarativeContent.ShowPageAction()]
-  //   //   }]);
-  //   // });
-
-  // });
-
 }
 
+// run the launch function when extension is first installed to set defaults
 chrome.runtime.onInstalled.addListener(launch)
+
+// reconnect to listeners every time chrome restarts (like after user closes chrome)
+chrome.runtime.onStartup.addListener(activateListeners)
 
 function parseDayOfWeek(weekday) {
   var weekdayDict = {

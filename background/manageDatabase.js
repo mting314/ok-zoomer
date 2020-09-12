@@ -2,16 +2,44 @@ function activateListeners() {
   chrome.runtime.onConnect.addListener(function (port) {
     // console.assert(port.name == "knockknock");
     port.onMessage.addListener(function (msg) {
-      var executed = false;
       console.log(msg);
-      if (msg.type === "deleteClass") {
+      // listen for addition requests
+      if (msg.type === "addClass") {
+        chrome.storage.sync.get({
+            classes: []
+          },
+          function (data) {
+            console.log(data.classes);
+            addClass(data.classes, msg.toAdd); //storing the storage value in a variable and passing to update function
+            createClassAlarm(msg.toAdd);
+            port.postMessage({
+              type: "reload"
+            });
+          }
+        );
+      } else if (msg.type === "addPersonal") {
+        chrome.storage.sync.get({
+            personal: []
+          },
+          function (data) {
+            console.log(data.personal);
+            addPersonal(data.personal, msg.toAdd);
+            port.postMessage({
+              type: "reload"
+            });
+          }
+        );
+        // listen for deletion requests
+      } else if (msg.type === "deleteClass") {
         chrome.storage.sync.get({
             classes: []
           },
           function (data) {
             console.log(data.classes);
             deleteClass(data.classes, msg.index); //storing the storage value in a variable and passing to update function
-            executed = true;
+            port.postMessage({
+              type: "reload"
+            });
           }
         );
       } else if (msg.type === "deletePersonal") {
@@ -22,9 +50,12 @@ function activateListeners() {
             console.log(data.personal);
             // nothing personnel, kiddo
             deletePersonal(data.personal, msg.index);
-            executed = true;
+            port.postMessage({
+              type: "reload"
+            });
           }
         );
+        // listen for edit requests
       } else if (msg.type === "editClass") {
         chrome.storage.sync.get({
             classes: []
@@ -32,7 +63,9 @@ function activateListeners() {
           function (data) {
             console.log(data.classes);
             editClass(data.classes, msg.index, msg.newObject);
-            executed = true;
+            port.postMessage({
+              type: "reload"
+            });
           }
         );
       } else if (msg.type === "editPersonal") {
@@ -42,54 +75,17 @@ function activateListeners() {
           function (data) {
             console.log(data.personal);
             editPersonal(data.personal, msg.index, msg.newObject);
-            executed = true;
+            port.postMessage({
+              type: "reload"
+            });
           }
         );
       }
-      // if any command was executed, reload the page you're at
-      if (executed) {
-        port.postMessage({
-          type: "reload"
-        });
-      }
-    });
 
-  });
-};
-
-// listen for addition requests
-chrome.runtime.onMessage.addListener(
-  function (request, sender, sendResponse) {
-    console.log(sender.tab ?
-      "from a content script:" + sender.tab.url :
-      "from the extension");
-    console.log(request.type, JSON.stringify(request.toAdd));
-    if (request.type === "addClass") {
-      chrome.storage.sync.get({
-          classes: []
-        },
-        function (data) {
-          console.log(data.classes);
-          addClass(data.classes, request.toAdd); //storing the storage value in a variable and passing to update function
-          createClassAlarm(request.toAdd);
-        }
-      );
-    } else if (request.type === "addPersonal") {
-      chrome.storage.sync.get({
-          personal: []
-        },
-        function (data) {
-          console.log(data.personal);
-          addPersonal(data.personal, request.toAdd);
-        }
-      );
-    }
-
-    sendResponse({
-      farewell: "finished processing addition request"
     });
   });
-  
+}
+
 // --------------------------------------------------
 // -- helper functions for adding or editing items in the class or personal entry arrays
 // --------------------------------------------------
