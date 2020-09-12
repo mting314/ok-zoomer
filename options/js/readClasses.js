@@ -6,14 +6,23 @@ function editClass(editedRow) {
     classObject.url = editedRow.find("td#classURL").text()
     classObject.password = editedRow.find("td#classPassword").text()
 
-    chrome.runtime.sendMessage({
+    // chrome.runtime.sendMessage({
+    //   newObject: classObject,
+    //   index: classIndex,
+    //   type: "editClass",
+    // }, function (response) {
+    //   console.log(response.farewell);
+    //   location.reload()
+    // });
+
+    var msg = {
       newObject: classObject,
       index: classIndex,
       type: "editClass",
-    }, function (response) {
-      console.log(response.farewell);
-      location.reload()
-    });
+    }
+    console.log("sending message:", msg);
+
+    port.postMessage(msg);
 
   });
 }
@@ -26,41 +35,75 @@ function editPersonal(editedRow) {
     personalObject.url = editedRow.find("td#personalURL").text()
     personalObject.password = editedRow.find("td#personalPassword").text()
 
-    chrome.runtime.sendMessage({
+    // chrome.runtime.sendMessage({
+    //   newObject: personalObject,
+    //   index: personalIndex,
+    //   type: "editPersonal",
+    // }, function (response) {
+    //   console.log(response.farewell);
+    //   location.reload()
+    // });
+
+    var msg = {
       newObject: personalObject,
       index: personalIndex,
       type: "editPersonal",
-    }, function (response) {
-      console.log(response.farewell);
-      location.reload()
-    });
+    }
+    console.log("sending message:", msg);
 
+    port.postMessage(msg);
   });
 }
 
 function deleteClass(deletedRow) {
   var classIndex = parseInt(deletedRow.find("td#classTableIndex").text()) - 1;
 
-  chrome.runtime.sendMessage({
+  // chrome.runtime.sendMessage({
+  //   index: classIndex,
+  //   type: "deleteClass",
+  // }, function (response) {
+  //   console.log(response.farewell);
+  //   location.reload()
+  // });
+
+  var msg = {
     index: classIndex,
-    type: "deleteClass",
-  }, function (response) {
-    console.log(response.farewell);
-    location.reload()
-  });
+    type: "deleteClass"
+  }
+  console.log("sending message:", msg);
+
+  port.postMessage(msg);
 
 }
 
 function deletePersonal(deletedRow) {
   var personalIndex = parseInt(deletedRow.find("td#personalTableIndex").text()) - 1;
-  chrome.runtime.sendMessage({
+  // chrome.runtime.sendMessage({
+  //   index: personalIndex,
+  //   type: "deletePersonal",
+  // }, function (response) {
+  //   console.log(response.farewell);
+  //   location.reload()
+  // });
+
+  var msg = {
     index: personalIndex,
     type: "deletePersonal",
-  }, function (response) {
-    console.log(response.farewell);
-    location.reload()
-  });
+  }
+  console.log("sending message:", msg);
+
+  port.postMessage(msg);
 }
+
+var port = chrome.runtime.connect({
+  name: "knockknock"
+});
+// reload page after background listener executed port's command
+port.onMessage.addListener(function (msg) {
+  if (msg.type == "reload") {
+    location.reload();
+  }
+})
 
 var classTable = new BSTable("Class Zooms", "table1", {
   editableColumns: "5,6",
