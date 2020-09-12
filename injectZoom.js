@@ -9,12 +9,11 @@ function copyTextToClipboard(text) {
 }
 
 function createClassText(currentClass) {
-	var className = JSON.stringify(extractClassName(currentClass)).replace(/\"/g, "");
+	var className = extractClassName(currentClass);
 
 	var classSection = JSON.stringify(currentClass.classInfo.class_section).replace(/\"/g, "");
 
 	var fullName = [className, classSection].join(' ');
-
 
 	var classPassword;
 	if (currentClass.password) {
@@ -65,7 +64,8 @@ function createPasswordText(classPassword) {
 }
 
 (function () {
-	// TODO: what if same Zoom link for lecture class, and for OH personal entry? Maybe pass a URL parameter to differentiate?
+	// TODO: what if same Zoom link for lecture class, and for OH personal entry?
+	// Maybe pass a URL parameter to differentiate?
 	chrome.storage.sync.get("classes", function (result1) {
 		chrome.storage.sync.get("personal", function (result2) {
 
