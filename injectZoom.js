@@ -1,30 +1,11 @@
 document.body.style.backgroundColor = "orange";
 
-// https://stackoverflow.com/a/18455088
 function copyTextToClipboard(text) {
-	//Create a textbox field where we can insert text to. 
-	var copyFrom = document.createElement("textarea");
-
-	//Set the text content to be the text you wished to copy.
-	copyFrom.textContent = text;
-
-	//Append the textbox field into the body as a child. 
-	//"execCommand()" only works when there exists selected text, and the text is inside 
-	//document.body (meaning the text is part of a valid rendered HTML element).
-	document.body.appendChild(copyFrom);
-
-	//Select all the text!
-	copyFrom.select();
-
-	//Execute command
-	document.execCommand('copy');
-
-	//(Optional) De-select the text using blur(). 
-	copyFrom.blur();
-
-	//Remove the textbox field from the document.body, so no other JavaScript nor 
-	//other elements can get access to this.
-	document.body.removeChild(copyFrom);
+	console.log("copying to clipboard:", text)
+	chrome.runtime.sendMessage({
+		type: 'copy',
+		text: text
+});
 }
 
 function createClassText(currentClass) {
@@ -63,16 +44,22 @@ function createPasswordText(classPassword) {
 	} else {
 		passwordText = ["Password is ", classPassword, ". Password has been copied to your clipboard."]
 
-		var node2 = document.createElement("span");
-		node2.className = "password";
-		passwordAnchor = document.createElement('a')
-		passwordAnchor.onclick = function () {
-			navigator.clipboard.writeText(classPassword);
-		}
-		passwordAnchor.appendChild(document.createTextNode(passwordText[1]))
-		node2.appendChild(passwordAnchor)
+		var node2 = $(`<span><a id="click-password">${passwordText[1]}</a></span>`)
+		// var node2 = document.createElement("span");
+		// node2.className = "password";
+		// passwordAnchor = document.createElement('a')
+		// passwordAnchor.onclick = function () {
+		// 	navigator.clipboard.writeText(classPassword);
+		// }
+		// passwordAnchor.appendChild(document.createTextNode(passwordText[1]))
+		// node2.appendChild(passwordAnchor)
 
 		password.append(passwordText[0], node2, passwordText[2])
+
+		node2.click(function() {
+			console.log("copying to clipboard:", classPassword)
+			navigator.clipboard.writeText(classPassword);
+		});
 	}
 	return password;
 }

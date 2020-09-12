@@ -24,3 +24,7 @@ function removeTags(str) {
   // HTML tag with a null string. 
   return str.replace(/(<([^>]+)>)/ig, '');
 }
+
+function randomID() {
+  return Math.round(Date.now() * Math.random());
+}

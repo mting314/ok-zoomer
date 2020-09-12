@@ -141,7 +141,6 @@ var personalTable = new BSTable("Personal Entries", "table4", {
   onEdit: function (editedRow) {
     editPersonal($(editedRow[0]));
   },
-  // TODO: Add confirm delete? Scary how fast you're able to delete a row
   onBeforeDelete: function (deletedRow) {
     console.log($(deletedRow[0]));
     deletePersonal(deletedRow);

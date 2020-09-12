@@ -50,64 +50,44 @@ function parseDayOfWeek(weekday) {
   }
 }
 
-function createSingleAlarm(classObject, classDayChar) {
-  chrome.storage.sync.get('leeway', function (result) {
-    var now = new Date()
-    var classTime = classObject.meet_items[0].meet_strt_tm.split(':')
-    var classHour = parseInt(classTime[0])
-    var classMinute = parseInt(classTime[1])
-
-
-    var classDay = parseDayOfWeek(classDayChar);
-    var dayDifference = (((classDay - now.getDay()) % 7) + 7) % 7
-
-    var timeToRing = now.getTime() + dayDifference * 24 * 60 * 60000
-    var target = new Date(timeToRing)
-
-    target.setHours(classHour, classMinute, 0)
-    if (dayDifference == 0) {
-      if (now.getTime() - target.getTime() > result.leeway * 60 * 1000) {
-        target.setDate(target.getDate() + 7)
-      }
-    }
-    var count = 0;
-    while (count < 12) {
-      console.log([extractClassName(classObject), classDayChar, target].join(' '))
-      chrome.alarms.create(extractClassName(classObject) + " " + classDayChar, {
-        when: target.getTime()
-      });
-      target.setDate(target.getDate() + 7);
-      count++;
-    }
-  });
-}
-
-async function createClassAlarm(classObject) {
-  for (var i = 0; i < classObject.meet_days.length; i++) {
-    createSingleAlarm(classObject, classObject.meet_days.charAt(i));
+chrome.runtime.onMessage.addListener(function(message) {
+  if (message && message.type == 'copy') {
+      var input = document.createElement('textarea');
+      document.body.appendChild(input);
+      input.value = message.text;
+      input.focus();
+      input.select();
+      document.execCommand('Copy');
+      input.remove();
   }
-}
+});
 
 chrome.alarms.onAlarm.addListener(function (alarm) {
-  chrome.notifications.create(alarm.name.slice(0, -2), {
-    type: 'basic',
-    iconUrl: 'images/sign_toontown_central.jpg',
-    title: alarm.name.slice(0, -2),
-    message: 'You have a class',
-    buttons: [{
-      title: 'Yes, get me there',
-      iconUrl: 'images/sign_toontown_central.jpg'
-    }, {
-      title: 'Get out of my way',
-      iconUrl: 'images/dollar_10.jpg'
-    }]
-  }, function (notificationId) {})
+  chrome.storage.sync.get('classes', function (result) {
+    var currentClass = findElement(result.classes, 'zoomerID', alarm.name.replace(/ .*/, ''))
+    chrome.notifications.create(alarm.name, {
+      type: 'basic',
+      iconUrl: '../images/sign_toontown_central.jpg',
+      title: extractClassName(currentClass),
+      message: 'You have a class',
+      eventTime: alarm.scheduledTime,
+      buttons: [{
+        title: 'Yes, get me there',
+        iconUrl: '../images/sign_toontown_central.jpg'
+      }, {
+        title: 'Get out of my way',
+        iconUrl: '../images/dollar_10.jpg'
+      }],
+      requireInteraction: false,
+      silent: false
+    }, function (notificationId) {})
+  });
 })
 
 /* Respond to the user's clicking one of the buttons */
 chrome.notifications.onButtonClicked.addListener(function (notifId, btnIdx) {
   chrome.storage.sync.get('classes', function (result) {
-    var currentClass = findElement(result.classes, 'name', notifId)
+    var currentClass = findElement(result.classes, 'zoomerID', notifId.replace(/ .*/, ''))
     if (btnIdx === 0) {
       console.log(currentClass.url)
       // window.open(currentClass['url']);

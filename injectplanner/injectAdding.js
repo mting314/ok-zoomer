@@ -77,6 +77,7 @@ function addClass(obj) {
           dataType: "json",
           success: function (newres) {
             selectedClass = newres.d.svcRes.ResultTiers[0];
+            // TODO: when you cancel on password prompt, it goes through, probably shouldn't have that happen
             var result = prompt("Add this class to the planner?\r\n" + extractClassName(selectedClass) + " " + selectedClass.class_section + "\r\nIf so, optionally enter a Zoom link:", "https://ucla.zoom.us/j/");
             if (result != null) {
               var password;
@@ -88,12 +89,14 @@ function addClass(obj) {
 
               delete selectedClass.anchor_tags;
               delete selectedClass.info_tooltip_data;
+              delete selectedClass.meet_location_tooltip;
 
               // TODO: sendmessage seems to break pretty often. I think there are fixes out there?
               chrome.runtime.sendMessage({
                 toAdd: {
                   classInfo: newres.d.svcRes.ResultTiers[0],
                   url: result,
+                  zoomerID: randomID(),
                   password: password
                 },
                 type: "addClass"
@@ -159,6 +162,7 @@ function addPersonal(obj) {
       toAdd: {
         entryInfo: personalObject,
         url: result,
+        zoomerID: randomID(),
         password: password
       },
       type: "addPersonal"

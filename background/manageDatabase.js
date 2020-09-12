@@ -13,6 +13,7 @@ function activateListeners() {
           function (data) {
             console.log(data.classes);
             addClass(data.classes, request.toAdd); //storing the storage value in a variable and passing to update function
+            createClassAlarm(request.toAdd);
           }
         );
       } else if (request.type === "addPersonal") {
@@ -101,6 +102,7 @@ function activateListeners() {
 // --------------------------------------------------
 // -- helper functions for adding or editing items in the class or personal entry arrays
 // --------------------------------------------------
+
 function addClass(array, toAdd) {
   array.push(toAdd);
   //then call the set to update with modified value
