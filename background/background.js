@@ -114,19 +114,29 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
 
 /* Respond to the user's clicking one of the buttons */
 chrome.notifications.onButtonClicked.addListener(function (notifId, btnIdx) {
-  chrome.storage.sync.get('classes', function (result) {
-    var currentClass = findElement(result.classes, 'zoomerID', notifId.replace(/ .*/, ''))
-    if (btnIdx === 0) {
-      console.log(currentClass.url)
-      // window.open(currentClass['url']);
-      chrome.tabs.create({
-        url: currentClass.url
-      }, function (tab) {
-        console.log(tab)
-      })
-    } else if (btnIdx === 1) {
-      saySorry()
-    }
+  chrome.storage.sync.get('classes', function (result1) {
+    chrome.storage.sync.get('personal', function (result2) {
+      var currentClass = findElement(result1.classes, 'zoomerID', notifId.replace(/ .*/, ''));
+      var currentPersonal = findElement(result2.personal, 'zoomerID', notifId.replace(/ .*/, ''))
+      if (btnIdx === 0) {
+        // window.open(currentClass['url']);
+        if (currentClass) {
+          chrome.tabs.create({
+            url: currentClass.url
+          }, function (tab) {
+            console.log(tab)
+          })
+        } else if (currentPersonal) {
+          chrome.tabs.create({
+            url: currentPersonal.url
+          }, function (tab) {
+            console.log(tab)
+          })
+        }
+      } else if (btnIdx === 1) {
+        saySorry()
+      }
+    })
   })
 })
 
@@ -145,4 +155,6 @@ chrome.notifications.onClosed.addListener(function () {
 
 /* Handle the user's rejection
  * (simple ignore if you just want to hide the notification) */
-function saySorry() {}
+function saySorry() {
+  console.log("why are you skipping class")
+}

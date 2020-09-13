@@ -14,6 +14,7 @@ function logAlarms() {
 
 // read stored options and set checkboxes to proper values
 function initializeOptions() {
+  // restore options to what user previous set
   chrome.storage.sync.get({
       alarms: []
     },
@@ -21,6 +22,8 @@ function initializeOptions() {
       $('input[name=alarms]').prop('checked', data.alarms);
     }
   );
+
+
 }
 (function () {
   initializeOptions();

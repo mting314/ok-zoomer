@@ -56,7 +56,7 @@ function editPersonal(editedRow) {
 }
 
 function deleteClass(deletedRow) {
-  var classIndex = parseInt(deletedRow.find("td#classTableIndex").text()) - 1;
+  var classZoomerID = parseInt(deletedRow.attr('id'));
 
   // chrome.runtime.sendMessage({
   //   index: classIndex,
@@ -67,7 +67,7 @@ function deleteClass(deletedRow) {
   // });
 
   var msg = {
-    index: classIndex,
+    zoomerID: classZoomerID,
     type: "deleteClass"
   }
   console.log("sending message:", msg);
@@ -76,7 +76,7 @@ function deleteClass(deletedRow) {
 }
 
 function deletePersonal(deletedRow) {
-  var personalIndex = parseInt(deletedRow.find("td#personalTableIndex").text()) - 1;
+  var personalZoomerID = parseInt(deletedRow.attr('id'));
   // chrome.runtime.sendMessage({
   //   index: personalIndex,
   //   type: "deletePersonal",
@@ -86,7 +86,7 @@ function deletePersonal(deletedRow) {
   // });
 
   var msg = {
-    index: personalIndex,
+    zoomerID: personalZoomerID,
     type: "deletePersonal",
   }
   console.log("sending message:", msg);
@@ -165,7 +165,7 @@ function readToTables() {
 
       for (const [index, classObject] of result.classes.entries()) {
         console.log(classObject.classInfo);
-        var row = $('<tr>').append(`<td id="classTableIndex">${(index+1).toString()}</td>
+        var row = $(`<tr id="${(classObject.zoomerID).toString()}">`).append(`<td id="classTableIndex">${(index+1).toString()}</td>
       <td id="className">${extractClassName(classObject)}</td>
       <td id="classSection">${classObject.classInfo.class_section}</td>
       <td id="classMeetDays">${classObject.classInfo.meet_days}</td>
@@ -185,7 +185,7 @@ function readToTables() {
 
       for (const [index, personalObject] of result.personal.entries()) {
         console.log(personalObject)
-        var row = $('<tr>').append(`<td id="personalTableIndex">${(index+1).toString()}</td>
+        var row = $(`<tr id="${(personalObject.zoomerID).toString()}">`).append(`<td id="personalTableIndex">${(index+1).toString()}</td>
       <td id="personalName">${personalObject.entryInfo.name}</td>
       <td id="personalMeetDays">${personalObject.entryInfo.days}</td>
       <td id="personalMeetTime">${removeTags(personalObject.entryInfo.time)}</td>

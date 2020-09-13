@@ -13,11 +13,11 @@ function createSingleClassAlarm(classObject, classDayChar) {
     var target = new Date(timeToRing)
 
     target.setHours(classHour, classMinute, 0, 0)
-    if (dayDifference == 0) {
-      if (now.getTime() - target.getTime() > result.leeway * 60 * 1000) {
-        target.setDate(target.getDate() + 7)
-      }
-    }
+    // if (dayDifference == 0) {
+    //   if (now.getTime() - target.getTime() > result.leeway * 60 * 1000) {
+    //     target.setDate(target.getDate() + 7)
+    //   }
+    // }
 
     var start_time_matches = classObject.classInfo.class_strt_dt.match(/\((.*?)\)/);
     var end_time_matches = classObject.classInfo.class_last_dt.match(/\((.*?)\)/);
@@ -35,9 +35,9 @@ function createSingleClassAlarm(classObject, classDayChar) {
     }
 
     // fudge data to test alarms
-    var timeObject = new Date;
-    target = new Date(timeObject.getTime() + 10000);
-    end_time.setTime(target.getTime() + 30 * 24 * 60 * 60 * 1000);
+    // var timeObject = new Date;
+    // target = new Date(timeObject.getTime() + 10000);
+    // end_time.setTime(target.getTime() + 30 * 24 * 60 * 60 * 1000);
 
     while (start_time < target && target < end_time) {
       console.log(classObject.zoomerID + " " + target);
@@ -56,6 +56,7 @@ async function createClassAlarm(classObject) {
 }
 
 function createSinglePersonalAlarm(personalEntry, personalDayChar) {
+  console.log("creating alarms for", personalEntry.entryInfo.name, personalDayChar)
   chrome.storage.sync.get('leeway', function (result) {
     var now = new Date()
     var personalStartTime = personalEntry.entryInfo.time.split('-')[0];
@@ -74,7 +75,7 @@ function createSinglePersonalAlarm(personalEntry, personalDayChar) {
     var timeToRing = now.getTime() + dayDifference * 24 * 60 * 60000
     var target = new Date(timeToRing)
 
-    // target.setHours(personalHour, personalMinute, 0, 0)
+    target.setHours(personalHour, personalMinute, 0, 0)
     // if (dayDifference == 0) {
     //   if (now.getTime() - target.getTime() > result.leeway * 60 * 1000) {
     //     target.setDate(target.getDate() + 7)
@@ -82,15 +83,15 @@ function createSinglePersonalAlarm(personalEntry, personalDayChar) {
     // }
 
     // TODO: find way to get when term ends, and end personal entries then
-    start_time = new Date();
     end_time = new Date();
     end_time.setDate(end_time.getDate() + 7 * 12); // make class artificially end in 12 weeks
 
-    // fudge data to test alarms
-    var timeObject = new Date();
-    target = new Date(timeObject.getTime() + 10000);
+    // // fudge data to test alarms
+    // var timeObject = new Date();
+    // target = new Date(timeObject.getTime() + 10000);
+    console.log([target, end_time].join(" | "));
 
-    while (start_time < target && target < end_time) {
+    while (target < end_time) {
       console.log(personalEntry.zoomerID + " " + target);
       chrome.alarms.create(personalEntry.zoomerID + " " + target, {
         when: target.getTime()
@@ -104,4 +105,18 @@ async function createPersonalAlarm(personalEntry) {
   for (var i = 0; i < personalEntry.entryInfo.days.length; i++) {
     createSinglePersonalAlarm(personalEntry, personalEntry.entryInfo.days.charAt(i));
   }
+}
+
+function deleteAlarm(zoomerID) {
+  chrome.alarms.getAll(function (alarms) {
+    for (var i = 0; i < alarms.length; i++) {
+      if (alarms[i].name.includes(zoomerID)) {
+        chrome.alarms.clear(alarms[i].name, function (wasCleared) {
+          if (wasCleared) {
+            console.log("an alarm was deleted")
+          }
+        });
+      }
+    }
+  })
 }

@@ -81,6 +81,7 @@ In decreasing order of priority:
 2. From the class planner adding a personal entry, figure out when that quarter/term begins and ends, so that alarms can be created for entries in the right time interval.
 3. If you create two personal entries with the same name, but different Zoom links, things will probably break. In particular, when turning the corresponding planner boxes into links, the program won't know which link to use. We I don't want to force people to name their entries to bend to Ok, Zoomer, so is there a way to maybe use the planner box's position to infer timing differences?
 4. If a class and personal entry (like if a professor uses the same Zoom link for lecture and office hours), the displayed info on a Zoom pre-lobby will display the class info over the personal entry. I could display both, but maybe another solution is to use URL parameters to tell if I joined the Zoom expecting to join the class vs personal entry.
+5. Finish leeway at some point?
 6. Way to add classes not in plan, just with a class ID number?
 7. Some way to export and import your classes and/or personal entries to CSV format.
 
