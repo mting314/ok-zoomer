@@ -387,10 +387,10 @@ class BSTable {
     _this.table.find('tbody tr').each(function () {
       // force edits to complete if in progress
       if (_this.currentlyEditingRow($(this))) {
-        $(this).find('#bAcep').click(); // Force Accept Edit
+        $(this).find('#bAcep').trigger("click"); // Force Accept Edit
       }
       if (_this.currentlyDeletingRow($(this))) {
-        $(this).find("#bDeny").click(); // Force Deny Deletion
+        $(this).find("#bDeny").trigger("click"); // Force Deny Deletion
       }
       var $cols = $(this).find('td'); // read columns
       rowValues = '';
