@@ -1,6 +1,26 @@
 function createSingleClassAlarm(classObject, classDayChar) {
   chrome.storage.sync.get('leeway', function (result) {
-    var now = new Date()
+    // read in start time and end time
+    var start_time_matches = classObject.classInfo.class_strt_dt.match(/\((.*?)\)/);
+    var end_time_matches = classObject.classInfo.class_last_dt.match(/\((.*?)\)/);
+
+    var start_time, end_time;
+    if (start_time_matches && end_time_matches) {
+      start_time = new Date(parseInt(start_time_matches[1]));
+      end_time = new Date(parseInt(end_time_matches[1]));
+    } else {
+      start_time = new Date();
+      end_time = new Date();
+      end_time.setDate(end_time.getDate() + 7 * 12); // make class artificially end in 12 weeks
+    }
+
+    // since classes have a defined start time, and we could be adding a class after the quarter starts,
+    // we have to start creating alarms from the LATER of right now, and the day classes start
+    // if we start just right now, and its before the quarter starts, start_time < target is not satisfied
+    // if we start then, but we're in Week 5, we'll get spammed 15 alarms from alarms being created for
+    // week 1,2,3 etc.
+    var dates =  [new Date(), start_time]
+    var now = new Date(Math.max.apply(null,dates));
     var classTime = classObject.classInfo.meet_items[0].meet_strt_tm.split(':')
     var classHour = parseInt(classTime[0])
     var classMinute = parseInt(classTime[1])
@@ -19,26 +39,13 @@ function createSingleClassAlarm(classObject, classDayChar) {
     //   }
     // }
 
-    var start_time_matches = classObject.classInfo.class_strt_dt.match(/\((.*?)\)/);
-    var end_time_matches = classObject.classInfo.class_last_dt.match(/\((.*?)\)/);
-    console.log(start_time_matches[1], end_time_matches[1]);
 
-    var start_time, end_time;
-    if (start_time_matches && end_time_matches) {
-      start_time = new Date(parseInt(start_time_matches[1]));
-      end_time = new Date(parseInt(end_time_matches[1]));
-      console.log([start_time, target, end_time].join(" | "));
-    } else {
-      start_time = new Date();
-      end_time = new Date();
-      end_time.setDate(end_time.getDate() + 7 * 12); // make class artificially end in 12 weeks
-    }
 
     // fudge data to test alarms
     // var timeObject = new Date;
     // target = new Date(timeObject.getTime() + 10000);
     // end_time.setTime(target.getTime() + 30 * 24 * 60 * 60 * 1000);
-
+    console.log([start_time, target, end_time].join(" | "));
     while (start_time < target && target < end_time) {
       console.log(classObject.zoomerID + " " + target);
       chrome.alarms.create(classObject.zoomerID + " " + target, {

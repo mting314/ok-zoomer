@@ -70,18 +70,18 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
           console.log(currentClass);
           chrome.notifications.create(alarm.name, {
             type: 'basic',
-            iconUrl: '../images/sign_toontown_central.jpg',
+            iconUrl: '../images/get_started128.png',
             title: extractClassName(currentClass),
             message: 'You have a class',
             eventTime: alarm.scheduledTime,
             buttons: [{
               title: 'Yes, get me there',
-              iconUrl: '../images/sign_toontown_central.jpg'
+              iconUrl: '../images/icons8-zoom-240.png'
             }, {
               title: 'Get out of my way',
-              iconUrl: '../images/dollar_10.jpg'
+              iconUrl: '../images/Drake-meme.jpg'
             }],
-            requireInteraction: false,
+            requireInteraction: true,
             silent: false
           }, function (notificationId) {})
         }
@@ -92,18 +92,18 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
         if (currentEntry) {
           chrome.notifications.create(alarm.name, {
             type: 'basic',
-            iconUrl: '../images/sign_toontown_central.jpg',
+            iconUrl: '../images/get_started128.png',
             title: currentEntry.entryInfo.name,
             message: 'You have a Personal Entry event',
             eventTime: alarm.scheduledTime,
             buttons: [{
               title: 'Yes, get me there',
-              iconUrl: '../images/sign_toontown_central.jpg'
+              iconUrl: '../images/icons8-zoom-240.png'
             }, {
               title: 'Get out of my way',
-              iconUrl: '../images/dollar_10.jpg'
+              iconUrl: '../images/Drake-meme.jpg'
             }],
-            requireInteraction: false,
+            requireInteraction: true,
             silent: false
           }, function (notificationId) {})
         }

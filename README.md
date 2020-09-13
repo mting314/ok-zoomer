@@ -6,6 +6,9 @@ Now that UCLA has become the University of Zoom, Los Angeles (UZLA), I personall
 
 I'll also admit that sometimes because all I need to join a class is hit the Zoom link, I'll be like "ah, it's 12:55 and class isn't till 1. I've got some time". But then I'll find a [really interesting video](https://www.youtube.com/watch?v=JAhVxGMXhZk) and all of a sudden because I'm too lazy to set up a calendar reminder.
 
+## Installation
+Please refer to [this installation PDF](InstallationInstructions.pdf), it's mainly images, and I think it would clutter up this readme.
+
 ## Main Functionality
 There are three main functions this extension has:
 1. The Class Planner: This extension turns planner boxes into links, as well as highlighting classes that are currently in progress so it's easily to join a the right class in a single click.

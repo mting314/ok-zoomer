@@ -77,7 +77,6 @@ function addClass(port, obj) {
           dataType: "json",
           success: function (newres) {
             selectedClass = newres.d.svcRes.ResultTiers[0];
-            // TODO: when you cancel on password prompt, it goes through, probably shouldn't have that happen
             var result = prompt("Add this class to the planner?\r\n" + extractClassName(selectedClass) + " " + selectedClass.class_section + "\r\nIf so, optionally enter a Zoom link:", "https://ucla.zoom.us/j/");
             if (result != null) {
               var password;
@@ -86,34 +85,35 @@ function addClass(port, obj) {
               } else {
                 password = prompt("What is the password for the class: " + extractClassName(selectedClass) + " " + selectedClass.class_section + "\r\nat the link " + result);
               }
+              if (password != null) {
+                delete selectedClass.anchor_tags;
+                delete selectedClass.info_tooltip_data;
+                delete selectedClass.meet_location_tooltip;
 
-              delete selectedClass.anchor_tags;
-              delete selectedClass.info_tooltip_data;
-              delete selectedClass.meet_location_tooltip;
-
-              // chrome.runtime.sendMessage({
-              //   toAdd: {
-              //     classInfo: newres.d.svcRes.ResultTiers[0],
-              //     url: result,
-              //     zoomerID: randomID(),
-              //     password: password
-              //   },
-              //   type: "addClass"
-              // }, function (response) {
-              //   console.log(response.farewell);
-              //   location.reload();
-              // });
-              var msg = {
-                toAdd: {
-                  classInfo: newres.d.svcRes.ResultTiers[0],
-                  url: result,
-                  zoomerID: randomID(),
-                  password: password,
-                },
-                type: "addClass"
+                // chrome.runtime.sendMessage({
+                //   toAdd: {
+                //     classInfo: newres.d.svcRes.ResultTiers[0],
+                //     url: result,
+                //     zoomerID: randomID(),
+                //     password: password
+                //   },
+                //   type: "addClass"
+                // }, function (response) {
+                //   console.log(response.farewell);
+                //   location.reload();
+                // });
+                var msg = {
+                  toAdd: {
+                    classInfo: newres.d.svcRes.ResultTiers[0],
+                    url: result,
+                    zoomerID: randomID(),
+                    password: password,
+                  },
+                  type: "addClass"
+                }
+                port.postMessage(msg);
+                console.log("sending message:", msg);
               }
-              port.postMessage(msg);
-              console.log("sending message:", msg);
             }
           }
         });
@@ -168,29 +168,31 @@ function addPersonal(port, obj) {
     } else {
       password = prompt("What is the password for the Personal Entry: " + personalObject.name + "\r\nat the link " + result);
     }
-    // chrome.runtime.sendMessage({
-    //   toAdd: {
-    //     entryInfo: personalObject,
-    //     url: result,
-    //     zoomerID: randomID(),
-    //     password: password
-    //   },
-    //   type: "addPersonal"
-    // }, function (response) {
-    //   console.log(response.farewell);
-    //   location.reload();
-    // });
-    var msg = {
-      toAdd: {
-        entryInfo: personalObject,
-        url: result,
-        zoomerID: randomID(),
-        password: password
-      },
-      type: "addPersonal"
+    if (password != null) {
+      // chrome.runtime.sendMessage({
+      //   toAdd: {
+      //     entryInfo: personalObject,
+      //     url: result,
+      //     zoomerID: randomID(),
+      //     password: password
+      //   },
+      //   type: "addPersonal"
+      // }, function (response) {
+      //   console.log(response.farewell);
+      //   location.reload();
+      // });
+      var msg = {
+        toAdd: {
+          entryInfo: personalObject,
+          url: result,
+          zoomerID: randomID(),
+          password: password
+        },
+        type: "addPersonal"
+      }
+      port.postMessage(msg);
+      console.log("sending message:", msg);
     }
-    port.postMessage(msg);
-    console.log("sending message:", msg);
   }
 }
 
