@@ -25,6 +25,7 @@ function activateListeners() {
           function (data) {
             console.log(data.personal);
             addPersonal(data.personal, msg.toAdd);
+            createPersonalAlarm(msg.toAdd);
             port.postMessage({
               type: "reload"
             });
