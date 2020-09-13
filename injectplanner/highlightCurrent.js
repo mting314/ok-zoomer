@@ -19,11 +19,11 @@ function classInProgress(classDiv, targetHeight) {
 
 
     var now = new Date();
-    now.setHours(11);
-    now.setDate(now.getDate()-2);
+    // now.setHours(11);
+    // now.setDate(now.getDate()-2);
     if (8 <= now.getHours() && now.getHours() < 8 + hourCount) {
       var currentDay = now.getDay();
-
+      // TODO: I think in some cases, planner can display weekend columns. How to handle?
       if (currentDay != 6 && currentDay != 0) {
         var eightAM = new Date(now.getTime());
         eightAM.setHours(8, 0, 0, 0);
