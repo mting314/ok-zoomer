@@ -1,4 +1,5 @@
 function activateListeners() {
+  console.log("activating listeners");
   chrome.runtime.onConnect.addListener(function (port) {
     // console.assert(port.name == "knockknock");
     port.onMessage.addListener(function (msg) {
@@ -31,60 +32,94 @@ function activateListeners() {
         );
         // listen for deletion requests
       } else if (msg.type === "deleteClass") {
-        chrome.storage.sync.get({
-            classes: []
-          },
-          function (data) {
-            console.log(data.classes);
-            deleteClass(data.classes, msg.index); //storing the storage value in a variable and passing to update function
-            port.postMessage({
-              type: "reload"
-            });
-          }
-        );
+        try {
+          chrome.storage.sync.get({
+              classes: []
+            },
+            function (data) {
+
+              console.log(data.classes);
+              var oldClass = deleteClass(data.classes, msg.index); //storing the storage value in a variable and passing to update function
+              port.postMessage({
+                oldClass: oldClass,
+                type: "successDeleteClass"
+              });
+
+            }
+          );
+        } catch (err) {
+          port.postMessage({
+            type: "failureDeleteClass",
+            error: err.toString()
+          });
+        }
       } else if (msg.type === "deletePersonal") {
-        chrome.storage.sync.get({
-            personal: []
-          },
-          function (data) {
-            console.log(data.personal);
-            // nothing personnel, kiddo
-            deletePersonal(data.personal, msg.index);
-            port.postMessage({
-              type: "reload"
-            });
-          }
-        );
+        try {
+          chrome.storage.sync.get({
+              personal: []
+            },
+            function (data) {
+              console.log(data.personal);
+              // nothing personnel, kiddo
+              var oldPersonal = deletePersonal(data.personal, msg.index);
+              port.postMessage({
+                oldPersonal: oldPersonal,
+                type: "successDeletePersonal"
+              });
+            }
+          );
+        } catch (err) {
+          port.postMessage({
+            type: "failureDeletePersonal",
+            error: err.toString()
+          });
+        }
         // listen for edit requests
       } else if (msg.type === "editClass") {
-        chrome.storage.sync.get({
-            classes: []
-          },
-          function (data) {
-            console.log(data.classes);
-            editClass(data.classes, msg.index, msg.newObject);
-            port.postMessage({
-              type: "reload"
-            });
-          }
-        );
+        try {
+          chrome.storage.sync.get({
+              classes: []
+            },
+            function (data) {
+              console.log(data.classes);
+              editClass(data.classes, msg.index, msg.newObject);
+              port.postMessage({
+                type: "successEditClass"
+              });
+            }
+          );
+        } catch (err) {
+          port.postMessage({
+            type: "failureEditClass",
+            error: err.toString()
+          });
+        }
       } else if (msg.type === "editPersonal") {
-        chrome.storage.sync.get({
-            personal: []
-          },
-          function (data) {
-            console.log(data.personal);
-            editPersonal(data.personal, msg.index, msg.newObject);
-            port.postMessage({
-              type: "reload"
-            });
-          }
-        );
+        try {
+          chrome.storage.sync.get({
+              personal: []
+            },
+            function (data) {
+              console.log(data.personal);
+              editPersonal(data.personal, msg.index, msg.newObject);
+              port.postMessage({
+                type: "successEditPersonal"
+              });
+            }
+          );
+        } catch (err) {
+          port.postMessage({
+            type: "failureEditPersonal",
+            error: err.toString()
+          });
+        }
       }
 
     });
   });
 }
+
+
 
 // --------------------------------------------------
 // -- helper functions for adding or editing items in the class or personal entry arrays
@@ -120,6 +155,7 @@ function deleteClass(array, index) {
   }, function () {
     console.log(`removed ${JSON.stringify(oldClass)} from classes list`);
   });
+  return oldClass;
 }
 
 function addPersonal(array, toAdd) {
@@ -152,4 +188,5 @@ function deletePersonal(array, index) {
   }, function () {
     console.log(`removed ${oldPersonal} from personal entries list`);
   });
+  return oldPersonal;
 }

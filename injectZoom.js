@@ -5,7 +5,7 @@ function copyTextToClipboard(text) {
 	chrome.runtime.sendMessage({
 		type: 'copy',
 		text: text
-});
+	});
 }
 
 function createClassText(currentClass) {
@@ -55,7 +55,7 @@ function createPasswordText(classPassword) {
 
 		password.append(passwordText[0], node2, passwordText[2])
 
-		node2.click(function() {
+		node2.click(function () {
 			console.log("copying to clipboard:", classPassword)
 			navigator.clipboard.writeText(classPassword);
 		});

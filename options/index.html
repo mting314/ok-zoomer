@@ -23,7 +23,7 @@
 
 	<!-- JQuery library -->
 	<script src="../jquery-3.4.1.min.js"></script>
-
+	<script src="js/bootstrap.min.js"></script>
 	<script src="../utils.js"></script>
 	<style>
 		body {
@@ -36,8 +36,11 @@
 
 
 	<main role="main" class="container" style="margin-top:150px;">
+		<div class="alert" id="change-alert">
+			<button type="button" class="close" data-dismiss="alert">x</button>
+		</div>
 		<div id="options">
-			<h1>Oof</h1>
+			<h1>Turn Alarms On or Off?</h1>
 			<div id="option1">
 				<label class="switch">
 					<input type="checkbox" name="alarms">
@@ -90,5 +93,29 @@
 	<script src="js/readClasses.js"></script>
 	<script src="js/checkbox.js"></script>
 </body>
+
+<!-- Footer -->
+<footer class="page-footer font-small unique-color-dark pt-4">
+
+	<!-- Footer Elements -->
+	<div class="container">
+
+		<!-- Call to action -->
+		<ul class="list-unstyled list-inline text-center py-2">
+			<li class="list-inline-item">
+				<a href="https://www.reddit.com/message/compose/?to=coolguy5530" target="_blank" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Please tell me if something is broken</a>			</li>
+		</ul>
+		<!-- Call to action -->
+
+	</div>
+	<!-- Footer Elements -->
+
+	<!-- Copyright -->
+	<div class="footer-copyright text-center py-3">by u/coolguy5530
+	</div>
+	<!-- Copyright -->
+
+</footer>
+<!-- Footer -->
 
 </html>

@@ -27,7 +27,7 @@ This is just asking for the link you want to associate with this class/personal 
 ![password prompt](readme-images/SecondPrompt.PNG)
 4. After clicking OK again, the page should refresh, and that plus button you click should be replaced with a little Zoom Icon.  
 ![add class result](readme-images/AddClassResult.PNG)
-And clicking that icon will bring you straight to that class's corresponding Zoom link!
+And clicking that little Zoom icon will bring you straight to that class's corresponding Zoom link!
 
 ### Linked Planner Boxes
 After adding a certain class to Ok, Zoomer, you might see something change in your class planner grid:
@@ -66,16 +66,18 @@ If you join a ucla.zoom.us lobby whose URL matches any URL stored in Ok, Zoomer,
 ![injected zoom](readme-images/InjectedZoom.PNG) 
 Not only will this info be displayed for you, but as the text says, if that class has an associated password, it will immediately be copied to your clipboard upon arriving at that URL. The password text is also clickable, and clicking will copy the password again, just in case.
 
-## More interesting notes
-1. In the process of developing this extension, I discovered how to query some database UCLA has that contains LOTS of class information. I can't be the first person who has discovered this, but this is what it looks like. 
+## The UCLA Class Database
+In the process of developing this extension, I discovered how to query some database UCLA has that contains LOTS of class information. I can't be the first person who has discovered this, but this is what it looks like. 
 ![example class database](readme-images/Database.PNG)
-And all I needed to get this info was essentially to be logged into the class planner, and a class ID number (that 9 digit ID you can see as `srs_crs_no`). This is also how I can know precisely what day a class begins and ends. I'm honestly not sure, but I think there could be some fun and maybe even useful apps you could make.
+And all I needed to get this info was essentially to be logged into the class planner, and a class ID number (that 9 digit ID you can see as `srs_crs_no`). This is also how I can know precisely what day a class begins and ends. I'm honestly not sure, but I think there could be some fun and maybe even useful apps you could make. Just putting it out there.
 
-2. 
 
 ## Todo/Issues
 In decreasing order of priority:
-1. If you close Chrome, all of the `chrome.runtime.sendMessage` stuff breaks, rendering the extension basically unusable. I think that there is a fix [here](https://developer.chrome.com/extensions/messaging#connect), but gotta look into it.
+
+~~1. If you close Chrome, all of the `chrome.runtime.sendMessage` stuff breaks, rendering the extension basically unusable. I think that there is a fix [here](https://developer.chrome.com/extensions/messaging#connect), but gotta look into it.~~
+
+2. TIME ZONES
 2. From the class planner adding a personal entry, figure out when that quarter/term begins and ends, so that alarms can be created for entries in the right time interval.
 3. If you create two personal entries with the same name, but different Zoom links, things will probably break. In particular, when turning the corresponding planner boxes into links, the program won't know which link to use. We I don't want to force people to name their entries to bend to Ok, Zoomer, so is there a way to maybe use the planner box's position to infer timing differences?
 4. If a class and personal entry (like if a professor uses the same Zoom link for lecture and office hours), the displayed info on a Zoom pre-lobby will display the class info over the personal entry. I could display both, but maybe another solution is to use URL parameters to tell if I joined the Zoom expecting to join the class vs personal entry.

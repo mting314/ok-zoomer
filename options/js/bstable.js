@@ -25,6 +25,7 @@ class BSTable {
     var defaults = {
       editableColumns: null, // Index to editable columns. If null all td will be editable. Ex.: "1,2,3,4,5"
       $addButton: null, // Jquery object of "Add" button
+      emptyText: null,
       onEdit: function () {}, // Called after edition
       onBeforeDelete: function () {}, // Called before deletion
       onDelete: function () {}, // Called after deletion
@@ -73,7 +74,7 @@ class BSTable {
    */
   init() {
     this.table.find('thead tr').append('<th name="bstable-actions">' + this.options.advanced.columnLabel + '</th>'); // Append column to header
-    this.table.find('tbody tr').append(this.actionsColumnHTML);
+    this.table.find('tbody tr:not(.na-row)').append(this.actionsColumnHTML);
 
     this._addOnClickEventsToActions(); // Add onclick events to each action button in all rows
 
@@ -87,8 +88,9 @@ class BSTable {
     }
     //Process "editableColumns" parameter. Sets the columns that will be editable
     if (this.options.editableColumns != null) {
-      //Extract felds
-      this.options.editableColumns = this.options.editableColumns.split(',');
+      //Extract fields if editable columns isn't already an array
+      if (typeof this.options.editableColumns != "object")
+        this.options.editableColumns = this.options.editableColumns.split(',');
     }
   }
 
@@ -110,6 +112,21 @@ class BSTable {
   refresh() {
     this.destroy();
     this.init();
+  }
+
+  // empty chairs at
+  emptyTables() {
+    if (this.table.find("tbody > tr").length == 0) {
+      if (this.options.emptyText != null) {
+        var colCount = this.table.find("tr").children().length
+        this.table.append(`<tr class="na-row"><td colspan="${colCount}">${this.options.emptyText}</td></tr>`)
+      }
+    }
+  }
+
+  restart() {
+    this.table.find("tbody").empty();
+    this.destroy();
   }
 
   // --------------------------------------------------

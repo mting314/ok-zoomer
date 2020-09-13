@@ -73,7 +73,6 @@ function deleteClass(deletedRow) {
   console.log("sending message:", msg);
 
   port.postMessage(msg);
-
 }
 
 function deletePersonal(deletedRow) {
@@ -98,12 +97,38 @@ function deletePersonal(deletedRow) {
 var port = chrome.runtime.connect({
   name: "knockknock"
 });
-// reload page after background listener executed port's command
 port.onMessage.addListener(function (msg) {
-  if (msg.type == "reload") {
-    location.reload();
+  var $alertBox = $("#change-alert")
+  // successful deletion
+  if (msg.type == "successDeleteClass") {
+    $alertBox.addClass("alert-success");
+    $alertBox.text(`${extractClassName(msg.oldClass)} was successfully removed from Ok, Zoomer.`)
+  } else if (msg.type == "successDeletePersonal") {
+    $alertBox.addClass("alert-success");
+    $alertBox.text(`${msg.oldPersonal.entryInfo.name} was successfully removed from Ok, Zoomer.`)
+
+    // failed deletion
+  } else if (msg.type == "failureDeleteClass") {
+    $alertBox.addClass("alert-danger");
+    $alertBox.text(`Error deleting class: ${msg.error}`)
+  } else if (msg.type == "failureDeletePersonal") {
+    $alertBox.addClass("alert-danger");
+    $alertBox.text(`Error deleting personal entry: ${msg.error}`)
+
+    // failed edit
+  } else if (msg.type == "failureEditClass") {
+    $alertBox.addClass("alert-danger");
+    $alertBox.text(`Error editing class: ${msg.error}`)
+  } else if (msg.type == "failureEditPersonal") {
+    $alertBox.addClass("alert-danger");
+    $alertBox.text(`Error editing personal entry: ${msg.error}`)
   }
-})
+  $alertBox.fadeTo(5000, 500).slideUp(500, function () {
+    $alertBox.slideUp(500);
+  });
+
+  readToTables();
+});
 
 var classTable = new BSTable("Class Zooms", "table1", {
   editableColumns: "5,6",
@@ -113,70 +138,8 @@ var classTable = new BSTable("Class Zooms", "table1", {
   onBeforeDelete: function (deletedRow) {
     console.log(deletedRow);
     deleteClass(deletedRow);
-  }
-});
-
-chrome.storage.sync.get('classes', function (result) {
-  if (result.classes != undefined && result.classes.length != 0) {
-
-    for (const [index, classObject] of result.classes.entries()) {
-      console.log(classObject.classInfo);
-      var row = $('<tr>').append(`<td id="classTableIndex">${(index+1).toString()}</td>
-      <td id="className">${extractClassName(classObject)}</td>
-      <td id="classSection">${classObject.classInfo.class_section}</td>
-      <td id="classMeetDays">${classObject.classInfo.meet_days}</td>
-      <td id="classMeetTime">${removeTags(classObject.classInfo.meet_times)}</td>
-      <td id="classURL">${classObject.url}</td>
-      <td id="classPassword">${classObject.password}</td>`);
-      classTable.table.append(row);
-
-
-      // var row = document.createElement('tr');
-
-      // var rowIndex = document.createElement('th');
-      // rowIndex.appendChild(document.createTextNode(index.toString()));
-      // row.appendChild(rowIndex);
-
-      // var className = row.insertCell();
-      // className.appendChild(document.createTextNode(extractClassName(classObject)));
-
-      // var section = row.insertCell();
-      // section.appendChild(document.createTextNode(classObject.classInfo.class_section));
-
-      // var days = row.insertCell();
-      // days.appendChild(document.createTextNode(classObject.classInfo.meet_days));
-
-      // var time = row.insertCell();
-      // time.appendChild(document.createTextNode(removeTags(classObject.classInfo.meet_times)));
-
-      // var zoomLink = row.insertCell();
-      // zoomLink.appendChild(document.createTextNode(classObject.url));
-
-      // var password = row.insertCell();
-      // var passwordText;
-      // if (classObject.password) {
-      //   passwordText = document.createTextNode(classObject.password)
-      // } else {
-      //   // TODO: is there a better way of doing this? Causes problems right now with editing table
-      //   // idea: instead, with a later script come in and replace all empty cells with red "N/A"?
-      //   passwordText = document.createElement("span")
-      //   passwordText.className = "no-password";
-      //   passwordText.appendChild(document.createTextNode("No Password"))
-      // }
-      // password.appendChild(passwordText);
-
-      // classTable.table.append(row);
-    }
-    classTable.init();
-  } else {
-    var colCount = classTable.table[0].rows[0].cells.length
-
-    var row = document.createElement('tr');
-    var cell = row.insertCell();
-    cell.appendChild(document.createTextNode("No classes have been added to Ok, Zoomer yet."));
-    cell.colSpan = colCount.toString();
-    classTable.table.append(row);
-  }
+  },
+  emptyText: "No Classes have been added to Ok, Zoomer yet."
 });
 
 var personalTable = new BSTable("Personal Entries", "table4", {
@@ -187,62 +150,59 @@ var personalTable = new BSTable("Personal Entries", "table4", {
   onBeforeDelete: function (deletedRow) {
     console.log($(deletedRow[0]));
     deletePersonal(deletedRow);
-  }
+  },
+  emptyText: "No Personal Entries have been added to Ok, Zoomer yet."
 });
-chrome.storage.sync.get('personal', function (result) {
-  if (result.personal != undefined && result.personal.length != 0) {
 
-    for (const [index, personalObject] of result.personal.entries()) {
-      console.log(personalObject)
-      var row = $('<tr>').append(`<td id="personalTableIndex">${(index+1).toString()}</td>
+readToTables();
+
+function readToTables() {
+  // restart both tables to flush out
+  classTable.restart();
+  personalTable.restart();
+  chrome.storage.sync.get('classes', function (result) {
+    if (result.classes != undefined) {
+
+      for (const [index, classObject] of result.classes.entries()) {
+        console.log(classObject.classInfo);
+        var row = $('<tr>').append(`<td id="classTableIndex">${(index+1).toString()}</td>
+      <td id="className">${extractClassName(classObject)}</td>
+      <td id="classSection">${classObject.classInfo.class_section}</td>
+      <td id="classMeetDays">${classObject.classInfo.meet_days}</td>
+      <td id="classMeetTime">${removeTags(classObject.classInfo.meet_times)}</td>
+      <td id="classURL">${classObject.url}</td>
+      <td id="classPassword">${classObject.password}</td>`);
+        classTable.table.append(row);
+      }
+    }
+    classTable.init();
+    classTable.emptyTables();
+
+  });
+
+  chrome.storage.sync.get('personal', function (result) {
+    if (result.personal != undefined) {
+
+      for (const [index, personalObject] of result.personal.entries()) {
+        console.log(personalObject)
+        var row = $('<tr>').append(`<td id="personalTableIndex">${(index+1).toString()}</td>
       <td id="personalName">${personalObject.entryInfo.name}</td>
       <td id="personalMeetDays">${personalObject.entryInfo.days}</td>
       <td id="personalMeetTime">${removeTags(personalObject.entryInfo.time)}</td>
       <td id="personalURL">${personalObject.url}</td>
       <td id="personalPassword">${personalObject.password}</td>`);
-      personalTable.table.append(row);
+        personalTable.table.append(row);
 
-      // var row = document.createElement('tr');
-
-      // var rowIndex = document.createElement('th');
-      // rowIndex.appendChild(document.createTextNode(index.toString()));
-      // row.appendChild(rowIndex);
-
-      // var personalName = row.insertCell();
-      // personalName.appendChild(document.createTextNode(personalObject.entryInfo.name));
-
-
-      // var days = row.insertCell();
-      // days.appendChild(document.createTextNode(personalObject.entryInfo.days));
-
-      // var time = row.insertCell();
-      // time.appendChild(document.createTextNode(removeTags(personalObject.entryInfo.time)));
-
-      // var zoomLink = row.insertCell();
-      // zoomLink.appendChild(document.createTextNode(personalObject.url));
-
-      // var password = row.insertCell();
-      // var passwordText;
-      // if (personalObject.password) {
-      //   passwordText = document.createTextNode(personalObject.password)
-      // } else {
-      //   passwordText = document.createElement("span")
-      //   passwordText.className = "no-password";
-      //   passwordText.appendChild(document.createTextNode("No Password"))
-      // }
-      // // password.appendChild(document.createTextNode(classObject.password ? classObject.password : "No Password"));
-      // password.appendChild(passwordText);
-
-      // personalTable.table.append(row);
+      }
     }
     personalTable.init();
-  } else {
-    var colCount = personalTable.table[0].rows[0].cells.length
+    personalTable.emptyTables();
 
-    var row = document.createElement('tr');
-    var cell = row.insertCell();
-    cell.appendChild(document.createTextNode("No Personal Entries have been added to Ok, Zoomer yet."));
-    cell.colSpan = colCount.toString();
-    personalTable.table.append(row);
-  }
+
+  });
+}
+
+$(document).ready(function () {
+  $("#change-alert").hide();
+
 });
