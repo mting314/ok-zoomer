@@ -8,8 +8,8 @@ function updateClipboard(newClip) {
 }
 
 function fillClasses(plannerBoxes) {
-	chrome.storage.sync.get("classes", function (result) {
-		result.classes.forEach(myclass => {
+	getAllClasses(function (classList) {
+		for (var i = 0, myclass; myclass = classList[i]; i++) {
 			for (let item of plannerBoxes) {
 
 				// don't overwrite if already has link
@@ -27,7 +27,7 @@ function fillClasses(plannerBoxes) {
 						// item.style.outlineOffset = "-3px";
 						link.href = myclass.url;
 						link.target = "_blank"
-						if (myclass.password) {
+						if (myclass.password != undefined) {
 							// link.className = "tooltip"
 							link.onclick = function () {
 								updateClipboard(myclass.password)
@@ -41,8 +41,7 @@ function fillClasses(plannerBoxes) {
 					}
 				}
 			}
-		});
-
+		};
 	});
 }
 

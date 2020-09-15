@@ -42,9 +42,9 @@ function createSingleClassAlarm(classObject, classDayChar) {
 
 
     // fudge data to test alarms
-    // var timeObject = new Date;
-    // target = new Date(timeObject.getTime() + 10000);
-    // end_time.setTime(target.getTime() + 30 * 24 * 60 * 60 * 1000);
+    var timeObject = new Date;
+    target = new Date(timeObject.getTime() + 10000);
+    end_time.setTime(target.getTime() + 30 * 24 * 60 * 60 * 1000);
     console.log([start_time, target, end_time].join(" | "));
     while (start_time < target && target < end_time) {
       console.log(classObject.zoomerID + " " + target);
@@ -83,11 +83,11 @@ function createSinglePersonalAlarm(personalEntry, personalDayChar) {
     var target = new Date(timeToRing)
 
     target.setHours(personalHour, personalMinute, 0, 0)
-    // if (dayDifference == 0) {
-    //   if (now.getTime() - target.getTime() > result.leeway * 60 * 1000) {
-    //     target.setDate(target.getDate() + 7)
-    //   }
-    // }
+    if (dayDifference == 0) {
+      if (now.getTime() - target.getTime() > 0) {
+        target.setDate(target.getDate() + 7)
+      }
+    }
 
     // TODO: find way to get when term ends, and end personal entries then
     end_time = new Date();

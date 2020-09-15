@@ -1,30 +1,33 @@
 function editClass(editedRow) {
-  chrome.storage.sync.get('classes', function (result) {
-    var classIndex = parseInt(editedRow.find("td#classTableIndex").text()) - 1;
+  var classZoomerID = parseInt(editedRow.attr('id'));
+  chrome.storage.sync.get(classZoomerID.toString(), function(foundClass) {
 
-    var classObject = result.classes[classIndex]
+    var classObject = foundClass[classZoomerID]
     classObject.url = editedRow.find("td#classURL").text()
     classObject.password = editedRow.find("td#classPassword").text()
 
-    // chrome.runtime.sendMessage({
-    //   newObject: classObject,
-    //   index: classIndex,
-    //   type: "editClass",
-    // }, function (response) {
-    //   console.log(response.farewell);
-    //   location.reload()
-    // });
-
+    console.log(classObject)
     var msg = {
       newObject: classObject,
-      index: classIndex,
+      zoomerID: classZoomerID,
       type: "editClass",
     }
     console.log("sending message:", msg);
-
+  
     port.postMessage(msg);
-
   });
+
+
+  // chrome.runtime.sendMessage({
+  //   newObject: classObject,
+  //   index: classIndex,
+  //   type: "editClass",
+  // }, function (response) {
+  //   console.log(response.farewell);
+  //   location.reload()
+  // });
+
+
 }
 
 function editPersonal(editedRow) {
@@ -101,6 +104,7 @@ port.onMessage.addListener(function (msg) {
   var $alertBox = $("#change-alert")
   // successful deletion
   if (msg.type == "successDeleteClass") {
+    console.log(msg);
     $alertBox.addClass("alert-success");
     $alertBox.text(`${extractClassName(msg.oldClass)} was successfully removed from Ok, Zoomer.`)
   } else if (msg.type == "successDeletePersonal") {
@@ -160,10 +164,11 @@ function readToTables() {
   // restart both tables to flush out
   classTable.restart();
   personalTable.restart();
-  chrome.storage.sync.get('classes', function (result) {
-    if (result.classes != undefined) {
+  getAllClasses(function (classList) {
+    console.log("asdfsd")
+    if (classList.length != 0) {
 
-      for (const [index, classObject] of result.classes.entries()) {
+      for (var index = 0, classObject; classObject = classList[index]; index++) {
         console.log(classObject.classInfo);
         var row = $(`<tr id="${(classObject.zoomerID).toString()}">`).append(`<td id="classTableIndex">${(index+1).toString()}</td>
       <td id="className">${extractClassName(classObject)}</td>

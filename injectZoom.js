@@ -66,12 +66,12 @@ function createPasswordText(classPassword) {
 (function () {
 	// TODO: what if same Zoom link for lecture class, and for OH personal entry?
 	// Maybe pass a URL parameter to differentiate?
-	chrome.storage.sync.get("classes", function (result1) {
-		chrome.storage.sync.get("personal", function (result2) {
+	getAllClasses(function (classList) {
+		chrome.storage.sync.get("personal", function (result) {
 
 			var currentURL = window.location.href.substring(0, window.location.href.indexOf('#'));
-			var currentClass = findElement(result1.classes, 'url', currentURL);
-			var currentPersonal = findElement(result2.personal, 'url', currentURL);
+			var currentClass = findElement(classList, 'url', currentURL);
+			var currentPersonal = findElement(result.personal, 'url', currentURL);
 
 			// only inject if we actually found a matching class or personal entry
 			if (currentClass || currentPersonal) {

@@ -7,11 +7,20 @@ function activateListeners() {
       // listen for addition requests
       if (msg.type === "addClass") {
         chrome.storage.sync.get({
-            classes: []
+            classIDs: []
           },
           function (data) {
-            console.log(data.classes);
-            addClass(data.classes, msg.toAdd); //storing the storage value in a variable and passing to update function
+            console.log(data.classIDs);
+
+            // this weird setup allows me to add each class as an individual object to the storage
+            // importantly, with the zoomerID as the key
+            var obj = {};
+            obj[msg.toAdd.zoomerID] = msg.toAdd;
+
+            chrome.storage.sync.set(obj, function () {
+              console.log(`added ${JSON.stringify(obj)} to class list`);
+            });
+            addClassID(data.classIDs, msg.toAdd.zoomerID); //storing the storage value in a variable and passing to update function
             createClassAlarm(msg.toAdd);
             port.postMessage({
               type: "reload"
@@ -34,16 +43,17 @@ function activateListeners() {
         // listen for deletion requests
       } else if (msg.type === "deleteClass") {
         chrome.storage.sync.get({
-            classes: []
+            classIDs: []
           },
           function (data) {
             try {
-              console.log(data.classes);
-              var oldClass = deleteClass(data.classes, msg.zoomerID); //storing the storage value in a variable and passing to update function
-              deleteAlarm(msg.zoomerID)
-              port.postMessage({
-                oldClass: oldClass,
-                type: "successDeleteClass"
+              console.log(data.classIDs);
+              deleteClass(data.classIDs, msg.zoomerID, function (oldClass) { //storing the storage value in a variable and passing to update function
+                deleteAlarm(msg.zoomerID)
+                port.postMessage({
+                  oldClass: oldClass,
+                  type: "successDeleteClass"
+                });
               });
             } catch (err) {
               port.postMessage({
@@ -51,9 +61,7 @@ function activateListeners() {
                 error: err.toString()
               });
             }
-          }
-        );
-
+          });
       } else if (msg.type === "deletePersonal") {
         chrome.storage.sync.get({
             personal: []
@@ -79,24 +87,17 @@ function activateListeners() {
 
         // listen for edit requests
       } else if (msg.type === "editClass") {
-        chrome.storage.sync.get({
-            classes: []
-          },
-          function (data) {
-            try {
-              console.log(data.classes);
-              editClass(data.classes, msg.index, msg.newObject);
-              port.postMessage({
-                type: "successEditClass"
-              });
-            } catch (err) {
-              port.postMessage({
-                type: "failureEditClass",
-                error: err.toString()
-              });
-            }
-          }
-        );
+        try {
+          editClass(msg.zoomerID, msg.newObject);
+          port.postMessage({
+            type: "successEditClass"
+          });
+        } catch (err) {
+          port.postMessage({
+            type: "failureEditClass",
+            error: err.toString()
+          });
+        }
 
       } else if (msg.type === "editPersonal") {
         chrome.storage.sync.get({
@@ -129,41 +130,54 @@ function activateListeners() {
 // -- helper functions for adding or editing items in the class or personal entry arrays
 // --------------------------------------------------
 
-function addClass(array, toAdd) {
+
+// TODO: create class array with IDs, rather than an array of the class objects themselves
+function addClassID(array, toAdd) {
   array.push(toAdd);
   //then call the set to update with modified value
   chrome.storage.sync.set({
-    classes: array
+    classIDs: array
   }, function () {
-    console.log("added to class list with new values");
+    console.log(`added ${toAdd} to class IDs`);
   });
 }
 
-function editClass(array, index, newObject) {
-  var oldClass = array[index];
-  array[index] = newObject;
+// zoomerID is a number
+function editClass(zoomerID, newObject) {
+  var obj = {};
+  obj[zoomerID] = newObject;
   //then call the set to update with modified value
-  chrome.storage.sync.set({
-    classes: array
-  }, function () {
-    console.log(`changed ${oldClass} to ${newObject}`);
+  chrome.storage.sync.set(obj, function () {
+    console.log(`updating to ${newObject}`);
   });
 }
 
-function deleteClass(array, zoomerID) {
-  var oldClass = findElement(array, "zoomerID", zoomerID);
-  if (oldClass) {
-    array.splice(array.indexOf(oldClass), 1);
-    //then call the set to update with modified value
-    chrome.storage.sync.set({
-      classes: array
-    }, function () {
-      console.log(`removed ${JSON.stringify(oldClass)} from classes list`);
-    });
-    return oldClass;
-  } else {
-    throw "could not find class with id: " + zoomerID;
-  }
+// takes zoomerID as a int
+function deleteClass(array, zoomerID, callback) {
+  chrome.storage.sync.get(zoomerID.toString(), function (foundClass) {
+    var oldClass = foundClass[zoomerID];
+    if (oldClass) {
+      // if we found a class with that ID, first remove it from classIDs list
+
+      // then remove the class object itself from storage
+      chrome.storage.sync.remove(zoomerID.toString(), function (Items) {
+        console.log(`removed class from storage`);
+      });
+      // this should always happen, but just to check: if that id is in the list of classIDs,
+      // remove it
+      if (array.includes(zoomerID)) {
+        array.splice(array.indexOf(zoomerID), 1);
+        chrome.storage.sync.set({
+          classIDs: array
+        }, function () {
+          console.log(`removed ${zoomerID} from classIDs list`);
+        });
+      }
+      callback(oldClass);
+    } else {
+      throw "could not find class with id: " + zoomerID;
+    }
+  });
 }
 
 function addPersonal(array, toAdd) {

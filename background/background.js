@@ -1,6 +1,8 @@
 'use strict'
 
 async function launch() {
+  // start by clearing everything
+  chrome.storage.sync.clear()
   activateListeners();
 
   //clear all alarms
@@ -64,8 +66,8 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
   chrome.storage.sync.get('alarms', function (alarms) {
     // only create a notification if alarms are turned on
     if (alarms.alarms) {
-      chrome.storage.sync.get('classes', function (result) {
-        var currentClass = findElement(result.classes, 'zoomerID', alarm.name.replace(/ .*/, ''))
+      getAllClasses(function (classList) {
+        var currentClass = findElement(classList, 'zoomerID', alarm.name.replace(/ .*/, ''))
         if (currentClass) {
           console.log(currentClass);
           chrome.notifications.create(alarm.name, {
@@ -114,10 +116,10 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
 
 /* Respond to the user's clicking one of the buttons */
 chrome.notifications.onButtonClicked.addListener(function (notifId, btnIdx) {
-  chrome.storage.sync.get('classes', function (result1) {
-    chrome.storage.sync.get('personal', function (result2) {
-      var currentClass = findElement(result1.classes, 'zoomerID', notifId.replace(/ .*/, ''));
-      var currentPersonal = findElement(result2.personal, 'zoomerID', notifId.replace(/ .*/, ''))
+  getAllClasses(function (classList) {
+    chrome.storage.sync.get('personal', function (result) {
+      var currentClass = findElement(classList, 'zoomerID', notifId.replace(/ .*/, ''));
+      var currentPersonal = findElement(result.personal, 'zoomerID', notifId.replace(/ .*/, ''))
       if (btnIdx === 0) {
         // window.open(currentClass['url']);
         if (currentClass) {

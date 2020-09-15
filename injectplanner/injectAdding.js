@@ -265,20 +265,22 @@ function createAddLink(type) {
     }
   });
   // inject links to class planner tables
-  chrome.storage.sync.get('classes', function (result) {
+  getAllClasses(function (classList) {
     var classIndex = 0;
     while ($(`#ctl00_MainContent_planClassListView_courseListView_ctrl${classIndex}_sectionListView_ctrl0_thisRow`).length != 0) {
       var sectionIndex = 0;
       while ($(`#ctl00_MainContent_planClassListView_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).length != 0) {
         var currentClassRow = $(`#ctl00_MainContent_planClassListView_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).first();
         var found = false;
-        result.classes.forEach(myclass => {
-          if (currentClassRow.find("td:eq(1) a").attr('title').includes(myclass.classInfo.srs_crs_no)) {
-            found = true;
-            currentClassRow.find("td:eq(6)").append(createZoomLink(myclass.url));
-            return;
-          }
-        });
+        if (classList != undefined) {
+          classList.forEach(myclass => {
+            if (currentClassRow.find("td:eq(1) a").attr('title').includes(myclass.classInfo.srs_crs_no)) {
+              found = true;
+              currentClassRow.find("td:eq(6)").append(createZoomLink(myclass.url));
+              return;
+            }
+          });
+        }
         if (!found) {
           currentClassRow.find("td:eq(6)").append(createAddLink("addclass"));
         }
@@ -294,13 +296,15 @@ function createAddLink(type) {
       while ($(`#ctl00_MainContent_enrolledNotPlanList_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).length != 0) {
         var currentClassRow = $(`#ctl00_MainContent_enrolledNotPlanList_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).first();
         var found = false;
-        result.classes.forEach(myclass => {
-          if (currentClassRow.find("td:eq(1) a").attr('title').includes(myclass.classInfo.srs_crs_no)) {
-            found = true;
-            currentClassRow.find("td:eq(6)").append(createZoomLink(myclass.url));
-            return;
-          }
-        });
+        if (classList != undefined) {
+          classList.forEach(myclass => {
+            if (currentClassRow.find("td:eq(1) a").attr('title').includes(myclass.classInfo.srs_crs_no)) {
+              found = true;
+              currentClassRow.find("td:eq(6)").append(createZoomLink(myclass.url));
+              return;
+            }
+          });
+        }
         if (!found) {
           currentClassRow.find("td:eq(6)").append(createAddLink("addclass"));
         }
