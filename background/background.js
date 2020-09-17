@@ -11,10 +11,6 @@ async function launch() {
     leeway: 10
   }, function () {})
 
-  // clear all classes
-  await chrome.storage.sync.set({
-    classes: []
-  });
   // clear all personal entries
   await chrome.storage.sync.set({
     personal: []

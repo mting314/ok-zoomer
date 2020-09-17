@@ -1,8 +1,8 @@
 {
   "name": "Ok, Zoomer",
   "version": "0.0.0.1",
-  "description": "Build an Extension!",
-  "permissions": ["activeTab", "declarativeContent", "storage", "unlimitedStorage", "alarms", "notifications", "tabs"],
+  "description": "Zoom to your UCLA Zoom classes",
+  "permissions": ["storage", "alarms", "notifications", "tabs"],
   "options_page": "options/index.html",
   "background": {
     "page": "background/background.html",
