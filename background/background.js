@@ -30,7 +30,14 @@ async function launch() {
 chrome.runtime.onInstalled.addListener(launch)
 
 // reconnect to listeners every time chrome restarts (like after user closes chrome)
-chrome.runtime.onStartup.addListener(activateListeners)
+// chrome.runtime.onStartup.addListener(activateListeners)
+chrome.windows.onCreated.addListener(function() {
+  chrome.windows.getAll(function(windows) {
+      if (windows.length == 1) {
+        activateListeners();
+      }
+  });
+});
 
 function parseDayOfWeek(weekday) {
   var weekdayDict = {

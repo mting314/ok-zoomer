@@ -78,7 +78,7 @@ And all I needed to get this info was essentially to be logged into the class pl
 ## Todo/Issues
 In decreasing order of priority:
 
-~~1. If you close Chrome, all of the `chrome.runtime.sendMessage` stuff breaks, rendering the extension basically unusable. I think that there is a fix [here](https://developer.chrome.com/extensions/messaging#connect), but gotta look into it.~~
+~~1. If you close Chrome, all of the `chrome.runtime.sendMessage` stuff breaks, rendering the extension basically unusable. I think that there is a fix [here](https://developer.chrome.com/extensions/messaging#connect), but gotta look into it.~~ Ok so I managed to for the most part fix the issue, but you might need to shut down and open Chrome in order to get things working again.
 
 2. TIME ZONES
 2. From the class planner adding a personal entry, figure out when that quarter/term begins and ends, so that alarms can be created for entries in the right time interval.
