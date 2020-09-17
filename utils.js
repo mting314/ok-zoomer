@@ -29,6 +29,33 @@ function getAllClasses(callback) {
   });
 }
 
+function classInProgress(classObject) {
+  var now = new Date();
+}
+
+function getCurrentClasses(callback) {
+  var classList = [];
+  chrome.storage.sync.get("classIDs", function (result) {
+    // if there are IDs, start filling list
+    if (result.classIDs != undefined && result.classIDs.length != 0) {
+      let c = result.classIDs.length; // initialize a counter
+      result.classIDs.forEach(element => {
+        chrome.storage.sync.get(element.toString(), function (foundClass) {
+          if (foundClass.isgoingon()) {
+          classList.push(foundClass[element.toString()]);
+          }
+          if (!--c) { // all async calls are finished
+            callback(classList);
+          }
+        });
+      })
+    }
+    // else return an empty array
+    else {
+      callback([]);
+    }
+  });
+}
 
 function extractClassName(classObject) {
   if (classObject.classInfo) {
