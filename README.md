@@ -6,6 +6,8 @@ Now that UCLA has become the University of Zoom, Los Angeles (UZLA), I personall
 
 I'll also admit that sometimes because all I need to join a class is hit the Zoom link, I'll be like "ah, it's 12:55 and class isn't till 1. I've got some time". But then I'll find a [really interesting video](https://www.youtube.com/watch?v=JAhVxGMXhZk) and all of a sudden because I'm too lazy to set up a calendar reminder.
 
+So yeah, combine that with a little inspiration for the renowned [Easy Bruinwalk Rating extension](https://chrome.google.com/webstore/detail/easy-bruinwalk-ratings/iohhcbccamefhmjnppendeffiapogjfg), I thought I could try my hand at messing with the HTML of the Class Planner. 
+
 ## Installation
 Please refer to [this installation PDF](InstallationInstructions.pdf), it's mainly images, and I think it would clutter up this readme.
 
