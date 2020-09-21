@@ -9,7 +9,7 @@ function copyTextToClipboard(text) {
 }
 
 function createClassText(currentClass) {
-	var className = extractClassName(currentClass);
+	var className = extractClassName(currentClass, true);
 
 	var classSection = JSON.stringify(currentClass.classInfo.class_section).replace(/\"/g, "");
 

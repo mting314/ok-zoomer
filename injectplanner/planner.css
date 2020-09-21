@@ -67,11 +67,11 @@
 
 @font-face {
   font-family: 'icomoon';
-  src:  url('chrome-extension://__MSG_@@extension_id__/fonts/icomoon.eot?gh249i');
-  src:  url('chrome-extension://__MSG_@@extension_id__/fonts/icomoon.eot?gh249i#iefix') format('embedded-opentype'),
-    url('chrome-extension://__MSG_@@extension_id__/fonts/icomoon.ttf?gh249i') format('truetype'),
-    url('chrome-extension://__MSG_@@extension_id__/fonts/icomoon.woff?gh249i') format('woff'),
-    url('chrome-extension://__MSG_@@extension_id__/fonts/icomoon.svg?gh249i#icomoon') format('svg');
+  src:  url('chrome-extension://__MSG_@@extension_id__/assets/fonts/icomoon.eot?gh249i');
+  src:  url('chrome-extension://__MSG_@@extension_id__/assets/fonts/icomoon.eot?gh249i#iefix') format('embedded-opentype'),
+    url('chrome-extension://__MSG_@@extension_id__/assets/fonts/icomoon.ttf?gh249i') format('truetype'),
+    url('chrome-extension://__MSG_@@extension_id__/assets/fonts/icomoon.woff?gh249i') format('woff'),
+    url('chrome-extension://__MSG_@@extension_id__/assets/fonts/icomoon.svg?gh249i#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;

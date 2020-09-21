@@ -7,19 +7,6 @@ function getLastWord(words) {
 
 }
 
-var getParams = function (url) {
-  var params = {};
-  var parser = document.createElement('a');
-  parser.href = url;
-  var query = parser.search.substring(1);
-  var vars = query.split('&');
-  for (var i = 0; i < vars.length; i++) {
-    var pair = vars[i].split('=');
-    params[pair[0]] = decodeURIComponent(pair[1]).replace(/\+/g, " ");
-  }
-  return params;
-};
-
 function getElementIndex(node) {
   var index = 0;
   while ((node = node.previousElementSibling)) {
@@ -28,8 +15,56 @@ function getElementIndex(node) {
   return index;
 }
 
-function addClass(port, obj) {
 
+function inputHandling(name) {
+  var inputObj = {
+    url: "",
+    password: "",
+    isLink: true,
+  }
+  var result = prompt("Add this class to the planner?\r\n" + name + "\r\nIf so, optionally enter a Zoom link OR Zoom Room ID:", "0123456789 OR https://ucla.zoom.us/j/");
+  if (result == null) { // if cancelled, return undefined
+    return;
+  }
+  var urlData;
+  if (result != "") { // if clicked OK, but didn't enter URL, return the empty inputObj
+    urlData = checkIsLink(result);
+    if (urlData == undefined) {
+      return;
+    }
+    inputObj.url = urlData[1];
+    inputObj.isLink = urlData[0];
+    var password = prompt("What is the password for the class: " + name + "\r\nat the link " + result);
+    if (password != null) {
+      inputObj.password = password;
+    }
+  }
+  return inputObj;
+}
+
+function extractTimeBoundaries(classInfo) {
+  if (classInfo.class_strt_dt != undefined) {
+    var start_time_matches = classInfo.class_strt_dt.match(/\((.*?)\)/);
+    var end_time_matches = classInfo.class_last_dt.match(/\((.*?)\)/);
+  }
+
+  var start_time, end_time;
+  if (start_time_matches && end_time_matches) {
+    start_time = parseInt(start_time_matches[1]);
+    end_time = parseInt(end_time_matches[1]);
+  } else {
+    start_time = (new Date()).getTime();
+    end_time = new Date();
+    end_time.setDate(end_time.getDate() + 7 * 12); // make personal entry artificially end in 12 weeks
+    end_time = end_time.getTime();
+  }
+  return [start_time, end_time]
+}
+
+// TODO: sometimes, after restarting computer or something, I get "trying to use disconnected port" error.
+// To counteract this, I can "listen" for this error somehow, and run a function in background to reopen
+// the port?
+function addClass(port, obj) {
   var classLink = obj.parent().parent().children()[1]
   var classParams = getParams(classLink.childNodes[1].href)
   var paramData = {
@@ -77,43 +112,36 @@ function addClass(port, obj) {
           dataType: "json",
           success: function (newres) {
             selectedClass = newres.d.svcRes.ResultTiers[0];
-            var result = prompt("Add this class to the planner?\r\n" + extractClassName(selectedClass) + " " + selectedClass.class_section + "\r\nIf so, optionally enter a Zoom link:", "https://ucla.zoom.us/j/");
-            if (result != null) {
-              var password;
-              if (result === "") {
-                password = ""
+            // remove extraneous stuff from database query
+            delete selectedClass.anchor_tags;
+            delete selectedClass.info_tooltip_data;
+            delete selectedClass.meet_location_tooltip;
+            try {
+              var inputObj = inputHandling(extractClassName(selectedClass, true));
+            } catch (err) {
+              if (err.name == 'LengthError' || err.name == 'InputError') {
+                alert(err.message);
+                return;
               } else {
-                password = prompt("What is the password for the class: " + extractClassName(selectedClass) + " " + selectedClass.class_section + "\r\nat the link " + result);
+                throw err; // let others bubble up
               }
-              if (password != null) {
-                delete selectedClass.anchor_tags;
-                delete selectedClass.info_tooltip_data;
-                delete selectedClass.meet_location_tooltip;
-
-                // chrome.runtime.sendMessage({
-                //   toAdd: {
-                //     classInfo: newres.d.svcRes.ResultTiers[0],
-                //     url: result,
-                //     zoomerID: randomID(),
-                //     password: password
-                //   },
-                //   type: "addClass"
-                // }, function (response) {
-                //   console.log(response.farewell);
-                //   location.reload();
-                // });
-                var msg = {
-                  toAdd: {
-                    classInfo: newres.d.svcRes.ResultTiers[0],
-                    url: result,
-                    zoomerID: randomID(),
-                    password: password,
-                  },
-                  type: "addClass"
-                }
-                port.postMessage(msg);
-                console.log("sending message:", msg);
+            }
+            if (inputObj != undefined) {
+              var msg = {
+                toAdd: {
+                  classInfo: newres.d.svcRes.ResultTiers[0],
+                  classTimes: extractClassTimes(newres.d.svcRes.ResultTiers[0]),
+                  timeBoundaries: extractTimeBoundaries(newres.d.svcRes.ResultTiers[0]),
+                  url: inputObj.url,
+                  sendNotifications: true,
+                  zoomerID: randomID(),
+                  password: inputObj.password,
+                  isLink: inputObj.isLink,
+                },
+                type: "addClass"
               }
+              port.postMessage(msg);
+              console.log("sending message:", msg);
             }
           }
         });
@@ -127,7 +155,7 @@ function extractPersonal(entryRow) {
   var personalEntry = {
     name: "",
     days: "",
-    time: ""
+    time: "",
   };
   // the personal entry description/name is the 2nd child node of the 2nd td of the row
   try {
@@ -149,6 +177,7 @@ function extractPersonal(entryRow) {
     // the personal entry time is the only child node of the 4th td of the row
     // personalEntry.time = entryRow.cells[3].childNodes[0].wholeText;
     personalEntry.time = entryRow.find("td:eq(3)").text()
+
   } catch (err) {
     console.log(err);
   }
@@ -160,39 +189,32 @@ function addPersonal(port, obj) {
   var personalRow = obj.parent().parent();
   var personalObject = extractPersonal(personalRow);
   console.log(personalObject);
-  var result = prompt("Add this Personal Entry to the Ok, Zoomer?\r\n" + personalObject.name + "\r\nIf so, optionally enter a Zoom link:", "https://ucla.zoom.us/j/");
-  if (result != null) {
-    var password;
-    if (result === "") {
-      password = ""
+  try {
+    var inputObj = inputHandling(extractClassName(selectedClass, true));
+  } catch (err) {
+    if (err.name == 'LengthError' || err.name == 'InputError') {
+      alert(err.message);
+      return;
     } else {
-      password = prompt("What is the password for the Personal Entry: " + personalObject.name + "\r\nat the link " + result);
+      throw err; // let others bubble up
     }
-    if (password != null) {
-      // chrome.runtime.sendMessage({
-      //   toAdd: {
-      //     entryInfo: personalObject,
-      //     url: result,
-      //     zoomerID: randomID(),
-      //     password: password
-      //   },
-      //   type: "addPersonal"
-      // }, function (response) {
-      //   console.log(response.farewell);
-      //   location.reload();
-      // });
-      var msg = {
-        toAdd: {
-          entryInfo: personalObject,
-          url: result,
-          zoomerID: randomID(),
-          password: password
-        },
-        type: "addPersonal"
-      }
-      port.postMessage(msg);
-      console.log("sending message:", msg);
+  }
+  if (inputObj != undefined) {
+    var msg = {
+      toAdd: {
+        entryInfo: personalObject,
+        classTimes: extractPersonalTimes(personalObject),
+        timeBoundaries: extractTimeBoundaries(personalObject),
+        url: inputObj.url,
+        zoomerID: randomID(),
+        password: inputObj.password,
+        isLink: inputObj.isLink,
+        sendNotifications: true,
+      },
+      type: "addPersonal"
     }
+    port.postMessage(msg);
+    console.log("sending message:", msg);
   }
 }
 
@@ -203,36 +225,22 @@ function equalEntries(first, second) {
 // TODO: As of right now, when changing class info the zoom link on class planner page still remembers
 // its old link if you don't refresh. Probably should change? Acutally maybe not, that requires accessing
 // the database, which could be worse than just having the link be injected and hard coded in the HTML
-function createZoomLink(url) {
-  var zoomLink = $(`<a href="${url}" class = "zoom-link" target="_blank"></a>`);
+function createZoomLink(zoomerItem) {
+  var zoomLink;
+  if (zoomerItem.isLink) {
+    zoomLink = $(`<a href="${zoomerItem.url}" class = "zoom-link" target="_blank"></a>`);
+  } else {
+    zoomLink = $(`<a href="${createURLfromID(zoomerItem.url, zoomerItem.password)}" class = "zoom-link" target="_blank"></a>`);
+  }
 
-  // var zoomLink = document.createElement('a')
-  // zoomLink.href = url;
-  // zoomLink.className = "zoom-link";
-  // zoomLink.target = "_blank";
 
   var zoomIcon = $(`<span class="moon-icon-zoom"></span>`);
-  // var zoomIcon = document.createElement('span');
-  // zoomIcon.className = "moon-icon-zoom"
 
   // for some reason making that little zoom icon (with the camera) requires three paths, check css
   var pathList = [];
   for (var i = 1; i <= 3; i++) {
     pathList.push($(`<span class="path${i.toString()}"></span>`))
   }
-
-  // zoomIcon.append(pathList);
-
-  // var path1 = document.createElement('span');
-  // path1.className = "path1"
-  // var path2 = document.createElement('span');
-  // path2.className = "path2"
-  // var path3 = document.createElement('span');
-  // path3.className = "path3"
-
-  // zoomIcon.appendChild(path1);
-  // zoomIcon.appendChild(path2);
-  // zoomIcon.appendChild(path3);
 
   zoomLink.append(zoomIcon.append(pathList));
 
@@ -241,16 +249,6 @@ function createZoomLink(url) {
 
 function createAddLink(type) {
   var addLink = $(`<a href="#" class="${type}"><span class="icon-plus zoomer-plus"></span></a>`)
-
-
-  // var addLink = document.createElement("a");
-  // var plusSpan = document.createElement("span")
-  // plusSpan.className = "icon-plus";
-  // plusSpan.classList.add("zoomer-plus");
-  // addLink.appendChild(plusSpan);
-  // addLink.className = type;
-  // addLink.href = "#"
-
   return addLink;
 }
 
@@ -276,7 +274,7 @@ function createAddLink(type) {
           classList.forEach(myclass => {
             if (currentClassRow.find("td:eq(1) a").attr('title').includes(myclass.classInfo.srs_crs_no)) {
               found = true;
-              currentClassRow.find("td:eq(6)").append(createZoomLink(myclass.url));
+              currentClassRow.find("td:eq(6)").append(createZoomLink(myclass));
               return;
             }
           });
@@ -300,7 +298,7 @@ function createAddLink(type) {
           classList.forEach(myclass => {
             if (currentClassRow.find("td:eq(1) a").attr('title').includes(myclass.classInfo.srs_crs_no)) {
               found = true;
-              currentClassRow.find("td:eq(6)").append(createZoomLink(myclass.url));
+              currentClassRow.find("td:eq(6)").append(createZoomLink(myclass));
               return;
             }
           });
@@ -335,13 +333,11 @@ function createAddLink(type) {
       result.personal.forEach(personalEntry => {
         if (equalEntries(personalEntry.entryInfo, extractPersonal(personalRow))) {
           found = true;
-          // personalRow.cells[1].appendChild(zoomLink);
-          personalRow.find("td:eq(1)").append(createZoomLink(personalEntry.url))
+          personalRow.find("td:eq(1)").append(createZoomLink(personalEntry))
           return;
         }
       });
       if (!found) {
-        // personalRow.cells[1].appendChild(addLink);
         personalRow.find("td:eq(1)").append(createAddLink("addpersonal"))
       }
       counter++;
