@@ -48,7 +48,7 @@ chrome.runtime.onInstalled.addListener(launch)
 chrome.windows.onCreated.addListener(function () {
   chrome.windows.getAll(function (windows) {
     if (windows.length == 1) {
-      // activateListeners();
+      activateListeners();
       speedchatOfTheDay();
     }
   });

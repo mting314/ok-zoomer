@@ -141,7 +141,7 @@ function addClass(port, obj) {
               // try {
               //   port.postMessage(msg);
               // } catch (err) {
-                
+
               //   console.log(err);
               //   if (err.message == "Attempting to use a disconnected port object") {
               //     var newport = chrome.runtime.connect({
@@ -288,7 +288,9 @@ function createAddLink(type) {
   var port = chrome.runtime.connect({
     name: "knockknock"
   });
-
+  chrome.runtime.sendMessage({
+    type: 'wakeup',
+  });
   // reload page after background listener executed port's command
   port.onMessage.addListener(function (msg) {
     if (msg.type == "reload") {

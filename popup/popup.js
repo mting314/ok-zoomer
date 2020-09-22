@@ -7,6 +7,18 @@ $(function () {
       chrome.runtime.sendMessage({
         type: 'speedchat',
       });
+      // start arrays off empty to avoid undefined issues later
+      chrome.storage.sync.set({
+        classIDs: []
+      });
+      chrome.storage.sync.set({
+        personal: []
+      });
+
+      // by default, alarms are turned ON
+      chrome.storage.sync.set({
+        alarms: true
+      });
       window.close('', '_parent', '');
     })
   })
@@ -69,17 +81,17 @@ $(function () {
     console.log(classRow);
     $('#deletemodal').prop('name', classRow.attr('id'));
     $('#deletemodal > .modal-header > .modal-title').html('Deleting ' + classRow.find('.namediv').text());
-    IDLookup(classRow.attr('id'), function(foundClass){
+    IDLookup(classRow.attr('id'), function (foundClass) {
       $('#deletemodal').find("#deletedName").text(extractClassName(foundClass, true));
       $('#deletemodal').find("#deletedURL").text(foundClass.url)
       $('#deletemodal').find("#deletedPassword").text((foundClass.password == "") ? "N/A" : foundClass.password)
     });
-    
+
     $('#deletemodal').closest('.modal').modal('toggle');
 
   })
 
-  $("#deleteClass").on("click", function() {
+  $("#deleteClass").on("click", function () {
     var zoomerID = $('#deletemodal').prop('name');
     deleteZoomerItem(zoomerID, function (oldItem) {
       var $alertBox = $("#change-alert")
