@@ -18,15 +18,19 @@ function classInProgress(classDiv, targetHeight) {
 
 
     var now = new Date();
+    var usaTime = new Date(now.toLocaleString('en-US', {
+      timeZone: "America/Los_Angeles"
+    }))
     // now.setHours(11);
     // now.setDate(now.getDate()-2);
-    if (8 <= now.getHours() && now.getHours() < 8 + hourCount) {
-      var currentDay = now.getDay();
+    if (8 <= usaTime.getHours() && usaTime.getHours() < 8 + hourCount) {
+      var currentDay = usaTime.getDay();
       // TODO: I think in some cases, planner can display weekend columns. How to handle?
       if (currentDay != 6 && currentDay != 0) {
-        var eightAM = new Date(now.getTime());
-        eightAM.setHours(8, 0, 0, 0);
-        var minutesFrom8 = (now - eightAM) / 60000;
+        var eightAM = dateWithTimeZone("America/Los_Angeles", usaTime.getFullYear(), usaTime.getMonth(), usaTime.getDate(), 8, 0, 0)
+        // var eightAM = new Date(now.getTime());
+        // eightAM.setHours(8, 0, 0, 0);
+        var minutesFrom8 = (usaTime - eightAM) / 60000;
 
         var start = hourCount;
         var hourboxHeight = parseInt(document.getElementsByClassName("hourbox")[0].style.height, 10);
