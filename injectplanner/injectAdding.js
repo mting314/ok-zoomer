@@ -51,10 +51,10 @@ function extractTimeBoundaries(classInfo) {
     end_time = parseInt(end_time_matches[1]);
   } else {
     var now = new Date();
-    var start_time = new Date(now.toLocaleString('en-US', {
+    start_time = new Date(now.toLocaleString('en-US', {
       timeZone: "America/Los_Angeles"
     })).getTime();
-    end_time = new Date();
+    end_time = new Date(start_time);
     end_time.setDate(end_time.getDate() + 7 * 12); // make personal entry artificially end in 12 weeks
     end_time = end_time.getTime();
   }

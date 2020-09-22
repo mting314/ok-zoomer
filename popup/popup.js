@@ -153,8 +153,11 @@ $(function () {
         days: "",
         time: "",
       };
-      var start_time = (new Date()).getTime();
-      var end_time = new Date();
+      var now = new Date();
+      var start_time = new Date(now.toLocaleString('en-US', {
+        timeZone: "America/Los_Angeles"
+      })).getTime();
+      var end_time = new Date(start_time);
       end_time.setDate(end_time.getDate() + 7 * 12); // make personal entry artificially end in 12 weeks
       end_time = end_time.getTime();
 
