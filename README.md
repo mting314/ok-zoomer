@@ -102,6 +102,7 @@ In decreasing order of priority:
 
 ~~1. If you close Chrome, all of the `chrome.runtime.sendMessage` stuff breaks, rendering the extension basically unusable. I think that there is a fix [here](https://developer.chrome.com/extensions/messaging#connect), but gotta look into it.~~By far this is the worst bug in the program, and if it doesn't get fixed, half of everyone who tries it will see it fail, and throw this away. I thiiiiiink it's fixed now, but it's hard to test.
 
+
 2. TIME ZONES
 2. From the class planner adding a personal entry, figure out when that quarter/term begins and ends, so that alarms can be created for entries in the right time interval.
 3. If you create two personal entries with the same name, but different Zoom links, things will probably break. In particular, when turning the corresponding planner boxes into links, the program won't know which link to use. We I don't want to force people to name their entries to bend to Ok, Zoomer, so is there a way to maybe use the planner box's position to infer timing differences?
