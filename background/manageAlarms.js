@@ -1,13 +1,29 @@
+dateWithTimeZone = (timeZone, year, month, day, hour, minute, second) => {
+  let date = new Date(Date.UTC(year, month, day, hour, minute, second));
+
+  let utcDate = new Date(date.toLocaleString('en-US', { timeZone: "UTC" }));
+  let tzDate = new Date(date.toLocaleString('en-US', { timeZone: timeZone }));
+  let offset = utcDate.getTime() - tzDate.getTime();
+
+  date.setTime( date.getTime() + offset );
+
+  return date;
+};
+
 function createAlarms(entry) {
   if (entry.classTimes.length == 0) {
     return;
   }
+  var therenow = new Date();
+  var now = new Date(therenow.toLocaleString('en-US', {
+    timeZone: "America/Los_Angeles"
+  }))
   // since classes have a defined start time, and we could be adding a class after the quarter starts,
   // we have to start creating alarms from the LATER of right now, and the day classes start
   // if we start just right now, and its before the quarter starts, start_time < target is not satisfied
   // if we start then, but we're in Week 5, we'll get spammed 15 alarms from alarms being created for
   // week 1,2,3 etc.
-  var dates = [new Date(), new Date(entry.timeBoundaries[0])]
+  var dates = [now, new Date(entry.timeBoundaries[0])]
   var now = new Date(Math.max.apply(null, dates));
 
   for (var i = 0; i < entry.classTimes.length; i++) {
@@ -15,9 +31,11 @@ function createAlarms(entry) {
     var classDay = parseInt(classTime[0]);
     var dayDifference = (((classDay - now.getDay()) % 7) + 7) % 7
 
-    var timeToRing = now.getTime() + dayDifference * 24 * 60 * 60000
-    var target = new Date(timeToRing);
-    target.setHours(parseInt(classTime[1]), parseInt(classTime[2]), 0, 0)
+    // var timeToRing = now.getTime() + dayDifference * 24 * 60 * 60000
+    // var target = new Date(timeToRing);
+    // target.setHours(parseInt(classTime[1]), parseInt(classTime[2]), 0, 0)
+    var timeToRing = new Date(now.getTime() + dayDifference * 24* 60 * 60000)
+    var target = dateWithTimeZone("America/Los_Angeles", timeToRing.getFullYear(), timeToRing.getMonth(), timeToRing.getDate(), parseInt(classTime[1]), parseInt(classTime[2]), 0)
 
     if (dayDifference == 0) {
       if (thereNow.getTime() - target.getTime() > 0) {

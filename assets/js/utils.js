@@ -64,9 +64,9 @@ function getAllClasses(callback) {
 }
 
 // TODO: eventually I need to finish highlighting classes in progress in popup
-function classInProgress(classObject) {
-  var now = new Date();
-}
+// function classInProgress(classObject) {
+//   var now = new Date();
+// }
 
 // decides if you have entered a link or zoom room ID
 function checkIsLink(url) {
@@ -254,18 +254,6 @@ function IDLookup(zoomerID, callback) {
     }
   })
 }
-
-dateWithTimeZone = (timeZone, year, month, day, hour, minute, second) => {
-  let date = new Date(Date.UTC(year, month, day, hour, minute, second));
-
-  let utcDate = new Date(date.toLocaleString('en-US', { timeZone: "UTC" }));
-  let tzDate = new Date(date.toLocaleString('en-US', { timeZone: timeZone }));
-  let offset = utcDate.getTime() - tzDate.getTime();
-
-  date.setTime( date.getTime() + offset );
-
-  return date;
-};
 
 function changeTimezone(date, ianatz) {
 
