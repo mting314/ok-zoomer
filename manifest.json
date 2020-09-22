@@ -1,6 +1,6 @@
 {
   "name": "Ok, Zoomer",
-  "version": "0.0.0.1",
+  "version": "0.0.0.2",
   "description": "Build an Extension!",
   "permissions": ["activeTab", "declarativeContent", "storage", "unlimitedStorage", "alarms", "notifications", "tabs"],
   "options_page": "options/index.html",

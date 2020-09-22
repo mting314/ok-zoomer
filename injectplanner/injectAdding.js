@@ -140,7 +140,18 @@ function addClass(port, obj) {
                 },
                 type: "addClass"
               }
-              port.postMessage(msg);
+              try {
+                port.postMessage(msg);
+              } catch (err) {
+                console.log(err);
+                chrome.runtime.sendMessage({
+                  type: 'wakeup',
+                }, function (response) {
+                  if (response.command == "retry") {
+                    port.postMessage(msg);
+                  }
+                });
+              }
               console.log("sending message:", msg);
             }
           }
@@ -190,7 +201,7 @@ function addPersonal(port, obj) {
   var personalObject = extractPersonal(personalRow);
   console.log(personalObject);
   try {
-    var inputObj = inputHandling(extractClassName(selectedClass, true));
+    var inputObj = inputHandling(personalObject.name);
   } catch (err) {
     if (err.name == 'LengthError' || err.name == 'InputError') {
       alert(err.message);
@@ -213,7 +224,19 @@ function addPersonal(port, obj) {
       },
       type: "addPersonal"
     }
-    port.postMessage(msg);
+    try {
+      port.postMessage(msg);
+    } catch (err) {
+      console.log(err);
+      chrome.runtime.sendMessage({
+        type: 'wakeup',
+      }, function (response) {
+        if (response.command == "retry") {
+          port.postMessage(msg);
+        }
+      });
+    }
+    
     console.log("sending message:", msg);
   }
 }

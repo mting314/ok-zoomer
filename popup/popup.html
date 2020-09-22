@@ -15,7 +15,6 @@
     <script type="text/javascript" src="../assets/js/utils.js"></script>
     <script type="text/javascript" src="../background/manageDatabase.js"></script>
     <script type="text/javascript" src="../background/manageAlarms.js"></script>
-    <script type="text/javascript" src="js/seedrandom.min.js"></script>
     <script type="text/javascript" src="popup.js"></script>
 </head>
 
@@ -30,13 +29,19 @@
         </div>
 
         <div style="display:flex; width:100%; margin: 0 auto">
-            <div style="display: flex;flex-direction: column;flex-basis: 100%;flex: 1;">
+            <div style="display: flex;flex-direction: column;flex-basis: 100%;flex: 1; display: block;">
                 <div id="add" class="clickable" style="text-align:left" data-toggle="modal" data-target="#addModal">
                     Add Zoom <i class="fas fa-plus"></i>
                 </div>
             </div>
             <div style="display: flex;flex-direction: column;flex-basis: 100%;flex: 1;">
-                <div id="cleardb" class="clickable" style="text-align:center">
+                <div id="fakeImp" class="clickable" style="text-align:left">
+                    Import Class <i class="fas fa-file-upload"></i>
+                </div>
+            </div>
+            <div style="display: flex;flex-direction: column;flex-basis: 100%;flex: 1;">
+                <div id="askcleardb" class="clickable" style="text-align:center" data-toggle="modal"
+                    data-target="#cleardbModal">
                     Clear Data <i class="far fa-trash-alt"></i>
                 </div>
             </div>
@@ -80,6 +85,29 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="cleardbModal" role="dialog" data-backdrop="false">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content" style="width:75%">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Clear all entries?</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div>
+                            <p>There's no going back!</p>
+                        </div>
+
+                        <button class="btn btn-danger btn-sm" id="cleardb">Speedchat: "Yes"</button>
+                        <button class="btn btn-secondary btn-sm" data-dismiss="modal" aria-label="Close">I'm not
+                            sure.</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </nav>
 
     <div class="modal fade" id="helpModal" role="dialog" data-backdrop="false">
@@ -102,7 +130,8 @@
                     <div>When you add a class or personal entry from the class planner, lots of info (including class
                         name, personal entry name, meeting times, ...) are automatically read in. However, if you decide
                         to add a class from this popup with the [Add Zoom <i class="fas fa-plus"></i>] button, know that
-                        the created entry will be very bare-bones, and you will have to manually fill in the meeting time and
+                        the created entry will be very bare-bones, and you will have to manually fill in the meeting
+                        time and
                         passwords, etc.
                     </div><br>
                     <div>When inputting either to the the class planner's adding prompt, or the popup's adding prompt,
@@ -131,6 +160,9 @@
     </div>
 
     <div id="main">
+        <div class="alert" id="change-alert">
+            <button type="button" class="close" data-dismiss="alert">x</button>
+        </div>
         <div id="absence" class="text-center">
             <p>No classes have been added to Ok, Zoomer yet.<br>You can add entries from the <a
                     href="https://be.my.ucla.edu/ClassPlanner/ClassPlan.aspx" target="_blank">class planner</a></p>
@@ -195,7 +227,55 @@
                         <button class="btn btn-primary btn-sm" id="savepass">Save Password</button>
                         <span id="savepassmsg"></span>
                     </div>
+                    <hr>
+                    <div class="md-form" id="exportcontainer">
 
+                        <button class="btn btn-primary btn-sm" id="export">Export</button>
+                        <span id="exportmsg"></span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" role="dialog" data-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div id="deletemodal" class="modal-content" style="width:85%">
+                <div class="modal-header">
+                    <h4 class="modal-title"
+                        style="white-space: nowrap; width: 80%; overflow: hidden;text-overflow: ellipsis;">Edit
+                        Preferences</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div>
+                        <p>Delete this entry?</p>
+                        <table class="tg">
+                            <tbody>
+                                <tr>
+                                    <td class="tg-0pky">Name</td>
+                                    <td class="tg-0pky" id="deletedName"></td>
+                                </tr>
+                                <tr>
+                                    <td class="tg-0pky">URL or ID</td>
+                                    <td class="tg-0pky" id="deletedURL"></td>
+                                </tr>
+                                <tr>
+                                    <td class="tg-0pky">Password</td>
+                                    <td class="tg-0pky" id="deletedPassword"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <button class="btn btn-danger btn-sm" id="deleteClass" data-dismiss="modal">Speedchat: "Yes"</button>
+                    <button class="btn btn-secondary btn-sm" data-dismiss="modal" aria-label="Close">I'm not
+                        sure.</button>
                 </div>
             </div>
         </div>
@@ -205,6 +285,7 @@
         <div>Speedchat Phrase of the Day: <span id="speedchat"></span>
         </div>
     </footer>
+    <input type="file" id="importOrig" accept=".json" style="display:none" />
 
 </body>
 

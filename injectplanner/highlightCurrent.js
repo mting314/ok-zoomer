@@ -1,7 +1,6 @@
 function classInProgress(classDiv, targetHeight) {
   var divTop = parseInt(classDiv.style.top, 10)
   var divBottom = divTop + parseInt(classDiv.style.height, 10)
-  console.log(divTop, targetHeight, divBottom)
   return (divTop < targetHeight && targetHeight < divBottom)
 }
 

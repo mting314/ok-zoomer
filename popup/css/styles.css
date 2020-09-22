@@ -10,8 +10,8 @@ body {
     font-family: DM Sans;
     background-color: #FFF;
     color: #222;
-    width:480px;
-    height:480px;
+    width: 480px;
+    height: 480px;
     transition: all 0.4s;
 }
 
@@ -19,7 +19,9 @@ body {
     padding-bottom: 25px;
 }
 
-.darkmode, .table.darkmode, .modal-content.darkmode .classtime{
+.darkmode,
+.table.darkmode,
+.modal-content.darkmode .classtime {
     background-color: #222;
     color: #FFF;
     transition: all 0.4s;
@@ -28,12 +30,12 @@ body {
 footer {
     color: #222;
     background-color: white;
-    padding:10px;
+    padding: 10px;
     border-top: 1px solid grey;
     text-align: center;
-    position:fixed;
-    bottom:0;
-    width:100%;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
     transition: all 0.4s;
 }
 
@@ -55,14 +57,16 @@ hr {
     transition: all 0.4s;
 }
 
-#nav.darkmode, .modal-content.darkmode, footer.darkmode {
-    color: white; 
-    background-color: #111; 
+#nav.darkmode,
+.modal-content.darkmode,
+footer.darkmode {
+    color: white;
+    background-color: #111;
     transition: all 0.4s;
-} 
+}
 
 .clickable {
-    cursor:pointer;
+    cursor: pointer;
 }
 
 .btn {
@@ -70,10 +74,10 @@ hr {
 }
 
 #absence {
-    display:flex;
-    height:60%;
-    align-items:center;
-    justify-content:center;
+    display: flex;
+    height: 60%;
+    align-items: center;
+    justify-content: center;
 }
 
 .table {
@@ -99,7 +103,7 @@ hr {
 }
 
 .modal-content.darkmode .modal-header {
-    border-bottom:0 none;
+    border-bottom: 0 none;
 }
 
 .modal-content.darkmode .modal-body {
@@ -107,7 +111,8 @@ hr {
 }
 
 
-table td, th {
+table td,
+th {
     border-top: none !important;
 }
 
@@ -115,18 +120,19 @@ table {
     table-layout: fixed;
     word-wrap: break-word;
 }
-*{
+
+* {
     -moz-user-select: -moz-none;
     -khtml-user-select: none;
     -webkit-user-select: none;
- 
+
     /*
       Introduced in IE 10.
       See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
     */
     -ms-user-select: none;
     user-select: none;
- }
+}
 
 .modal-backdrop {
     z-index: 1020;
@@ -148,7 +154,9 @@ table {
     background: transparent;
 }
 
-#schedule:focus {outline:none;}
+#schedule:focus {
+    outline: none;
+}
 
 .form-control:focus {
     box-shadow: none;
@@ -158,8 +166,44 @@ table {
     border: none;
 }
 
-.modal-content.darkmode #schedule, .modal-content.darkmode .form-control {
+.modal-content.darkmode #schedule,
+.modal-content.darkmode .form-control {
     border: none;
     color: white;
     background-color: #888;
+}
+
+.tg {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.tg td {
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    overflow: hidden;
+    padding: 10px 5px;
+    word-break: normal;
+    border-top: 1px solid !important
+}
+
+.tg th {
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    overflow: hidden;
+    padding: 10px 5px;
+    word-break: normal;
+}
+
+.tg .tg-0pky {
+    border-color: inherit;
+    text-align: left;
+    vertical-align: top
 }

@@ -6,42 +6,25 @@ function activateListeners() {
       console.log(msg);
       // listen for addition requests
       if (msg.type === "addClass") {
-        chrome.storage.sync.get({
-            classIDs: []
-          },
-          function (data) {
-            console.log(data.classIDs);
-
-            // this weird setup allows me to add each class as an individual object to the storage
-            // importantly, with the zoomerID as the key
-            var obj = {};
-            obj[msg.toAdd.zoomerID] = msg.toAdd;
-
-            chrome.storage.sync.set(obj, function () {
-              console.log(`added ${JSON.stringify(obj)} to class list`);
-            });
-            addClassID(data.classIDs, msg.toAdd.zoomerID); //storing the storage value in a variable and passing to update function
-            // createClassAlarm(msg.toAdd);
-            createAlarms(msg.toAdd);
-            port.postMessage({
-              type: "reload"
-            });
-          }
-        );
+        addClass(msg.toAdd, function () {
+          port.postMessage({
+            type: "reload"
+          });
+        })
       } else if (msg.type === "addPersonal") {
         chrome.storage.sync.get({
             personal: []
           },
           function (data) {
             console.log(data.personal);
-            addPersonal(data.personal, msg.toAdd, function(){});
+            addPersonal(data.personal, msg.toAdd, function () {});
             createAlarms(msg.toAdd);
             port.postMessage({
               type: "reload"
             });
           }
         );
-        
+
         // listen for deletion requests
       } else if (msg.type === "deleteClass") {
         chrome.storage.sync.get({
@@ -123,6 +106,53 @@ function addClassID(array, toAdd) {
   });
 }
 
+function addClass(toAdd, callback) {
+  chrome.storage.sync.get({
+      classIDs: []
+    },
+    function (data) {
+      console.log(data.classIDs);
+
+      // this weird setup allows me to add each class as an individual object to the storage
+      // importantly, with the zoomerID as the key
+      var obj = {};
+      obj[toAdd.zoomerID] = toAdd;
+
+      chrome.storage.sync.set(obj, function () {
+        console.log(`added ${JSON.stringify(obj)} to class list`);
+        addClassID(data.classIDs, toAdd.zoomerID); //storing the storage value in a variable and passing to update function
+        // createClassAlarm(msg.toAdd);
+        createAlarms(toAdd);
+        callback();
+      });
+
+    }
+  );
+}
+
+function deleteZoomerItem(zoomerID, callback) {
+  IDLookup(zoomerID, function (foundClass, foundIndex) {
+    if (foundIndex == -1) {
+      chrome.storage.sync.get({
+          classIDs: []
+        },
+        function (data) {
+          deleteClass(data.classIDs, parseInt(zoomerID), function (oldClass) {
+            callback(oldClass)
+          });
+        });
+    } else {
+      chrome.storage.sync.get({
+          personal: []
+        },
+        function (data) {
+          var oldPersonal = deletePersonal(data.personal, zoomerID)
+          callback(oldPersonal);
+        })
+    }
+  });
+}
+
 // takes zoomerID as a int
 function deleteClass(array, zoomerID, callback) {
   chrome.storage.sync.get(zoomerID.toString(), function (foundClass) {
@@ -198,23 +228,23 @@ function editZoomerItem(zoomerID, updatedObject, callback) {
           callback(foundClass);
         });
       } else {
-      chrome.storage.sync.get({
-          personal: []
-        },
-        function (data) {
-          var array = data.personal;
-          var oldPersonal = array[foundIndex];
-          for (const key in updatedObject) {
-            oldPersonal[key] = updatedObject[key];
-          }
-          array[foundIndex] = oldPersonal;
-          //then call the set to update with modified value
-          chrome.storage.sync.set({
-            personal: array
-          }, function () {
-            callback(oldPersonal);
-          });
-        })
+        chrome.storage.sync.get({
+            personal: []
+          },
+          function (data) {
+            var array = data.personal;
+            var oldPersonal = array[foundIndex];
+            for (const key in updatedObject) {
+              oldPersonal[key] = updatedObject[key];
+            }
+            array[foundIndex] = oldPersonal;
+            //then call the set to update with modified value
+            chrome.storage.sync.set({
+              personal: array
+            }, function () {
+              callback(oldPersonal);
+            });
+          })
       }
     }
   });

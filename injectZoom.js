@@ -1,5 +1,3 @@
-document.body.style.backgroundColor = "orange";
-
 function copyTextToClipboard(text) {
 	console.log("copying to clipboard:", text)
 	chrome.runtime.sendMessage({
@@ -9,11 +7,7 @@ function copyTextToClipboard(text) {
 }
 
 function createClassText(currentClass) {
-	var className = extractClassName(currentClass, true);
-
-	var classSection = JSON.stringify(currentClass.classInfo.class_section).replace(/\"/g, "");
-
-	var fullName = [className, classSection].join(' ');
+	var fullName = extractClassName(currentClass, true);
 
 	var classPassword;
 	if (currentClass.password) {
@@ -24,17 +18,17 @@ function createClassText(currentClass) {
 	return [fullName, classPassword];
 }
 
-function createPersonalText(currentPersonal) {
-	var fullName = currentPersonal.entryInfo.name;
+// function createPersonalText(currentPersonal) {
+// 	var fullName = currentPersonal.entryInfo.name;
 
-	var entryPassword;
-	if (currentPersonal.password) {
-		entryPassword = currentPersonal.password;
-		copyTextToClipboard(JSON.stringify(entryPassword).replace(/\"/g, ""));
-	}
+// 	var entryPassword;
+// 	if (currentPersonal.password) {
+// 		entryPassword = currentPersonal.password;
+// 		copyTextToClipboard(JSON.stringify(entryPassword).replace(/\"/g, ""));
+// 	}
 
-	return [fullName, entryPassword];
-}
+// 	return [fullName, entryPassword];
+// }
 
 function createPasswordText(classPassword) {
 	var password = $("<p></p>")
@@ -44,14 +38,6 @@ function createPasswordText(classPassword) {
 		passwordText = ["Password is ", classPassword, ". Password has been copied to your clipboard."]
 
 		var node2 = $(`<span><a id="click-password">${passwordText[1]}</a></span>`)
-		// var node2 = document.createElement("span");
-		// node2.className = "password";
-		// passwordAnchor = document.createElement('a')
-		// passwordAnchor.onclick = function () {
-		// 	navigator.clipboard.writeText(classPassword);
-		// }
-		// passwordAnchor.appendChild(document.createTextNode(passwordText[1]))
-		// node2.appendChild(passwordAnchor)
 
 		password.append(passwordText[0], node2, passwordText[2])
 
@@ -68,18 +54,23 @@ function createPasswordText(classPassword) {
 	// Maybe pass a URL parameter to differentiate?
 	getAllClasses(function (classList) {
 		chrome.storage.sync.get("personal", function (result) {
-
 			var currentURL = window.location.href.substring(0, window.location.href.indexOf('#'));
-			var currentClass = findElement(classList, 'url', currentURL);
-			var currentPersonal = findElement(result.personal, 'url', currentURL);
+			const regex = /j\/\d{9,11}/;
+			const found = currentURL.match(regex);
+			if (found != null) {
+				var foundID = found[0].match(/\d/g).join("");
+				var currentClass = findElement(classList, 'url', foundID);
+				var currentPersonal = findElement(result.personal, 'url', foundID);
+			}
+
 
 			// only inject if we actually found a matching class or personal entry
-			if (currentClass || currentPersonal) {
+			if (currentClass != undefined || currentPersonal != undefined) {
 				var info;
-				if (currentClass) {
-					info = createClassText(currentClass)
-				} else if (currentPersonal) {
-					info = createPersonalText(currentPersonal)
+				if (currentClass != undefined) {
+					info = createClassText(currentClass);
+				} else {
+					info = createClassText(currentPersonal);
 				}
 				// only inject if the class's name is not undefined, i.e. we found a matching class
 				var helperText = $("<h1></h1>").text(`Joining ${info[0]}`);

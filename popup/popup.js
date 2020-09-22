@@ -1,19 +1,12 @@
-// Submits -> Set Chrome API -> Chrome Storage -> Get Chrome API (repeat)
 $(function () {
 
-  // update db properties for new users
-  /** 
-  chrome.storage.sync.get({'classList': {}}, function(classes) {
-      var keys = Object.keys(classes.classList);
-      keys.forEach((key) => {
-          if (classes.classList[key].hasOwnProperty())
-      });
-  })
-  */
-
-  $('#cleardb').click(function () {
+  $('#cleardb').on("click", function () {
     // this is sort of a nuclear option, but hey it works and I'm lazy
+
     chrome.storage.sync.clear(function () {
+      chrome.runtime.sendMessage({
+        type: 'speedchat',
+      });
       window.close('', '_parent', '');
     })
   })
@@ -57,7 +50,7 @@ $(function () {
   })
 
   // Dark Mode [toggle]
-  $('#lightswitch').click(function () {
+  $('#lightswitch').on("click", function () {
     chrome.storage.sync.get({
       'darkOn': true
     }, function (style) {
@@ -72,27 +65,33 @@ $(function () {
 
   // Delete Class 
   $("#classlist").on("click", ".del", function () {
-    var classRow = $(this).parent()[0];
-
-    IDLookup(classRow.id, function (foundClass, foundIndex) {
-      if (foundIndex == -1) {
-        chrome.storage.sync.get({
-            classIDs: []
-          },
-          function (data) {
-            deleteClass(data.classIDs, parseInt(classRow.id), function (oldClass) {});
-          });
-      } else {
-        chrome.storage.sync.get({
-            personal: []
-          },
-          function (data) {
-            deletePersonal(data.personal, classRow.id)
-          })
-      }
+    var classRow = $(this).parent();
+    console.log(classRow);
+    $('#deletemodal').prop('name', classRow.attr('id'));
+    $('#deletemodal > .modal-header > .modal-title').html('Deleting ' + classRow.find('.namediv').text());
+    IDLookup(classRow.attr('id'), function(foundClass){
+      $('#deletemodal').find("#deletedName").text(extractClassName(foundClass, true));
+      $('#deletemodal').find("#deletedURL").text(foundClass.url)
+      $('#deletemodal').find("#deletedPassword").text((foundClass.password == "") ? "N/A" : foundClass.password)
     });
-    // visual update
-    classRow.remove();
+    
+    $('#deletemodal').closest('.modal').modal('toggle');
+
+  })
+
+  $("#deleteClass").on("click", function() {
+    var zoomerID = $('#deletemodal').prop('name');
+    deleteZoomerItem(zoomerID, function (oldItem) {
+      var $alertBox = $("#change-alert")
+      $alertBox.addClass("alert-success");
+      $alertBox.text(`${extractClassName(oldItem, true)} was successfully removed from Ok, Zoomer.`)
+      $alertBox.fadeTo(5000, 500).slideUp(500, function () {
+        $alertBox.slideUp(500);
+      });
+      // visual update
+      $("#" + zoomerID).remove();
+      $('#deleteModal').closest('.modal').modal('toggle');
+    });
   })
 
   // Join class
@@ -106,24 +105,24 @@ $(function () {
       } else {
         window.open(createURLfromID(foundClass.url, foundClass.password))
       }
-      // chrome get asynchronous cannot define behavior/modify link to join 'after'
     });
+
+
   })
 
   // Enter key procs submit
 
   $('#classURL, #className').keypress(function (e) {
     if (e.keyCode == 13)
-      $('#enterClassURL').click();
+      $('#enterClassURL').trigger("click");
   });
 
   // Submit class id
-  $('#enterClassURL').click(function () {
+  $('#enterClassURL').on("click", function () {
     chrome.storage.sync.get({
       'personal': {}
     }, function (data) {
       // Reset error message
-
       $('#error-message').text('');
       var urlData;
       try {
@@ -226,6 +225,7 @@ $(function () {
           $('#password').blur();
         }
         $('#editpasscontainer').css('display', 'block');
+        $('#exportcontainer').css('display', 'block');
 
         if (foundClass.isLink) {
           $('#editmodal').children(".modal-header").children(".modal-title").html('Editing Link <br><span style="font-size:small">' + parentId + '</span>');
@@ -309,7 +309,7 @@ $(function () {
   });
 
   // add a classtime
-  $('#savetime').click(function () {
+  $('#savetime').on("click", function () {
     var editedId = $('#editmodal').prop('name');
     var day = $("#dayselect option:selected").val(); // -1 if invalid
     var time = $("#schedule").val(); // blank string if invalid
@@ -341,7 +341,7 @@ $(function () {
   })
 
   // save password
-  $('#savepass').click(function () {
+  $('#savepass').on("click", function () {
     var updatedPassword = $('#password').val();
     var zoomerID = $('#editmodal').prop('name');
     editZoomerItem(zoomerID, {
@@ -352,13 +352,61 @@ $(function () {
     })
   })
 
+  $('#export').on("click", function () {
+    var zoomerID = $('#editmodal').prop('name');
+    IDLookup(zoomerID, function (foundClass) {
+      var exportClass = foundClass;
+      delete exportClass.zoomerID;
+      delete exportClass.customName;
+
+      var _myArray = JSON.stringify(foundClass, null, 4); //indentation in json format, human readable
+
+      var vLink = document.createElement('a'),
+        vBlob = new Blob([_myArray], {
+          type: "octet/stream"
+        }),
+        vName = `${extractClassName(foundClass)}.json`,
+        vUrl = window.URL.createObjectURL(vBlob);
+      vLink.setAttribute('href', vUrl);
+      vLink.setAttribute('download', vName);
+      vLink.click();
+      $("#exportmsg").css("color", "#1E90FF");
+      $("#exportmsg").text("Exported to JSON")
+    })
+  })
+
   chrome.storage.sync.get({
       speedchat: []
     },
     function (data) {
       $('#speedchat').text(`"${data.speedchat}"`);
     })
+  $("#fakeImp").on("click", function () {
+    $('#importOrig').trigger("click")
+  })
+
+  $('#importOrig').change(importFun)
+
+  $("#change-alert").hide();
 })
+
+function importFun(e) {
+  var files = e.target.files,
+    reader = new FileReader();
+  reader.onload = _imp;
+  reader.readAsText(files[0]);
+}
+
+function _imp() {
+  var _myImportedData = JSON.parse(this.result);
+  _myImportedData.zoomerID = randomID();
+  console.log(_myImportedData);
+  addClass(_myImportedData, function () {
+    $("#absence").css('display', 'none');
+    addClassDisplay(_myImportedData);
+    $("#importOrig").val(''); //make sure to clear input value after every import
+  })
+}
 
 function formatTime(time) {
   var day = parseDayOfWeek(time[0]);
@@ -378,52 +426,23 @@ function saveName(zoomerID, updatedName) {
 
 function addClassDisplay(classObject) {
   // Create div for the class: composed of button and breaks
-  var classRow = document.createElement("tr");
-  classRow.className = "class d-flex align-items-center";
-  classRow.setAttribute("id", classObject.zoomerID);
+  var classRow = $(`<tr class="class d-flex align-items-center" id="${classObject.zoomerID}"></tr>`)
 
-  var classDescriptor = document.createElement("td");
-  classDescriptor.className = "col-5 text-truncate text-center namedisplay";
-  var nameDiv = document.createElement("div");
-  nameDiv.setAttribute('contenteditable', 'true');
-  nameDiv.setAttribute('spellcheck', 'false');
-  if (classObject.customName != undefined) {
-    nameDiv.innerText = classObject.customName;
-  } else {
-    nameDiv.innerText = extractClassName(classObject, true);
-  }
-  classDescriptor.appendChild(nameDiv);
+  var classDescriptor = $("<td class = col-5 text-truncate text-center namedisplay></td>")
 
-  var classButton = document.createElement("button");
-  classButton.className = "btn btn-primary btn-block join";
-  classButton.style = "display: flex;align-items: center;justify-content: center;";
+  var nameDiv = $(`<div class="namediv" style="text-align: center"></div>`).text((classObject.customName != undefined) ? classObject.customName : extractClassName(classObject, true))
+  nameDiv.attr('contenteditable', 'true');
+  nameDiv.attr('spellcheck', 'false');
 
-  classButton.setAttribute("data-content", classObject.url);
-  classButton.innerText = classObject.url;
 
-  classButton.setAttribute("data-content", classObject.url);
-  if (classObject.url == "") {
-    classButton.innerText = "No Link"
-  } else {
-    classButton.innerText = classObject.url;
-  }
+  var classButton = $(`<button class="btn btn-primary btn-block join" style="display: flex;align-items: center;justify-content: center;">${(classObject.url == "") ? "No Link" : classObject.url}</button>`)
+  // classButton.attr("data-content", classObject.url);
 
-  var temp = document.createElement("td");
-  temp.className = "col-5";
-  temp.appendChild(classButton);
+  var temp = $(`<td class="col-5"></td>`).append(classButton);
   classButton = temp;
+  var button = $(`<td class="col-1 clickable"></td>`)
 
-  var delButton = document.createElement("td");
-  delButton.className = "col-1 del clickable";
-  delButton.innerHTML = '<i class="fa fa-trash"></i>';
-
-  var editButton = document.createElement("td");
-  editButton.className = "col-1 edit clickable";
-  editButton.innerHTML = '<i class="fa fa-cog"></i>';
-
-  classRow.appendChild(classDescriptor);
-  classRow.appendChild(classButton);
-  classRow.appendChild(delButton);
-  classRow.appendChild(editButton);
+  classDescriptor.append(nameDiv);
+  classRow.append(classDescriptor, classButton, button.clone().addClass("del").append(`<i class="fa fa-trash"></i>`), button.clone().addClass("edit").append(`<i class="fa fa-cog"></i>`));
   $("#classlist").append(classRow);
 }
