@@ -1,6 +1,3 @@
-// I'm keeping a lot of old DOM code in here even after moving lots of stuff to JQuery, I'm just afraid
-// that some systems might not support JQuery or whatever and that I'll have to switch back
-
 function getLastWord(words) {
   var n = words.split(" ");
   return n[n.length - 1];
@@ -140,18 +137,28 @@ function addClass(port, obj) {
                 },
                 type: "addClass"
               }
-              try {
-                port.postMessage(msg);
-              } catch (err) {
-                console.log(err);
-                chrome.runtime.sendMessage({
-                  type: 'wakeup',
-                }, function (response) {
-                  if (response.command == "retry") {
-                    port.postMessage(msg);
-                  }
-                });
-              }
+              port.postMessage(msg);
+              // try {
+              //   port.postMessage(msg);
+              // } catch (err) {
+                
+              //   console.log(err);
+              //   if (err.message == "Attempting to use a disconnected port object") {
+              //     var newport = chrome.runtime.connect({
+              //       name: "knockknock"
+              //     });
+              //     // reload page after background listener executed port's command
+              //     newport.onMessage.addListener(function (msg) {
+              //       if (msg.type == "reload") {
+              //         location.reload();
+              //       }
+              //     });
+
+              //   }
+              //   if (chrome.runtime.lastError) {
+              //     alert("oof");
+              //   }
+              // }
               console.log("sending message:", msg);
             }
           }
@@ -224,19 +231,21 @@ function addPersonal(port, obj) {
       },
       type: "addPersonal"
     }
-    try {
-      port.postMessage(msg);
-    } catch (err) {
-      console.log(err);
-      chrome.runtime.sendMessage({
-        type: 'wakeup',
-      }, function (response) {
-        if (response.command == "retry") {
-          port.postMessage(msg);
-        }
-      });
-    }
-    
+
+    port.postMessage(msg);
+    // try {
+    //   port.postMessage(msg);
+    // } catch (err) {
+    //   console.log(err);
+    //   chrome.runtime.sendMessage({
+    //     type: 'wakeup',
+    //   }, function (response) {
+    //     if (response.command == "retry") {
+    //       port.postMessage(msg);
+    //     }
+    //   });
+    // }
+
     console.log("sending message:", msg);
   }
 }
@@ -279,6 +288,7 @@ function createAddLink(type) {
   var port = chrome.runtime.connect({
     name: "knockknock"
   });
+
   // reload page after background listener executed port's command
   port.onMessage.addListener(function (msg) {
     if (msg.type == "reload") {

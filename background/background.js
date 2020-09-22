@@ -48,7 +48,7 @@ chrome.runtime.onInstalled.addListener(launch)
 chrome.windows.onCreated.addListener(function () {
   chrome.windows.getAll(function (windows) {
     if (windows.length == 1) {
-      activateListeners();
+      // activateListeners();
       speedchatOfTheDay();
     }
   });
@@ -56,7 +56,7 @@ chrome.windows.onCreated.addListener(function () {
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request) {
-    if (request && request.type == 'copy') {
+    if ( request.type == 'copy') {
       var input = document.createElement('textarea');
       document.body.appendChild(input);
       input.value = request.text;
@@ -71,6 +71,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       sendResponse({
         command: "retry"
       })
+      return true;
     }
   }
 });
@@ -128,14 +129,6 @@ chrome.notifications.onButtonClicked.addListener(function (notifId, btnIdx) {
   }
 
 })
-
-// chrome.tabs.onUpdated.addListener(function (tabId , changeInfo, tab) {
-//   if (changeInfo.status === 'complete') {
-//     if (tab.url.includes("ucla.zoom.us")){
-//       console.log(tab)
-//     }
-//   }
-// });
 
 /* Add this to also handle the user's manually dismissing the notification */
 chrome.notifications.onClosed.addListener(function () {

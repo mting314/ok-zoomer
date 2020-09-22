@@ -1,13 +1,17 @@
+var portfromCS;
+
 function activateListeners() {
   console.log("activating listeners");
-  chrome.runtime.onConnect.addListener(function (port) {
+  chrome.runtime.onConnect.addListener(port => {
+    portFromCS = port;
+    console.log('connected ', port);
     // console.assert(port.name == "knockknock");
-    port.onMessage.addListener(function (msg) {
+    portFromCS.onMessage.addListener(function (msg) {
       console.log(msg);
       // listen for addition requests
       if (msg.type === "addClass") {
         addClass(msg.toAdd, function () {
-          port.postMessage({
+          portFromCS.postMessage({
             type: "reload"
           });
         })
@@ -19,7 +23,7 @@ function activateListeners() {
             console.log(data.personal);
             addPersonal(data.personal, msg.toAdd, function () {});
             createAlarms(msg.toAdd);
-            port.postMessage({
+            portFromCS.postMessage({
               type: "reload"
             });
           }
@@ -34,13 +38,13 @@ function activateListeners() {
             try {
               console.log(data.classIDs);
               deleteClass(data.classIDs, msg.zoomerID, function (oldClass) { //storing the storage value in a variable and passing to update function
-                port.postMessage({
+                portFromCS.postMessage({
                   oldClass: oldClass,
                   type: "successDeleteClass"
                 });
               });
             } catch (err) {
-              port.postMessage({
+              portFromCS.postMessage({
                 type: "failureDeleteClass",
                 error: err.toString()
               });
@@ -55,12 +59,12 @@ function activateListeners() {
               console.log(data.personal);
               // nothing personnel, kiddo
               var oldPersonal = deletePersonal(data.personal, msg.zoomerID);
-              port.postMessage({
+              portFromCS.postMessage({
                 oldItem: oldPersonal,
                 type: "successDeletePersonal"
               });
             } catch (err) {
-              port.postMessage({
+              portFromCS.postMessage({
                 type: "failureDeletePersonal",
                 error: err.toString()
               });
@@ -72,14 +76,14 @@ function activateListeners() {
       } else if (msg.type === "editItem") {
         try {
           editZoomerItem(msg.zoomerID, msg.editingObj, function (oldItem) {
-            port.postMessage({
+            portFromCS.postMessage({
               oldItem: oldItem,
               type: "successEditClass"
             });
           });
 
         } catch (err) {
-          port.postMessage({
+          portFromCS.postMessage({
             type: "failureEditClass",
             error: err.toString()
           });

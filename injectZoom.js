@@ -18,18 +18,6 @@ function createClassText(currentClass) {
 	return [fullName, classPassword];
 }
 
-// function createPersonalText(currentPersonal) {
-// 	var fullName = currentPersonal.entryInfo.name;
-
-// 	var entryPassword;
-// 	if (currentPersonal.password) {
-// 		entryPassword = currentPersonal.password;
-// 		copyTextToClipboard(JSON.stringify(entryPassword).replace(/\"/g, ""));
-// 	}
-
-// 	return [fullName, entryPassword];
-// }
-
 function createPasswordText(classPassword) {
 	var password = $("<p></p>")
 	if (!classPassword) {
