@@ -10,6 +10,7 @@ function updateClipboard(newClip) {
 function fillClasses(plannerBoxes) {
 	getAllClasses(function (classList) {
 		for (var i = 0, myclass; myclass = classList[i]; i++) {
+			console.log(myclass);
 			for (let item of plannerBoxes) {
 
 				// don't overwrite if already has link
@@ -18,22 +19,26 @@ function fillClasses(plannerBoxes) {
 					continue;
 				}
 				//if (item.childNodes[0].wholeText.toUpperCase() == [myclass.classInfo.subj_area_cd, myclass.classInfo.disp_catlg_no].join(' ').replace(/\s+/g, ' ').trim()) {
-				if (item.childNodes[0].wholeText.toUpperCase() == extractClassName(myclass)) {
+				if (item.childNodes[0].wholeText.toUpperCase() == extractClassName(myclass, false)) {
 
 					if (!item.childNodes[3] || item.childNodes[3].wholeText.toUpperCase() == myclass.classInfo.class_section.toUpperCase()) {
 						var link = document.createElement('a');
 
 						item.style.outline = "5px groove " + item.style.borderColor
 						// item.style.outlineOffset = "-3px";
-						link.href = myclass.url;
-						link.target = "_blank"
-						if (myclass.password != undefined) {
-							// link.className = "tooltip"
-							link.onclick = function () {
-								updateClipboard(myclass.password)
-							};
-							// var tooltiptext = document.createTextNode(text);
+						if (myclass.isLink) {
+							link.href = myclass.url
+						} else {
+							link.href = createURLfromID(myclass.url, myclass.password)
 						}
+						link.target = "_blank"
+						// if (myclass.password != undefined) {
+						// 	// link.className = "tooltip"
+						// 	link.onclick = function () {
+						// 		updateClipboard(myclass.password)
+						// 	};
+						// 	// var tooltiptext = document.createTextNode(text);
+						// }
 
 						link.className = "classlink";
 						item.classList.add("linkedbox");
@@ -67,8 +72,14 @@ function fillPersonal(plannerBoxes) {
 
 						item.style.outline = "5px groove " + item.style.borderColor
 						// item.style.outlineOffset = "-3px";
-						link.href = personalEntry.url;
+						if (personalEntry.isLink) {
+							link.href = personalEntry.url
+						} else {
+							link.href = createURLfromID(personalEntry.url, personalEntry.password)
+						}
 						link.target = "_blank"
+
+						
 						if (personalEntry.password) {
 							// link.className = "tooltip"
 							link.onclick = function () {

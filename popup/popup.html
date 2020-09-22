@@ -1,0 +1,292 @@
+<html>
+
+<head>
+    <title>Ok, Zoomer Chrome Extension</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+    <link rel="stylesheet" type="text/css" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/mdb.min.css">
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <script type="text/javascript" src="../assets/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/popper.min.js"></script>
+    <script type="text/javascript" src="js/mdb.min.js"></script>
+    <script type="text/javascript" src="../assets/js/utils.js"></script>
+    <script type="text/javascript" src="../background/manageDatabase.js"></script>
+    <script type="text/javascript" src="../background/manageAlarms.js"></script>
+    <script type="text/javascript" src="popup.js"></script>
+</head>
+
+<body>
+    <nav id="nav" class="navbar shadow sticky-top" style="white-space: nowrap">
+        <span class="navbar-text">
+            <h1>Ok, Zoomer<span id="randomemoji"></span></h1>
+        </span>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="lightswitch">
+            <label class="custom-control-label" for="lightswitch">Darkmode</label>
+        </div>
+
+        <div style="display:flex; width:100%; margin: 0 auto">
+            <div style="display: flex;flex-direction: column;flex-basis: 100%;flex: 1; display: block;">
+                <div id="add" class="clickable" style="text-align:left" data-toggle="modal" data-target="#addModal">
+                    Add Zoom <i class="fas fa-plus"></i>
+                </div>
+            </div>
+            <div style="display: flex;flex-direction: column;flex-basis: 100%;flex: 1;">
+                <div id="fakeImp" class="clickable" style="text-align:left">
+                    Import Class <i class="fas fa-file-upload"></i>
+                </div>
+            </div>
+            <div style="display: flex;flex-direction: column;flex-basis: 100%;flex: 1;">
+                <div id="askcleardb" class="clickable" style="text-align:center" data-toggle="modal"
+                    data-target="#cleardbModal">
+                    Clear Data <i class="far fa-trash-alt"></i>
+                </div>
+            </div>
+            <div style="display: flex;flex-direction: column;flex-basis: 100%;flex: 1;">
+                <div class="clickable" style="text-align:right" data-toggle="modal" data-target="#helpModal">
+                    Need Help? <i class="fas fa-question-circle"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="addModal" role="dialog" data-backdrop="false">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content" style="width:75%">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Add Zoom Meeting</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="md-form">
+                            <i class="fas fa-hashtag prefix grey-text"></i>
+                            <input type="text" id="classURL" class="form-control">
+                            <label for="classURL">Meeting ID (required)</label>
+                        </div>
+
+                        <div class="md-form">
+                            <i class="fas fa-pencil-alt prefix grey-text"></i>
+                            <input type="text" id="className" class="form-control">
+                            <label for="className">Meeting Name</label>
+                        </div>
+
+                        <div>
+                            <p>This will be added as if it were a <strong>personal entry</strong>.</p>
+                        </div>
+
+                        <button class="btn btn-primary btn-sm" id="enterClassURL">Submit</button>
+                        <span id="error-message" style="color: red"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="cleardbModal" role="dialog" data-backdrop="false">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content" style="width:75%">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Clear all entries?</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div>
+                            <p>There's no going back!</p>
+                        </div>
+
+                        <button class="btn btn-danger btn-sm" id="cleardb">Speedchat: "Yes"</button>
+                        <button class="btn btn-secondary btn-sm" data-dismiss="modal" aria-label="Close">I'm not
+                            sure.</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="modal fade" id="helpModal" role="dialog" data-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content" style="width:90%">
+                <div class="modal-header">
+                    <h4 class="modal-title">Info</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div>Welcome to OK Zoomer! To get started, click on [Add Zoom <i class="fas fa-plus"></i>]
+                        or go to the class planner and find the [<i class="fas fa-plus"></i>] symbols added to your
+                        class plan tables (under the location field). <img src="../readme-images/AddButtonsCropped.png"
+                            style="max-width: 100%;"></img>
+                    </div><br>
+
+                    <div>When you add a class or personal entry from the class planner, lots of info (including class
+                        name, personal entry name, meeting times, ...) are automatically read in. However, if you decide
+                        to add a class from this popup with the [Add Zoom <i class="fas fa-plus"></i>] button, know that
+                        the created entry will be very bare-bones, and you will have to manually fill in the meeting
+                        time and
+                        passwords, etc.
+                    </div><br>
+                    <div>When inputting either to the the class planner's adding prompt, or the popup's adding prompt,
+                        you can give
+                        either a link (https://www.google.com/) or a Zoom meeting ID (1234567890) which is always 9-11
+                        digits.
+                    </div><br>
+                    <div><strong>However</strong>, and important point to note is that if you add something of the form
+                        (https://ucla.zoom.us/j/1234567890),
+                        the system will detect that this link is basically just a Zoom meeting ID, and add it as such.
+                        This is as opposed to Zoom Personal Links (https://ucla.zoom.us/my/mycoollink)
+                    </div><br>
+                    <div>Once a meeting has been added to the dashboard, you can join it [big blue button], remove it
+                        [<i class="fas fa-minus-circle"></i>], edit its properties [<i class="fas fa-cog"></i>]. You can
+                        change the name stored in the popup simply by clicking the name.
+                    </div><br>
+                    <div>Within the edit field (accessible via a meeting's edit button [<i class="fas fa-cog"></i>]),
+                        most of the settings are self-explanatory. The most important thing to note is that if you added
+                        a class from the class planner, the system will automatically add the meeting times for that
+                        class.
+                        However, these automatically added times are still removable if you want to skip class.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="main">
+        <div class="alert" id="change-alert">
+            <button type="button" class="close" data-dismiss="alert">x</button>
+        </div>
+        <div id="absence" class="text-center">
+            <p>No classes have been added to Ok, Zoomer yet.<br>You can add entries from the <a
+                    href="https://be.my.ucla.edu/ClassPlanner/ClassPlan.aspx" target="_blank">class planner</a></p>
+        </div>
+        <table id="classlist" class="table">
+        </table>
+    </div>
+
+    <div class="modal fade" role="dialog" data-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div id="editmodal" class="modal-content" style="width:85%">
+                <div class="modal-header">
+                    <h4 class="modal-title"
+                        style="white-space: nowrap; width: 80%; overflow: hidden;text-overflow: ellipsis;">Edit
+                        Preferences</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="remindtoggle">
+                        <label class="custom-control-label" for="remindtoggle">Get Reminders (notifications)</label>
+                    </div>
+
+                    <div class="md-form" id='remindtime'>
+                        <i class="fas fa-bell prefix grey-text"></i>
+                        <input type="number" id="remindinput" class="form-control" min="1" default="5">
+                        <label for="remindinput">minutes before meeting to get reminder</label>
+                    </div>
+                    <hr>
+
+                    <i class="fas fa-calendar-plus"></i> Schedule Times
+                    <select id="dayselect" class="form-control form-control-sm">
+                        <option value="-1">--</option>
+                        <option value="0">Sunday</option>
+                        <option value="1">Monday</option>
+                        <option value="2">Tuesday</option>
+                        <option value="3">Wednesday</option>
+                        <option value="4">Thursday</option>
+                        <option value="5">Friday</option>
+                        <option value="6">Saturday</option>
+                    </select>
+
+
+                    <input type="time" id="schedule">
+                    <button class="btn btn-primary btn-sm" id="savetime">Save Time</button>
+                    <span id="savetimemsg"></span>
+                    <hr>
+
+                    <i class="fas fa-calendar"></i> Saved Meeting Times<span id="schedulemsg"> - None Yet!</span>
+                    <ul id="scheduledtimes" class="list-group list-group-flush">
+                    </ul>
+
+                    <hr>
+                    <div class="md-form" id="editpasscontainer">
+
+                        <i class="fas fa-key prefix grey-text"></i>
+                        <input type="text" id="password" class="form-control">
+                        <label for="password">Password (empty for none)</label>
+                        <button class="btn btn-primary btn-sm" id="savepass">Save Password</button>
+                        <span id="savepassmsg"></span>
+                    </div>
+                    <hr>
+                    <div class="md-form" id="exportcontainer">
+
+                        <button class="btn btn-primary btn-sm" id="export">Export</button>
+                        <span id="exportmsg"></span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" role="dialog" data-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div id="deletemodal" class="modal-content" style="width:85%">
+                <div class="modal-header">
+                    <h4 class="modal-title"
+                        style="white-space: nowrap; width: 80%; overflow: hidden;text-overflow: ellipsis;">Edit
+                        Preferences</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div>
+                        <p>Delete this entry?</p>
+                        <table class="tg">
+                            <tbody>
+                                <tr>
+                                    <td class="tg-0pky">Name</td>
+                                    <td class="tg-0pky" id="deletedName"></td>
+                                </tr>
+                                <tr>
+                                    <td class="tg-0pky">URL or ID</td>
+                                    <td class="tg-0pky" id="deletedURL"></td>
+                                </tr>
+                                <tr>
+                                    <td class="tg-0pky">Password</td>
+                                    <td class="tg-0pky" id="deletedPassword"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <button class="btn btn-danger btn-sm" id="deleteClass" data-dismiss="modal">Speedchat: "Yes"</button>
+                    <button class="btn btn-secondary btn-sm" data-dismiss="modal" aria-label="Close">I'm not
+                        sure.</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="font-small">
+        <div>Speedchat Phrase of the Day: <span id="speedchat"></span>
+        </div>
+    </footer>
+    <input type="file" id="importOrig" accept=".json" style="display:none" />
+
+</body>
+
+</html>

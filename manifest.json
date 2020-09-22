@@ -1,6 +1,6 @@
 {
   "name": "Ok, Zoomer",
-  "version": "0.0.0.1",
+  "version": "0.0.0.3",
   "description": "Zoom to your UCLA Zoom classes",
   "permissions": ["storage", "alarms", "notifications", "tabs"],
   "options_page": "options/index.html",
@@ -8,25 +8,34 @@
     "page": "background/background.html",
     "persistent": false
   },
-  "content_scripts": [
-    {
+  "content_scripts": [{
       "matches": ["https://ucla.zoom.us/*"],
-      "js": ["utils.js", "jquery-3.4.1.min.js", "injectZoom.js"],
+      "js": ["assets/js/utils.js", "assets/js/jquery-3.5.1.min.js", "injectZoom.js"],
       "css": ["zoom.css"]
     },
     {
       "matches": ["https://be.my.ucla.edu/ClassPlanner/ClassPlan.aspx"],
-      "js": ["utils.js", "jquery-3.4.1.min.js", "injectplanner/injectPlanner.js", "injectplanner/highlightCurrent.js", "injectplanner/injectAdding.js"],
-      "css" : ["injectplanner/planner.css"]
+      "js": ["assets/js/utils.js", "assets/js/jquery-3.5.1.min.js", "injectplanner/injectPlanner.js", "injectplanner/highlightCurrent.js", "injectplanner/injectAdding.js"],
+      "css": ["injectplanner/planner.css"]
     }
   ],
-  "page_action": {
-    "default_popup": "popup.html",
+  "browser_action": {
+    "default_popup": "popup/popup.html",
     "default_icon": {
       "16": "images/get_started16.png",
       "32": "images/get_started32.png",
       "48": "images/get_started48.png",
       "128": "images/get_started128.png"
+    }
+  },
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+E",
+        "linux": "Ctrl+Shift+K",
+        "windows": "Ctrl+Shift+E",
+        "mac": "Alt+Shift+P"
+      }
     }
   },
   "icons": {
@@ -35,6 +44,6 @@
     "48": "images/get_started48.png",
     "128": "images/get_started128.png"
   },
-  "web_accessible_resources": ["fonts/*"],
+  "web_accessible_resources": ["assets/fonts/*"],
   "manifest_version": 2
 }

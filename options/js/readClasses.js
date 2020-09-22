@@ -1,19 +1,27 @@
 function editClass(editedRow) {
   var classZoomerID = parseInt(editedRow.attr('id'));
-  chrome.storage.sync.get(classZoomerID.toString(), function(foundClass) {
+  chrome.storage.sync.get(classZoomerID.toString(), function (foundClass) {
 
-    var classObject = foundClass[classZoomerID]
-    classObject.url = editedRow.find("td#classURL").text()
-    classObject.password = editedRow.find("td#classPassword").text()
+    // var classObject = foundClass[classZoomerID]
+    // classObject.url = editedRow.find("td#classURL").text()
+    // classObject.password = editedRow.find("td#classPassword").text()
 
-    console.log(classObject)
+    // console.log(classObject)
+    // var msg = {
+    //   newObject: classObject,
+    //   zoomerID: classZoomerID,
+    //   type: "editClass",
+    // }
     var msg = {
-      newObject: classObject,
       zoomerID: classZoomerID,
-      type: "editClass",
+      editingObj: {
+        url: editedRow.find("td#classURL").text(),
+        password: editedRow.find("td#classPassword").text(),
+      },
+      type: "editItem",
     }
     console.log("sending message:", msg);
-  
+
     port.postMessage(msg);
   });
 
@@ -34,25 +42,24 @@ function editPersonal(editedRow) {
   chrome.storage.sync.get('personal', function (result) {
     var personalIndex = parseInt(editedRow.find("td#personalTableIndex").text()) - 1;
 
-    var personalObject = result.personal[personalIndex]
-    personalObject.url = editedRow.find("td#personalURL").text()
-    personalObject.password = editedRow.find("td#personalPassword").text()
+    // var personalObject = result.personal[personalIndex]
+    // personalObject.url = editedRow.find("td#personalURL").text()
+    // personalObject.password = editedRow.find("td#personalPassword").text()
 
-    // chrome.runtime.sendMessage({
+    // var msg = {
     //   newObject: personalObject,
     //   index: personalIndex,
     //   type: "editPersonal",
-    // }, function (response) {
-    //   console.log(response.farewell);
-    //   location.reload()
-    // });
-
-    var msg = {
-      newObject: personalObject,
-      index: personalIndex,
-      type: "editPersonal",
-    }
+    // }
     console.log("sending message:", msg);
+    var msg = {
+      zoomerID: classZoomerID,
+      editingObj: {
+        url: editedRow.find("td#personalURL").text(),
+        password: editedRow.find("td#personalPassword").text(),
+      },
+      type: "editItem",
+    }
 
     port.postMessage(msg);
   });
@@ -103,29 +110,25 @@ var port = chrome.runtime.connect({
 port.onMessage.addListener(function (msg) {
   var $alertBox = $("#change-alert")
   // successful deletion
-  if (msg.type == "successDeleteClass") {
+  if (msg.type == "successDeleteClass" || msg.type == "successDeletePersonal") {
     console.log(msg);
     $alertBox.addClass("alert-success");
-    $alertBox.text(`${extractClassName(msg.oldClass)} was successfully removed from Ok, Zoomer.`)
-  } else if (msg.type == "successDeletePersonal") {
-    $alertBox.addClass("alert-success");
-    $alertBox.text(`${msg.oldPersonal.entryInfo.name} was successfully removed from Ok, Zoomer.`)
+    $alertBox.text(`${extractClassName(msg.oldItem, true)} was successfully removed from Ok, Zoomer.`)
 
     // failed deletion
-  } else if (msg.type == "failureDeleteClass") {
-    $alertBox.addClass("alert-danger");
-    $alertBox.text(`Error deleting class: ${msg.error}`)
-  } else if (msg.type == "failureDeletePersonal") {
-    $alertBox.addClass("alert-danger");
-    $alertBox.text(`Error deleting personal entry: ${msg.error}`)
+  } else if (msg.type == "successEditClass" || msg.type == "successEditPersonal") {
+    $alertBox.addClass("alert-success");
+    $alertBox.text(`${extractClassName(msg.oldItem, true)} was successfully edited`)
 
     // failed edit
-  } else if (msg.type == "failureEditClass") {
+  } else if (msg.type == "failureDeleteClass" || msg.type == "failureDeletePersonal") {
+    $alertBox.addClass("alert-danger");
+    $alertBox.text(`Error deleting class: ${msg.error}`)
+
+    // failed edit
+  } else if (msg.type == "failureEditClass" || msg.type == "failureEditPersonal") {
     $alertBox.addClass("alert-danger");
     $alertBox.text(`Error editing class: ${msg.error}`)
-  } else if (msg.type == "failureEditPersonal") {
-    $alertBox.addClass("alert-danger");
-    $alertBox.text(`Error editing personal entry: ${msg.error}`)
   }
   $alertBox.fadeTo(5000, 500).slideUp(500, function () {
     $alertBox.slideUp(500);
