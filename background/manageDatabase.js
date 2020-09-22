@@ -1,45 +1,34 @@
+var portfromCS;
+
 function activateListeners() {
   console.log("activating listeners");
-  chrome.runtime.onConnect.addListener(function (port) {
+  chrome.runtime.onConnect.addListener(port => {
+    portFromCS = port;
+    console.log('connected ', port);
     // console.assert(port.name == "knockknock");
-    port.onMessage.addListener(function (msg) {
+    portFromCS.onMessage.addListener(function (msg) {
       console.log(msg);
       // listen for addition requests
       if (msg.type === "addClass") {
-        chrome.storage.sync.get({
-            classIDs: []
-          },
-          function (data) {
-            console.log(data.classIDs);
-
-            // this weird setup allows me to add each class as an individual object to the storage
-            // importantly, with the zoomerID as the key
-            var obj = {};
-            obj[msg.toAdd.zoomerID] = msg.toAdd;
-
-            chrome.storage.sync.set(obj, function () {
-              console.log(`added ${JSON.stringify(obj)} to class list`);
-            });
-            addClassID(data.classIDs, msg.toAdd.zoomerID); //storing the storage value in a variable and passing to update function
-            createClassAlarm(msg.toAdd);
-            port.postMessage({
-              type: "reload"
-            });
-          }
-        );
+        addClass(msg.toAdd, function () {
+          portFromCS.postMessage({
+            type: "reload"
+          });
+        })
       } else if (msg.type === "addPersonal") {
         chrome.storage.sync.get({
             personal: []
           },
           function (data) {
             console.log(data.personal);
-            addPersonal(data.personal, msg.toAdd);
-            createPersonalAlarm(msg.toAdd);
-            port.postMessage({
+            addPersonal(data.personal, msg.toAdd, function () {});
+            createAlarms(msg.toAdd);
+            portFromCS.postMessage({
               type: "reload"
             });
           }
         );
+
         // listen for deletion requests
       } else if (msg.type === "deleteClass") {
         chrome.storage.sync.get({
@@ -49,14 +38,13 @@ function activateListeners() {
             try {
               console.log(data.classIDs);
               deleteClass(data.classIDs, msg.zoomerID, function (oldClass) { //storing the storage value in a variable and passing to update function
-                deleteAlarm(msg.zoomerID)
-                port.postMessage({
+                portFromCS.postMessage({
                   oldClass: oldClass,
                   type: "successDeleteClass"
                 });
               });
             } catch (err) {
-              port.postMessage({
+              portFromCS.postMessage({
                 type: "failureDeleteClass",
                 error: err.toString()
               });
@@ -71,13 +59,12 @@ function activateListeners() {
               console.log(data.personal);
               // nothing personnel, kiddo
               var oldPersonal = deletePersonal(data.personal, msg.zoomerID);
-              deleteAlarm(msg.zoomerID)
-              port.postMessage({
-                oldPersonal: oldPersonal,
+              portFromCS.postMessage({
+                oldItem: oldPersonal,
                 type: "successDeletePersonal"
               });
             } catch (err) {
-              port.postMessage({
+              portFromCS.postMessage({
                 type: "failureDeletePersonal",
                 error: err.toString()
               });
@@ -86,39 +73,21 @@ function activateListeners() {
         );
 
         // listen for edit requests
-      } else if (msg.type === "editClass") {
+      } else if (msg.type === "editItem") {
         try {
-          editClass(msg.zoomerID, msg.newObject);
-          port.postMessage({
-            type: "successEditClass"
+          editZoomerItem(msg.zoomerID, msg.editingObj, function (oldItem) {
+            portFromCS.postMessage({
+              oldItem: oldItem,
+              type: "successEditClass"
+            });
           });
+
         } catch (err) {
-          port.postMessage({
+          portFromCS.postMessage({
             type: "failureEditClass",
             error: err.toString()
           });
         }
-
-      } else if (msg.type === "editPersonal") {
-        chrome.storage.sync.get({
-            personal: []
-          },
-          function (data) {
-            try {
-
-              console.log(data.personal);
-              editPersonal(data.personal, msg.index, msg.newObject);
-              port.postMessage({
-                type: "successEditPersonal"
-              });
-            } catch (err) {
-              port.postMessage({
-                type: "failureEditPersonal",
-                error: err.toString()
-              });
-            }
-          }
-        );
       }
     });
   });
@@ -131,7 +100,6 @@ function activateListeners() {
 // --------------------------------------------------
 
 
-// TODO: create class array with IDs, rather than an array of the class objects themselves
 function addClassID(array, toAdd) {
   array.push(toAdd);
   //then call the set to update with modified value
@@ -142,13 +110,50 @@ function addClassID(array, toAdd) {
   });
 }
 
-// zoomerID is a number
-function editClass(zoomerID, newObject) {
-  var obj = {};
-  obj[zoomerID] = newObject;
-  //then call the set to update with modified value
-  chrome.storage.sync.set(obj, function () {
-    console.log(`updating to ${newObject}`);
+function addClass(toAdd, callback) {
+  chrome.storage.sync.get({
+      classIDs: []
+    },
+    function (data) {
+      console.log(data.classIDs);
+
+      // this weird setup allows me to add each class as an individual object to the storage
+      // importantly, with the zoomerID as the key
+      var obj = {};
+      obj[toAdd.zoomerID] = toAdd;
+
+      chrome.storage.sync.set(obj, function () {
+        console.log(`added ${JSON.stringify(obj)} to class list`);
+        addClassID(data.classIDs, toAdd.zoomerID); //storing the storage value in a variable and passing to update function
+        // createClassAlarm(msg.toAdd);
+        createAlarms(toAdd);
+        callback();
+      });
+
+    }
+  );
+}
+
+function deleteZoomerItem(zoomerID, callback) {
+  IDLookup(zoomerID, function (foundClass, foundIndex) {
+    if (foundIndex == -1) {
+      chrome.storage.sync.get({
+          classIDs: []
+        },
+        function (data) {
+          deleteClass(data.classIDs, parseInt(zoomerID), function (oldClass) {
+            callback(oldClass)
+          });
+        });
+    } else {
+      chrome.storage.sync.get({
+          personal: []
+        },
+        function (data) {
+          var oldPersonal = deletePersonal(data.personal, zoomerID)
+          callback(oldPersonal);
+        })
+    }
   });
 }
 
@@ -170,6 +175,7 @@ function deleteClass(array, zoomerID, callback) {
         chrome.storage.sync.set({
           classIDs: array
         }, function () {
+          deleteAlarm(zoomerID);
           console.log(`removed ${zoomerID} from classIDs list`);
         });
       }
@@ -180,26 +186,17 @@ function deleteClass(array, zoomerID, callback) {
   });
 }
 
-function addPersonal(array, toAdd) {
+function addPersonal(array, toAdd, callback) {
   array.push(toAdd);
   //then call the set to update with modified value
   chrome.storage.sync.set({
     personal: array
   }, function () {
     console.log("added to personal list with new values");
+    callback();
   });
 }
 
-function editPersonal(array, index, newObject) {
-  var oldPersonal = array[index];
-  array[index] = newObject;
-  //then call the set to update with modified value
-  chrome.storage.sync.set({
-    personal: array
-  }, function () {
-    console.log(`changed ${oldPersonal} to ${newObject}`);
-  });
-}
 
 function deletePersonal(array, zoomerID) {
   var oldPersonal = findElement(array, "zoomerID", zoomerID);
@@ -209,10 +206,50 @@ function deletePersonal(array, zoomerID) {
     chrome.storage.sync.set({
       personal: array
     }, function () {
+      deleteAlarm(zoomerID)
       console.log(`removed ${JSON.stringify(oldPersonal)} from personal entries list`);
     });
     return oldPersonal;
   } else {
     throw "could not find personal entry with id: " + zoomerID;
   }
+}
+
+
+function editZoomerItem(zoomerID, updatedObject, callback) {
+  IDLookup(zoomerID, function (foundClass, foundIndex) {
+    if (foundClass != undefined) {
+      if (foundIndex == -1) { // if the found index is -1, it's a class
+        var updatedClass = foundClass;
+        for (const key in updatedObject) {
+          updatedClass[key] = updatedObject[key];
+        }
+        var obj = {};
+        obj[zoomerID] = updatedClass;
+        //then call the set to update with modified value
+        chrome.storage.sync.set(obj, function () {
+          console.log(`updating to ${updatedClass}`);
+          callback(foundClass);
+        });
+      } else {
+        chrome.storage.sync.get({
+            personal: []
+          },
+          function (data) {
+            var array = data.personal;
+            var oldPersonal = array[foundIndex];
+            for (const key in updatedObject) {
+              oldPersonal[key] = updatedObject[key];
+            }
+            array[foundIndex] = oldPersonal;
+            //then call the set to update with modified value
+            chrome.storage.sync.set({
+              personal: array
+            }, function () {
+              callback(oldPersonal);
+            });
+          })
+      }
+    }
+  });
 }
