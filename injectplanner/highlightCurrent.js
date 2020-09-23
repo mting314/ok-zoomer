@@ -16,7 +16,7 @@ function classInProgress(classDiv, targetHeight) {
     }
 
 
-
+    // TODO: I think I might be able to switch this to moment, but is there a need?
     var now = new Date();
     var usaTime = new Date(now.toLocaleString('en-US', {
       timeZone: "America/Los_Angeles"

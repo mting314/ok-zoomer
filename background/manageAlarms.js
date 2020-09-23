@@ -35,13 +35,7 @@ function createAlarms(entry) {
     var classDay = parseInt(classTime[0]);
     var dayDifference = (((classDay - now.day()) % 7) + 7) % 7
 
-    // var timeToRing = now.getTime() + dayDifference * 24 * 60 * 60000
-    // var target = new Date(timeToRing);
-    // target.setHours(parseInt(classTime[1]), parseInt(classTime[2]), 0, 0)
-    // var timeToRing = new Date(now.getTime() + dayDifference * 24* 60 * 60000)
-    // var target = dateWithTimeZone("America/Los_Angeles", timeToRing.getFullYear(), timeToRing.getMonth(), timeToRing.getDate(), parseInt(classTime[1]), parseInt(classTime[2]), 0)
-    var timeToRing = now.add(dayDifference, 'days')
-    timeToRing.hours(classTime[1]).minutes(classTime[2]).seconds(0)
+    var timeToRing = now.add(dayDifference, 'days').hours(classTime[1]).minutes(classTime[2]).seconds(0)
 
     if (dayDifference == 0) {
       if (moment().diff(timeToRing) > 0) {
@@ -49,7 +43,7 @@ function createAlarms(entry) {
       }
     }
     if (entry.remindTime) {
-      timeToRing.add(entry.remindTime, 'minutes')
+      timeToRing.subtract(entry.remindTime, 'minutes')
     }
 
     var startTime = moment.unix(entry.timeBoundaries[0]/1000);
@@ -62,6 +56,8 @@ function createAlarms(entry) {
     console.log([startTime, timeToRing, endTime].join(" | "));
     while (timeToRing.isBetween(startTime, endTime)) {
       console.log(entry.zoomerID + " " + timeToRing.format("LLL"));
+      var benis = moment(timeToRing);
+      console.log(new Date(benis.valueOf()))
       chrome.alarms.create(entry.zoomerID + " " + timeToRing.format("LLL"), {
         when: timeToRing.valueOf()
       });
