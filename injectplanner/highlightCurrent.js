@@ -5,73 +5,43 @@ function classInProgress(classDiv, targetHeight) {
 }
 
 (function () {
-  var grids = document.getElementsByClassName("daybox")
-  for (var i = 0, currentGrid; currentGrid = grids[i]; i++) {
-    // var currentGrid = document.getElementsByClassName("daybox")[1];
-    var hourCount = 0;
-    for (let item of currentGrid.childNodes) {
-      if (item.className == "hourbox") {
-        hourCount++;
-      }
-    }
-
-
     // TODO: I think I might be able to switch this to moment, but is there a need?
+  var grids = $(".daybox");
+  grids.each(function (index) {
+    var hourCount = $(this).find(".hourbox").length + 1;
+    var timecols = $(this).find(".timebox");
+
     var now = new Date();
     var usaTime = new Date(now.toLocaleString('en-US', {
       timeZone: "America/Los_Angeles"
     }))
     // now.setHours(11);
-    // now.setDate(now.getDate()-2);
-    if (8 <= usaTime.getHours() && usaTime.getHours() < 8 + hourCount) {
-      var currentDay = usaTime.getDay();
-      // TODO: I think in some cases, planner can display weekend columns. How to handle?
-      if (currentDay != 6 && currentDay != 0) {
-        // var eightAM = dateWithTimeZone("America/Los_Angeles", usaTime.getFullYear(), usaTime.getMonth(), usaTime.getDate(), 8, 0, 0)
-        // var eightAM = new Date(now.getTime());
-        // eightAM.setHours(8, 0, 0, 0);
-        var minutesFrom8 = (usaTime.getHours() - 8)*60 + usaTime.getMinutes();
+    // now.setDate(now.getDate() + 2);
+    if (8 <= now.getHours() && now.getHours() < 8 + hourCount) {
+      var currentDay = (((now.getDay() - 1) % 7) + 7) % 7;
+      var eightAM = new Date(now.getTime());
+      eightAM.setHours(8, 0, 0, 0);
 
-        var start = hourCount;
-        var hourboxHeight = parseInt(document.getElementsByClassName("hourbox")[0].style.height, 10);
-        var targetHeight = hourboxHeight / 60 * minutesFrom8;
+      var minutesFrom8 = (now - eightAM) / 60000;
+      var hourboxHeight = $(".hourbox:eq(0)").height();
+      var targetHeight = hourboxHeight / 60 * minutesFrom8;
 
-        var endBox = hourCount + currentDay - 1;
-        while (start <= endBox) {
-          var containingDiv = document.createElement("div");
-
-          var injectingCol = currentGrid.childNodes[start];
-          var injectingHR = document.createElement("hr");
-
-          containingDiv.style.top = `${targetHeight}px`;
-
-
-          injectingHR.className = "oof";
-
-          if (start < endBox) {
-            containingDiv.className = "otherday";
-          } else {
-            containingDiv.className = "thisday";
+      if (timecols.length > currentDay) {
+        timecols.each(function (dayIndex, timecol) {
+          var containingDiv = $(`<div class="${(dayIndex < currentDay) ? "otherday" : "thisday"}" style="top: ${targetHeight}px"></div>`)
+          $(timecol).append(containingDiv);
+          if (dayIndex == currentDay) {
+            return false;
           }
-          // containingDiv.appendChild(injectingHR)
-          injectingCol.appendChild(containingDiv)
-
-          start++;
-        }
-        currentGrid.childNodes[endBox].childNodes.forEach(
-          function (classDiv) {
-            if (classDiv.className.includes("planneritembox") && classInProgress(classDiv, targetHeight)) {
-              classDiv.classList.add("currentClass");
-            }
-          }
-        )
-        //     console.log(item.className);
-        //     if (item.className == "planneritembox" && classInProgress(item)){
-        //       item.classList.add("currentClass");
-        //     }
-        //   }
-
+        })
       }
     }
-  }
+
+    $(timecols[currentDay]).find(".planneritembox").each(function (i, classDiv) {
+      if (classInProgress(classDiv, targetHeight)) {
+        classDiv.classList.add("currentClass");
+      }
+    })
+
+  })
 })();
