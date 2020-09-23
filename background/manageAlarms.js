@@ -11,16 +11,12 @@ dateWithTimeZone = (timeZone, year, month, day, hour, minute, second) => {
 };
 
 // moment.tz.add('America/Los_Angeles|PST PDT|80 70|0101|1Lzm0 1zb0 Op0');
-moment.tz.setDefault("America/Los_Angeles");
 
 function createAlarms(entry) {
   if (entry.classTimes.length == 0) {
     return;
   }
-  var therenow = new Date();
-  var now = new Date(therenow.toLocaleString('en-US', {
-    timeZone: "America/Los_Angeles"
-  }))
+  moment.tz.setDefault("America/Los_Angeles");
   // since classes have a defined start time, and we could be adding a class after the quarter starts,
   // we have to start creating alarms from the LATER of right now, and the day classes start
   // if we start just right now, and its before the quarter starts, start_time < target is not satisfied
@@ -28,9 +24,9 @@ function createAlarms(entry) {
   // week 1,2,3 etc.
   // var dates = [now, new Date(entry.timeBoundaries[0])]
   // var now = new Date(Math.max.apply(null, dates));
-  var now = moment.max(moment(), moment.unix(entry.timeBoundaries[0]/1000))
 
   for (var i = 0; i < entry.classTimes.length; i++) {
+    var now = moment.max(moment(), moment.unix(entry.timeBoundaries[0]/1000))
     var classTime = entry.classTimes[i].split(":");
     var classDay = parseInt(classTime[0]);
     var dayDifference = (((classDay - now.day()) % 7) + 7) % 7
