@@ -64,9 +64,9 @@ function getAllClasses(callback) {
 }
 
 // TODO: eventually I need to finish highlighting classes in progress in popup
-function classInProgress(classObject) {
-  var now = new Date();
-}
+// function classInProgress(classObject) {
+//   var now = new Date();
+// }
 
 // decides if you have entered a link or zoom room ID
 function checkIsLink(url) {

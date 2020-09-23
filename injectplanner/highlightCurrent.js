@@ -5,12 +5,16 @@ function classInProgress(classDiv, targetHeight) {
 }
 
 (function () {
+    // TODO: I think I might be able to switch this to moment, but is there a need?
   var grids = $(".daybox");
   grids.each(function (index) {
     var hourCount = $(this).find(".hourbox").length + 1;
     var timecols = $(this).find(".timebox");
 
     var now = new Date();
+    var usaTime = new Date(now.toLocaleString('en-US', {
+      timeZone: "America/Los_Angeles"
+    }))
     // now.setHours(11);
     // now.setDate(now.getDate() + 2);
     if (8 <= now.getHours() && now.getHours() < 8 + hourCount) {
