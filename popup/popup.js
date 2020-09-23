@@ -318,6 +318,7 @@ $(function () {
       editZoomerItem(parentId, {
         classTimes: foundClass.classTimes
       }, function () {
+        editAlarms(parentId);
         renderSchedule(parentId);
       });
     })
