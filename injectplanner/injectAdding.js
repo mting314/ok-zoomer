@@ -137,7 +137,28 @@ function addClass(port, obj) {
                 },
                 type: "addClass"
               }
-              port.postMessage(msg);
+              // port.postMessage(msg);
+              try {
+                port.postMessage(msg);
+              } catch (err) {
+                console.log(err);
+                chrome.runtime.sendMessage({
+                  type: 'wakeup',
+                }, function (response) {
+                  if (response.command == "retry") {
+                    var newport = chrome.runtime.connect({
+                      name: "knockknock"
+                    });
+                    // reload page after background listener executed port's command
+                    newport.onMessage.addListener(function (msg) {
+                      if (msg.type == "reload") {
+                        location.reload();
+                      }
+                    });
+                    newport.postMessage(msg);
+                  }
+                });
+              }
               // try {
               //   port.postMessage(msg);
               // } catch (err) {
@@ -232,19 +253,21 @@ function addPersonal(port, obj) {
       type: "addPersonal"
     }
 
-    port.postMessage(msg);
-    // try {
+
     //   port.postMessage(msg);
-    // } catch (err) {
-    //   console.log(err);
-    //   chrome.runtime.sendMessage({
-    //     type: 'wakeup',
-    //   }, function (response) {
-    //     if (response.command == "retry") {
-    //       port.postMessage(msg);
-    //     }
-    //   });
-    // }
+
+    try {
+      port.postMessage(msg);
+    } catch (err) {
+      console.log(err);
+      chrome.runtime.sendMessage({
+        type: 'wakeup',
+      }, function (response) {
+        if (response.command == "retry") {
+          port.postMessage(msg);
+        }
+      });
+    }
 
     console.log("sending message:", msg);
   }

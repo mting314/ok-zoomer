@@ -20,7 +20,7 @@ function createAlarms(entry) {
     target.setHours(parseInt(classTime[1]), parseInt(classTime[2]), 0, 0)
 
     if (dayDifference == 0) {
-      if (thereNow.getTime() - target.getTime() > 0) {
+      if (now.getTime() - target.getTime() > 0) {
         target.setDate(target.getDate() + 7)
       }
     }

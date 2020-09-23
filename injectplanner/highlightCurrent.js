@@ -8,6 +8,7 @@ function classInProgress(classDiv, targetHeight) {
   var grids = $(".daybox");
   grids.each(function (index) {
     var hourCount = $(this).find(".hourbox").length + 1;
+    var timecols = $(this).find(".timebox");
 
     var now = new Date();
     // now.setHours(11);
@@ -21,7 +22,6 @@ function classInProgress(classDiv, targetHeight) {
       var hourboxHeight = $(".hourbox:eq(0)").height();
       var targetHeight = hourboxHeight / 60 * minutesFrom8;
 
-      var timecols = $(this).find(".timebox");
       if (timecols.length > currentDay) {
         timecols.each(function (dayIndex, timecol) {
           var containingDiv = $(`<div class="${(dayIndex < currentDay) ? "otherday" : "thisday"}" style="top: ${targetHeight}px"></div>`)
