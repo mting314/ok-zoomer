@@ -444,7 +444,7 @@ function addClassDisplay(classObject) {
   // Create div for the class: composed of button and breaks
   var classRow = $(`<tr class="class d-flex align-items-center" id="${classObject.zoomerID}"></tr>`)
 
-  var classDescriptor = $("<td class = col-5 text-truncate text-center namedisplay></td>")
+  var classDescriptor = $(`<td class= "col-5 text-truncate text-center namedisplay"></td>`)
 
   var nameDiv = $(`<div class="namediv" style="text-align: center"></div>`).text((classObject.customName != undefined) ? classObject.customName : extractClassName(classObject, true))
   nameDiv.attr('contenteditable', 'true');

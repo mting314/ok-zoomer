@@ -2,7 +2,7 @@
 
 async function launch() {
   // start by clearing everything
-  chrome.storage.sync.clear()
+  // chrome.storage.sync.clear()
   activateListeners();
   speedchatOfTheDay();
 
@@ -10,12 +10,28 @@ async function launch() {
   chrome.alarms.clearAll()
 
   // start arrays off empty to avoid undefined issues later
-  await chrome.storage.sync.set({
-    classIDs: []
-  });
-  await chrome.storage.sync.set({
-    personal: []
-  });
+  chrome.storage.sync.get("classIDs", function (result) {
+    if (Object.keys(result).length === 0) {
+      chrome.storage.sync.set({
+        classIDs: []
+      });
+    } else {
+      for (var i = 0; i < result.classIDs.length; i++) {
+        editAlarms(result.classIDs[i])
+      }
+    }
+  })
+  chrome.storage.sync.get("personal", function (result) {
+    if (Object.keys(result).length === 0) {
+      chrome.storage.sync.set({
+        personal: []
+      });
+    } else {
+      for (var i = 0; i < result.personal.length; i++) {
+        createAlarms(result.personal[i])
+      }
+    }
+  })
 
   // by default, alarms are turned ON
   await chrome.storage.sync.set({

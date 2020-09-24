@@ -15,14 +15,12 @@ function classInProgress(classDiv, targetHeight) {
     var usaTime = new Date(now.toLocaleString('en-US', {
       timeZone: "America/Los_Angeles"
     }))
-    // now.setHours(11);
-    // now.setDate(now.getDate() + 2);
-    if (8 <= now.getHours() && now.getHours() < 8 + hourCount) {
-      var currentDay = (((now.getDay() - 1) % 7) + 7) % 7;
-      var eightAM = new Date(now.getTime());
-      eightAM.setHours(8, 0, 0, 0);
+    // usaTime.setHours(11);
+    // usaTime.setDate(now.getDate() + 2);
+    if (8 <= usaTime.getHours() && usaTime.getHours() < 8 + hourCount) {
+      var currentDay = (((usaTime.getDay() - 1) % 7) + 7) % 7;
 
-      var minutesFrom8 = (now - eightAM) / 60000;
+      var minutesFrom8 = (usaTime.getHours() - 8)*60 + usaTime.getMinutes();
       var hourboxHeight = $(".hourbox:eq(0)").height();
       var targetHeight = hourboxHeight / 60 * minutesFrom8;
 

@@ -1,15 +1,3 @@
-dateWithTimeZone = (timeZone, year, month, day, hour, minute, second) => {
-  let date = new Date(Date.UTC(year, month, day, hour, minute, second));
-
-  let utcDate = new Date(date.toLocaleString('en-US', { timeZone: "UTC" }));
-  let tzDate = new Date(date.toLocaleString('en-US', { timeZone: timeZone }));
-  let offset = utcDate.getTime() - tzDate.getTime();
-
-  date.setTime( date.getTime() + offset );
-
-  return date;
-};
-
 // moment.tz.add('America/Los_Angeles|PST PDT|80 70|0101|1Lzm0 1zb0 Op0');
 
 function createAlarms(entry) {

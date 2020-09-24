@@ -141,48 +141,45 @@ function addClass(port, obj) {
                 type: "addClass"
               }
               // port.postMessage(msg);
-              try {
-                port.postMessage(msg);
-              } catch (err) {
-                console.log(err);
-                chrome.runtime.sendMessage({
-                  type: 'wakeup',
-                }, function (response) {
-                  if (response.command == "retry") {
-                    var newport = chrome.runtime.connect({
-                      name: "knockknock"
-                    });
-                    // reload page after background listener executed port's command
-                    newport.onMessage.addListener(function (msg) {
-                      if (msg.type == "reload") {
-                        location.reload();
-                      }
-                    });
-                    newport.postMessage(msg);
-                  }
-                });
-              }
               // try {
               //   port.postMessage(msg);
               // } catch (err) {
-
               //   console.log(err);
-              //   if (err.message == "Attempting to use a disconnected port object") {
-              //     var newport = chrome.runtime.connect({
-              //       name: "knockknock"
-              //     });
-              //     // reload page after background listener executed port's command
-              //     newport.onMessage.addListener(function (msg) {
-              //       if (msg.type == "reload") {
-              //         location.reload();
-              //       }
-              //     });
-
-              //   }
-              //   if (chrome.runtime.lastError) {
-              //     alert("oof");
-              //   }
+              //   chrome.runtime.sendMessage({
+              //     type: 'wakeup',
+              //   }, function (response) {
+              //     if (response.command == "retry") {
+              //       var newport = chrome.runtime.connect({
+              //         name: "knockknock"
+              //       });
+              //       // reload page after background listener executed port's command
+              //       newport.onMessage.addListener(function (msg) {
+              //         if (msg.type == "reload") {
+              //           location.reload();
+              //         }
+              //       });
+              //       newport.postMessage(msg);
+              //     }
+              //   });
               // }
+              try {
+                port.postMessage(msg);
+              } catch (err) {
+          
+                if (err.message == "Attempting to use a disconnected port object") {
+                  var newport = chrome.runtime.connect({
+                    name: "benis"
+                  });
+                  // reload page after background listener executed port's command
+                  newport.onMessage.addListener(function (msg) {
+                    if (msg.type == "reload") {
+                      location.reload();
+                    }
+                  });
+                  newport.postMessage(msg);
+                }
+              }
+
               console.log("sending message:", msg);
             }
           }
@@ -223,7 +220,6 @@ function extractPersonal(entryRow) {
   } catch (err) {
     console.log(err);
   }
-  console.log(personalEntry);
   return personalEntry;
 }
 
@@ -262,14 +258,19 @@ function addPersonal(port, obj) {
     try {
       port.postMessage(msg);
     } catch (err) {
-      console.log(err);
-      chrome.runtime.sendMessage({
-        type: 'wakeup',
-      }, function (response) {
-        if (response.command == "retry") {
-          port.postMessage(msg);
-        }
-      });
+
+      if (err.message == "Attempting to use a disconnected port object") {
+        var newport = chrome.runtime.connect({
+          name: "benis"
+        });
+        // reload page after background listener executed port's command
+        newport.onMessage.addListener(function (msg) {
+          if (msg.type == "reload") {
+            location.reload();
+          }
+        });
+        newport.postMessage(msg);
+      }
     }
 
     console.log("sending message:", msg);
