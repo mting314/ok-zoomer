@@ -381,7 +381,7 @@ $(function () {
         vBlob = new Blob([_myArray], {
           type: "octet/stream"
         }),
-        vName = `${extractClassName(foundClass)}.json`,
+        vName = `${extractClassName(foundClass, true)}.json`,
         vUrl = window.URL.createObjectURL(vBlob);
       vLink.setAttribute('href', vUrl);
       vLink.setAttribute('download', vName);
