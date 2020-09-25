@@ -39,7 +39,7 @@ function createAlarms(entry) {
 
     console.log([startTime, timeToRing, endTime].join(" | "));
     while (timeToRing.isBetween(startTime, endTime)) {
-      console.log(entry.zoomerID + " " + new Date(timeToRing.valueOf()));
+      console.log(entry.zoomerID + " " + extractClassName(entry, true) + " " + new Date(timeToRing.valueOf()));
       chrome.alarms.create(entry.zoomerID + " " + timeToRing.format("LLL"), {
         when: timeToRing.valueOf()
       });
