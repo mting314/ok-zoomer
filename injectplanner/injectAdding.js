@@ -1,3 +1,5 @@
+const millisInDay = 24*60*60*1000;
+
 function getLastWord(words) {
   let n = words.split(" ");
   return n[n.length - 1];
@@ -50,7 +52,13 @@ function extractTimeBoundaries(classInfo) {
 
   if (typeof start_time_matches !== "undefined" && typeof end_time_matches !== "undefined") {
     start_time = parseInt(start_time_matches[1]);
-    end_time = parseInt(end_time_matches[1]);
+    // TODO (?): There's a really strange thing for Winter 2021 at least where the "class_last_dt" is marked
+    // as the midnight of the last *Friday*, which actually cuts off that last Friday of classes
+    // I have no idea when this might happen again so I think it might just be safe to always add 24 hours
+    end_time = parseInt(end_time_matches[1]) + millisInDay;
+    // I'm also a bit uncomfortable now adding 24 hours like this just because I'm afraid of weird DST stuff potentially
+    // and I trust moment a lot more, but it doesn't seem worth it to store these boundaries as moment
+    // objects either, so I think this'll do.
   } else {
     let now = new Date();
     start_time = new Date(now.toLocaleString('en-US', {
@@ -118,6 +126,9 @@ function addClass(port, obj) {
             delete selectedClass.anchor_tags;
             delete selectedClass.info_tooltip_data;
             delete selectedClass.meet_location_tooltip;
+
+            console.log(selectedClass);
+
             let inputObj;
             try {
               inputObj = inputHandling(extractClassName(selectedClass, true));

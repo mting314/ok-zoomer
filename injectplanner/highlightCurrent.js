@@ -18,7 +18,7 @@ function classInProgress(classDiv, targetHeight) {
       timeZone: "America/Los_Angeles"
     }))
     // usaTime.setHours(11);
-    // usaTime.setDate(now.getDate() - 2);
+    // usaTime.setDate(3);
     let currentDay = (((usaTime.getDay() - 1) % 7) + 7) % 7;
     // If the current (US) time is within the boundaries of the grid, draw in the line at the appropriate height
     // and highlight current class if the line crosses it (on the right day)
@@ -27,7 +27,6 @@ function classInProgress(classDiv, targetHeight) {
       let minutesFrom8 = (usaTime.getHours() - 8) * 60 + usaTime.getMinutes();
       let hourboxHeight = $(".hourbox:eq(0)").height();
       let targetHeight = hourboxHeight / 60 * minutesFrom8;
-
 
       if (timecols.length > currentDay) {
         timecols.each(function (dayIndex, timecol) {

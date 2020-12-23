@@ -38,13 +38,17 @@ function createAlarms(entry) {
     // target = new Date(timeObject.getTime() + 10000);
 
     console.log([startTime, timeToRing, endTime].join(" | "));
+
+    let createdAlarms = [];
     while (timeToRing.isBetween(startTime, endTime)) {
-      console.log(entry.zoomerID + " " + extractClassName(entry, true) + " " + new Date(timeToRing.valueOf()));
+      createdAlarms.push(entry.zoomerID + " " + extractClassName(entry, true) + " " + new Date(timeToRing.valueOf()));
       chrome.alarms.create(entry.zoomerID + " " + timeToRing.format("LLL"), {
         when: timeToRing.valueOf()
       });
       timeToRing.add(1, 'weeks');
     }
+    console.log(`created ${moment().day(classDay).format('dddd')} alarms for ${extractClassName(entry, true)}:`, createdAlarms);
+
   }
 }
 
