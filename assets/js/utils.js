@@ -35,7 +35,7 @@ function createURLfromID(roomID, password) {
   var zoomIDURL = `zoommtg://zoom.us/join?action=join&confno=${roomID}`
   if (password) {
     var URIpassword = encodeURIComponent(password);
-    zoomIDURL += password ? `&pwd=${URIpassword}` : "";
+    zoomIDURL += (password !== undefined) ? `&pwd=${URIpassword}` : "";
   }
   return zoomIDURL;
 }

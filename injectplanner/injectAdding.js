@@ -1,11 +1,13 @@
+const millisInDay = 24*60*60*1000;
+
 function getLastWord(words) {
-  var n = words.split(" ");
+  let n = words.split(" ");
   return n[n.length - 1];
 
 }
 
 function getElementIndex(node) {
-  var index = 0;
+  let index = 0;
   while ((node = node.previousElementSibling)) {
     index++;
   }
@@ -14,24 +16,24 @@ function getElementIndex(node) {
 
 
 function inputHandling(name) {
-  var inputObj = {
+  let inputObj = {
     url: "",
     password: "",
     isLink: true,
   }
-  var result = prompt("Add this class to the planner?\r\n" + name + "\r\nIf so, optionally enter a Zoom link OR Zoom Room ID:", "0123456789 OR https://ucla.zoom.us/j/");
-  if (result == null) { // if cancelled, return undefined
+  let result = prompt("Add this class to the planner?\r\n" + name + "\r\nIf so, optionally enter a Zoom link OR Zoom Room ID:", "0123456789 OR https://ucla.zoom.us/j/");
+  if (result === null) { // if cancelled, return undefined
     return;
   }
-  var urlData;
+  let urlData;
   if (result != "") { // if clicked OK, but didn't enter URL, return the empty inputObj
     urlData = checkIsLink(result);
-    if (urlData == undefined) {
+    if (urlData === undefined) {
       return;
     }
     inputObj.url = urlData[1];
     inputObj.isLink = urlData[0];
-    var password = prompt("What is the password for the class: " + name + "\r\nat the link " + result);
+    let password = prompt("What is the password for the class: " + name + "\r\nat the link " + result);
     if (password != null) {
       inputObj.password = password;
     }
@@ -40,17 +42,25 @@ function inputHandling(name) {
 }
 
 function extractTimeBoundaries(classInfo) {
+  let start_time, end_time;
+  let start_time_matches, end_time_matches;
+
   if (classInfo.class_strt_dt != undefined) {
-    var start_time_matches = classInfo.class_strt_dt.match(/\((.*?)\)/);
-    var end_time_matches = classInfo.class_last_dt.match(/\((.*?)\)/);
+    start_time_matches = classInfo.class_strt_dt.match(/\((.*?)\)/);
+    end_time_matches = classInfo.class_last_dt.match(/\((.*?)\)/);
   }
 
-  var start_time, end_time;
-  if (start_time_matches && end_time_matches) {
+  if (typeof start_time_matches !== "undefined" && typeof end_time_matches !== "undefined") {
     start_time = parseInt(start_time_matches[1]);
-    end_time = parseInt(end_time_matches[1]);
+    // TODO (?): There's a really strange thing for Winter 2021 at least where the "class_last_dt" is marked
+    // as the midnight of the last *Friday*, which actually cuts off that last Friday of classes
+    // I have no idea when this might happen again so I think it might just be safe to always add 24 hours
+    end_time = parseInt(end_time_matches[1]) + millisInDay;
+    // I'm also a bit uncomfortable now adding 24 hours like this just because I'm afraid of weird DST stuff potentially
+    // and I trust moment a lot more, but it doesn't seem worth it to store these boundaries as moment
+    // objects either, so I think this'll do.
   } else {
-    var now = new Date();
+    let now = new Date();
     start_time = new Date(now.toLocaleString('en-US', {
       timeZone: "America/Los_Angeles"
     })).getTime();
@@ -65,9 +75,9 @@ function extractTimeBoundaries(classInfo) {
 // To counteract this, I can "listen" for this error somehow, and run a function in background to reopen
 // the port?
 function addClass(port, obj) {
-  var classLink = obj.parent().parent().children()[1]
-  var classParams = getParams(classLink.childNodes[1].href)
-  var paramData = {
+  let classLink = obj.parent().parent().children()[1]
+  let classParams = getParams(classLink.childNodes[1].href)
+  let paramData = {
     search_by_typ_cd: 'classidnumber',
     term_cd: `${classParams.term_cd}`,
     ses_grp_cd: '%',
@@ -116,8 +126,12 @@ function addClass(port, obj) {
             delete selectedClass.anchor_tags;
             delete selectedClass.info_tooltip_data;
             delete selectedClass.meet_location_tooltip;
+
+            console.log(selectedClass);
+
+            let inputObj;
             try {
-              var inputObj = inputHandling(extractClassName(selectedClass, true));
+              inputObj = inputHandling(extractClassName(selectedClass, true));
             } catch (err) {
               if (err.name == 'LengthError' || err.name == 'InputError') {
                 alert(err.message);
@@ -126,8 +140,8 @@ function addClass(port, obj) {
                 throw err; // let others bubble up
               }
             }
-            if (inputObj != undefined) {
-              var msg = {
+            if (inputObj !== undefined) {
+              let msg = {
                 toAdd: {
                   classInfo: newres.d.svcRes.ResultTiers[0],
                   classTimes: extractClassTimes(newres.d.svcRes.ResultTiers[0]),
@@ -140,34 +154,12 @@ function addClass(port, obj) {
                 },
                 type: "addClass"
               }
-              // port.postMessage(msg);
-              // try {
-              //   port.postMessage(msg);
-              // } catch (err) {
-              //   console.log(err);
-              //   chrome.runtime.sendMessage({
-              //     type: 'wakeup',
-              //   }, function (response) {
-              //     if (response.command == "retry") {
-              //       var newport = chrome.runtime.connect({
-              //         name: "knockknock"
-              //       });
-              //       // reload page after background listener executed port's command
-              //       newport.onMessage.addListener(function (msg) {
-              //         if (msg.type == "reload") {
-              //           location.reload();
-              //         }
-              //       });
-              //       newport.postMessage(msg);
-              //     }
-              //   });
-              // }
               try {
                 port.postMessage(msg);
               } catch (err) {
           
                 if (err.message == "Attempting to use a disconnected port object") {
-                  var newport = chrome.runtime.connect({
+                  let newport = chrome.runtime.connect({
                     name: "benis"
                   });
                   // reload page after background listener executed port's command
@@ -191,14 +183,13 @@ function addClass(port, obj) {
 }
 
 function extractPersonal(entryRow) {
-  var personalEntry = {
+  let personalEntry = {
     name: "",
     days: "",
     time: "",
   };
   // the personal entry description/name is the 2nd child node of the 2nd td of the row
   try {
-    //personalEntry.name = entryRow.cells[1].childNodes[1].wholeText;
     personalEntry.name = entryRow.find("td:eq(1)").text()
   } catch (err) {
     console.log(err);
@@ -206,7 +197,6 @@ function extractPersonal(entryRow) {
 
   try {
     // the personal entry Days is the text node within the anchor tag of the 3rd td of the row
-    // personalEntry.days = entryRow.cells[2].childNodes[1].childNodes[0].wholeText;
     personalEntry.days = entryRow.find("td:eq(2) a").text()
   } catch (err) {
     console.log(err);
@@ -214,7 +204,6 @@ function extractPersonal(entryRow) {
 
   try {
     // the personal entry time is the only child node of the 4th td of the row
-    // personalEntry.time = entryRow.cells[3].childNodes[0].wholeText;
     personalEntry.time = entryRow.find("td:eq(3)").text()
 
   } catch (err) {
@@ -224,11 +213,12 @@ function extractPersonal(entryRow) {
 }
 
 function addPersonal(port, obj) {
-  var personalRow = obj.parent().parent();
-  var personalObject = extractPersonal(personalRow);
+  let personalRow = obj.parent().parent();
+  let personalObject = extractPersonal(personalRow);
   console.log(personalObject);
+  let inputObj;
   try {
-    var inputObj = inputHandling(personalObject.name);
+    inputObj = inputHandling(personalObject.name);
   } catch (err) {
     if (err.name == 'LengthError' || err.name == 'InputError') {
       alert(err.message);
@@ -237,8 +227,8 @@ function addPersonal(port, obj) {
       throw err; // let others bubble up
     }
   }
-  if (inputObj != undefined) {
-    var msg = {
+  if (inputObj !== undefined) {
+    let msg = {
       toAdd: {
         entryInfo: personalObject,
         classTimes: extractPersonalTimes(personalObject),
@@ -260,7 +250,7 @@ function addPersonal(port, obj) {
     } catch (err) {
 
       if (err.message == "Attempting to use a disconnected port object") {
-        var newport = chrome.runtime.connect({
+        let newport = chrome.runtime.connect({
           name: "benis"
         });
         // reload page after background listener executed port's command
@@ -285,7 +275,7 @@ function equalEntries(first, second) {
 // its old link if you don't refresh. Probably should change? Acutally maybe not, that requires accessing
 // the database, which could be worse than just having the link be injected and hard coded in the HTML
 function createZoomLink(zoomerItem) {
-  var zoomLink;
+  let zoomLink;
   if (zoomerItem.isLink) {
     zoomLink = $(`<a href="${zoomerItem.url}" class = "zoom-link" target="_blank"></a>`);
   } else {
@@ -293,11 +283,11 @@ function createZoomLink(zoomerItem) {
   }
 
 
-  var zoomIcon = $(`<span class="moon-icon-zoom"></span>`);
+  let zoomIcon = $(`<span class="moon-icon-zoom"></span>`);
 
   // for some reason making that little zoom icon (with the camera) requires three paths, check css
-  var pathList = [];
-  for (var i = 1; i <= 3; i++) {
+  let pathList = [];
+  for (let i = 1; i <= 3; i++) {
     pathList.push($(`<span class="path${i.toString()}"></span>`))
   }
 
@@ -307,12 +297,12 @@ function createZoomLink(zoomerItem) {
 }
 
 function createAddLink(type) {
-  var addLink = $(`<a href="#" class="${type}"><span class="icon-plus zoomer-plus"></span></a>`)
+  let addLink = $(`<a href="#" class="${type}"><span class="icon-plus zoomer-plus"></span></a>`)
   return addLink;
 }
 
 (function () {
-  var port = chrome.runtime.connect({
+  let port = chrome.runtime.connect({
     name: "knockknock"
   });
   chrome.runtime.sendMessage({
@@ -326,13 +316,13 @@ function createAddLink(type) {
   });
   // inject links to class planner tables
   getAllClasses(function (classList) {
-    var classIndex = 0;
+    let classIndex = 0;
     while ($(`#ctl00_MainContent_planClassListView_courseListView_ctrl${classIndex}_sectionListView_ctrl0_thisRow`).length != 0) {
-      var sectionIndex = 0;
+      let sectionIndex = 0;
       while ($(`#ctl00_MainContent_planClassListView_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).length != 0) {
-        var currentClassRow = $(`#ctl00_MainContent_planClassListView_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).first();
-        var found = false;
-        if (classList != undefined) {
+        let currentClassRow = $(`#ctl00_MainContent_planClassListView_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).first();
+        let found = false;
+        if (classList !== undefined) {
           classList.forEach(myclass => {
             if (currentClassRow.find("td:eq(1) a").attr('title').includes(myclass.classInfo.srs_crs_no)) {
               found = true;
@@ -350,13 +340,12 @@ function createAddLink(type) {
     }
 
     // inject links to tables for classes in study list but not in plan
-    var classIndex = 0;
     while ($(`#ctl00_MainContent_enrolledNotPlanList_courseListView_ctrl${classIndex}_sectionListView_ctrl0_thisRow`).length != 0) {
-      var sectionIndex = 0;
+      let sectionIndex = 0;
       while ($(`#ctl00_MainContent_enrolledNotPlanList_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).length != 0) {
-        var currentClassRow = $(`#ctl00_MainContent_enrolledNotPlanList_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).first();
-        var found = false;
-        if (classList != undefined) {
+        let currentClassRow = $(`#ctl00_MainContent_enrolledNotPlanList_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).first();
+        let found = false;
+        if (classList !== undefined) {
           classList.forEach(myclass => {
             if (currentClassRow.find("td:eq(1) a").attr('title').includes(myclass.classInfo.srs_crs_no)) {
               found = true;
@@ -386,12 +375,12 @@ function createAddLink(type) {
 
   // inject to Personal Entries table
   chrome.storage.sync.get('personal', function (result) {
-    var counter = 0;
+    let counter = 0;
     while ($(`tr#ctl00_MainContent_personalEntryListView_ctrl${counter}_iItemRow`).length != 0) {
-      var personalRow = $(`tr#ctl00_MainContent_personalEntryListView_ctrl${counter}_iItemRow`).first()
+      let personalRow = $(`tr#ctl00_MainContent_personalEntryListView_ctrl${counter}_iItemRow`).first()
 
       // check if already in planner
-      var found = false;
+      let found = false;
       result.personal.forEach(personalEntry => {
         if (equalEntries(personalEntry.entryInfo, extractPersonal(personalRow))) {
           found = true;

@@ -189,10 +189,9 @@ function readToTables() {
   });
 
   chrome.storage.sync.get('personal', function (result) {
-    if (result.personal != undefined) {
+    if (result.personal !== undefined) {
 
       for (const [index, personalObject] of result.personal.entries()) {
-        console.log(personalObject)
         var row = $(`<tr id="${(personalObject.zoomerID).toString()}">`).append(`<td id="personalTableIndex">${(index+1).toString()}</td>
       <td id="personalName">${personalObject.entryInfo.name}</td>
       <td id="personalMeetDays">${personalObject.entryInfo.days}</td>

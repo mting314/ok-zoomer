@@ -51,16 +51,10 @@ function createPasswordText(classPassword) {
 				var currentPersonal = findElement(result.personal, 'url', foundID);
 			}
 
+			info = createClassText(currentClass) ?? createClassText(currentPersonal);
 
 			// only inject if we actually found a matching class or personal entry
-			if (currentClass != undefined || currentPersonal != undefined) {
-				var info;
-				if (currentClass != undefined) {
-					info = createClassText(currentClass);
-				} else {
-					info = createClassText(currentPersonal);
-				}
-				// only inject if the class's name is not undefined, i.e. we found a matching class
+			if (info !== undefined) {
 				var helperText = $("<h1></h1>").text(`Joining ${info[0]}`);
 				$("._2XjT-0pJ").prepend(createPasswordText(info[1]));
 				$("._2XjT-0pJ").prepend(helperText);

@@ -5,7 +5,6 @@ function activateListeners() {
   chrome.runtime.onConnect.addListener(port => {
     portFromCS = port;
     console.log('connected ', port);
-    // console.assert(port.name == "knockknock");
     portFromCS.onMessage.addListener(function (msg) {
       console.log(msg);
       // listen for addition requests
@@ -115,7 +114,6 @@ function addClass(toAdd, callback) {
       classIDs: []
     },
     function (data) {
-      console.log(data.classIDs);
 
       // this weird setup allows me to add each class as an individual object to the storage
       // importantly, with the zoomerID as the key
@@ -123,7 +121,7 @@ function addClass(toAdd, callback) {
       obj[toAdd.zoomerID] = toAdd;
 
       chrome.storage.sync.set(obj, function () {
-        console.log(`added ${JSON.stringify(obj)} to class list`);
+        console.log("added",  obj, " to class list");
         addClassID(data.classIDs, toAdd.zoomerID); //storing the storage value in a variable and passing to update function
         // createClassAlarm(msg.toAdd);
         createAlarms(toAdd);
@@ -218,7 +216,7 @@ function deletePersonal(array, zoomerID) {
 
 function editZoomerItem(zoomerID, updatedObject, callback) {
   IDLookup(zoomerID, function (foundClass, foundIndex) {
-    if (foundClass != undefined) {
+    if (foundClass !== undefined) {
       if (foundIndex == -1) { // if the found index is -1, it's a class
         var updatedClass = foundClass;
         for (const key in updatedObject) {

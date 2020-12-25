@@ -9,7 +9,7 @@ function updateClipboard(newClip) {
 
 function fillClasses(plannerBoxes) {
 	getAllClasses(function (classList) {
-		for (var i = 0, myclass; myclass = classList[i]; i++) {
+		for (let i = 0, myclass; myclass = classList[i]; i++) {
 			console.log(myclass);
 			for (let item of plannerBoxes) {
 
@@ -22,7 +22,7 @@ function fillClasses(plannerBoxes) {
 				if (item.childNodes[0].wholeText.toUpperCase() == extractClassName(myclass, false)) {
 
 					if (!item.childNodes[3] || item.childNodes[3].wholeText.toUpperCase() == myclass.classInfo.class_section.toUpperCase()) {
-						var link = document.createElement('a');
+						let link = document.createElement('a');
 
 						item.style.outline = "5px groove " + item.style.borderColor
 						// item.style.outlineOffset = "-3px";
@@ -37,7 +37,7 @@ function fillClasses(plannerBoxes) {
 						// 	link.onclick = function () {
 						// 		updateClipboard(myclass.password)
 						// 	};
-						// 	// var tooltiptext = document.createTextNode(text);
+						// 	// let tooltiptext = document.createTextNode(text);
 						// }
 
 						link.className = "classlink";
@@ -68,7 +68,7 @@ function fillPersonal(plannerBoxes) {
 					// I'll just have to hope that 
 					if (item.childNodes[0].wholeText.toUpperCase() == personalEntry.entryInfo.name.toUpperCase()) {
 
-						var link = document.createElement('a');
+						let link = document.createElement('a');
 
 						item.style.outline = "5px groove " + item.style.borderColor
 						// item.style.outlineOffset = "-3px";
@@ -85,7 +85,7 @@ function fillPersonal(plannerBoxes) {
 							link.onclick = function () {
 								updateClipboard(personalEntry.password)
 							};
-							// var tooltiptext = document.createTextNode(text);
+							// let tooltiptext = document.createTextNode(text);
 						}
 
 						link.className = "classlink";
@@ -100,7 +100,7 @@ function fillPersonal(plannerBoxes) {
 }
 
 (function () {
-	var plannerBoxes = document.getElementsByClassName('planneritembox');
+	let plannerBoxes = document.getElementsByClassName('planneritembox');
 	fillClasses(plannerBoxes);
 	fillPersonal(plannerBoxes);
 
