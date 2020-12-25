@@ -22,13 +22,13 @@ function inputHandling(name) {
     isLink: true,
   }
   let result = prompt("Add this class to the planner?\r\n" + name + "\r\nIf so, optionally enter a Zoom link OR Zoom Room ID:", "0123456789 OR https://ucla.zoom.us/j/");
-  if (result == null) { // if cancelled, return undefined
+  if (result === null) { // if cancelled, return undefined
     return;
   }
   let urlData;
   if (result != "") { // if clicked OK, but didn't enter URL, return the empty inputObj
     urlData = checkIsLink(result);
-    if (urlData == undefined) {
+    if (urlData === undefined) {
       return;
     }
     inputObj.url = urlData[1];
@@ -140,7 +140,7 @@ function addClass(port, obj) {
                 throw err; // let others bubble up
               }
             }
-            if (inputObj != undefined) {
+            if (inputObj !== undefined) {
               let msg = {
                 toAdd: {
                   classInfo: newres.d.svcRes.ResultTiers[0],
@@ -227,7 +227,7 @@ function addPersonal(port, obj) {
       throw err; // let others bubble up
     }
   }
-  if (inputObj != undefined) {
+  if (inputObj !== undefined) {
     let msg = {
       toAdd: {
         entryInfo: personalObject,
@@ -322,7 +322,7 @@ function createAddLink(type) {
       while ($(`#ctl00_MainContent_planClassListView_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).length != 0) {
         let currentClassRow = $(`#ctl00_MainContent_planClassListView_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).first();
         let found = false;
-        if (classList != undefined) {
+        if (classList !== undefined) {
           classList.forEach(myclass => {
             if (currentClassRow.find("td:eq(1) a").attr('title').includes(myclass.classInfo.srs_crs_no)) {
               found = true;
@@ -345,7 +345,7 @@ function createAddLink(type) {
       while ($(`#ctl00_MainContent_enrolledNotPlanList_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).length != 0) {
         let currentClassRow = $(`#ctl00_MainContent_enrolledNotPlanList_courseListView_ctrl${classIndex}_sectionListView_ctrl${sectionIndex}_thisRow`).first();
         let found = false;
-        if (classList != undefined) {
+        if (classList !== undefined) {
           classList.forEach(myclass => {
             if (currentClassRow.find("td:eq(1) a").attr('title').includes(myclass.classInfo.srs_crs_no)) {
               found = true;

@@ -29,7 +29,7 @@ $(function () {
         personal: []
       },
       function (data) {
-        var totalList = classList.concat(data.personal)
+        let totalList = classList.concat(data.personal)
         if (totalList.length != 0) {
           $("#absence").css('display', 'none');
           totalList.forEach((element) => {
@@ -47,7 +47,7 @@ $(function () {
   chrome.storage.sync.get({
     'darkOn': true
   }, function (style) {
-    var darkOn = style.darkOn;
+    let darkOn = style.darkOn;
     if (darkOn) {
       $('#lightswitch').prop('checked', true);
       $('body, #nav, .table, .modal-content, footer').addClass("darkmode");
@@ -66,7 +66,7 @@ $(function () {
     chrome.storage.sync.get({
       'darkOn': true
     }, function (style) {
-      var darkOn = !style.darkOn;
+      let darkOn = !style.darkOn;
       chrome.storage.sync.set({
         'darkOn': darkOn
       });
@@ -77,7 +77,7 @@ $(function () {
 
   // Delete Class 
   $("#classlist").on("click", ".del", function () {
-    var classRow = $(this).parent();
+    let classRow = $(this).parent();
     console.log(classRow);
     $('#deletemodal').prop('name', classRow.attr('id'));
     $('#deletemodal > .modal-header > .modal-title').html('Deleting ' + classRow.find('.namediv').text());
@@ -92,9 +92,9 @@ $(function () {
   })
 
   $("#deleteClass").on("click", function () {
-    var zoomerID = $('#deletemodal').prop('name');
+    let zoomerID = $('#deletemodal').prop('name');
     deleteZoomerItem(zoomerID, function (oldItem) {
-      var $alertBox = $("#change-alert")
+      let $alertBox = $("#change-alert")
       $alertBox.addClass("alert-success");
       $alertBox.text(`${extractClassName(oldItem, true)} was successfully removed from Ok, Zoomer.`)
       $alertBox.fadeTo(5000, 500).slideUp(500, function () {
@@ -108,7 +108,7 @@ $(function () {
 
   // Join class
   $("#classlist").on("click", ".join", function () {
-    var zoomerID = $(this).parent().parent().attr("id");
+    let zoomerID = $(this).parent().parent().attr("id");
     IDLookup(zoomerID, function (foundClass) {
       if (foundClass.isLink) {
         if (foundClass.url != "") {
@@ -136,7 +136,7 @@ $(function () {
     }, function (data) {
       // Reset error message
       $('#error-message').text('');
-      var urlData;
+      let urlData;
       try {
         urlData = checkIsLink($('#classURL').val());
       } catch (err) {
@@ -148,20 +148,20 @@ $(function () {
         }
       }
 
-      var entryInfo = {
-        name: $("#className").val() == "" ? "Zoom Meeting" : $("#className").val(),
+      let entryInfo = {
+        name: $("#className").val() === "" ? "Zoom Meeting" : $("#className").val(),
         days: "",
         time: "",
       };
-      var now = new Date();
-      var start_time = new Date(now.toLocaleString('en-US', {
+      let now = new Date();
+      let start_time = new Date(now.toLocaleString('en-US', {
         timeZone: "America/Los_Angeles"
       })).getTime();
-      var end_time = new Date(start_time);
+      let end_time = new Date(start_time);
       end_time.setDate(end_time.getDate() + 7 * 12); // make personal entry artificially end in 12 weeks
       end_time = end_time.getTime();
 
-      var newPersonal = {
+      let newPersonal = {
         entryInfo: entryInfo,
         customName: entryInfo.name,
         timeBoundaries: [start_time, end_time],
@@ -196,18 +196,18 @@ $(function () {
   });
 
   $("#classlist").on("focusout", ".namedisplay", function () {
-    var zoomerID = $(this).parent()[0].id;
-    var updatedName = $(this).text();
+    let zoomerID = $(this).parent()[0].id;
+    let updatedName = $(this).text();
     saveName(zoomerID, updatedName);
   });
 
   // Toggle the edit menu
   $('#classlist').on("click", ".edit", function () {
-    var parentId = $(this).parent()[0].id; // class [classrow] id
-    var previousId = $('#editmodal').prop('name');
+    let parentId = $(this).parent()[0].id; // class [classrow] id
+    let previousId = $('#editmodal').prop('name');
     console.log('previous: ' + previousId + ", now: " + parentId);
     // prevent unnecessary reloading
-    if (parentId != previousId) {
+    if (parentId !== previousId) {
       // previous items: set filled values to default values
       $('#scheduledtimes').empty();
       $('#password').attr("value", "");
@@ -220,7 +220,7 @@ $(function () {
 
       console.log('Currently editing #' + $('#editmodal').prop('name'));
       // chrome.storage.sync.get({'classList': {}}, function(classes) {
-      //     var meeting = classes.classList[parentId];
+      //     let meeting = classes.classList[parentId];
       IDLookup(parentId, function (foundClass) {
 
         $('#remindinput').val(foundClass.remindTime);
@@ -243,9 +243,9 @@ $(function () {
         $('#exportcontainer').css('display', 'block');
 
         if (foundClass.isLink) {
-          $('#editmodal').children(".modal-header").children(".modal-title").html('Editing Link <br><span style="font-size:small">' + parentId + '</span>');
+          $('#editmodal > .modal-header > .modal-title').html('Editing Link <br><span style="font-size:small">' + parentId + '</span>');
         } else {
-          $('#editmodal').children(".modal-header").children(".modal-title").text('Editing #' + parentId);
+          $('#editmodal > .modal-header > .modal-title').text('Editing #' + parentId);
         }
 
       })
@@ -259,11 +259,11 @@ $(function () {
     IDLookup(zoomerID, function (foundClass) {
       if (foundClass.classTimes.length != 0) {
         $('#schedulemsg').text(" - Click to Delete");
-        for (var i = 0; i < foundClass.classTimes.length; i++) {
-          var timeElement = document.createElement("li");
+        for (let i = 0; i < foundClass.classTimes.length; i++) {
+          let timeElement = document.createElement("li");
           timeElement.className = "classtime clickable list-group-item";
           timeElement.setAttribute("data-id", i);
-          var fTime = formatTime(foundClass.classTimes[i].split(":"));
+          let fTime = formatTime(foundClass.classTimes[i].split(":"));
           timeElement.innerText = fTime;
           $("#scheduledtimes")[0].appendChild(timeElement);
         }
@@ -274,7 +274,7 @@ $(function () {
   }
 
   $('#remindtoggle').change(function () {
-    var editedId = $('#editmodal').prop('name');
+    let editedId = $('#editmodal').prop('name');
     console.log($(this).attr('checked'))
     if ($(this).is(':checked')) {
       editZoomerItem(editedId, {
@@ -294,7 +294,7 @@ $(function () {
   });
 
   $('#remindinput').change(function () {
-    var editedId = $('#editmodal').prop('name');
+    let editedId = $('#editmodal').prop('name');
     IDLookup(editedId, function (foundClass) {
       if ($('#remindinput').val() < 1) {
         $('#remindinput').val(5);
@@ -310,8 +310,8 @@ $(function () {
 
   // remove a classtime
   $('#editmodal').on('click', '.classtime', function (event) {
-    var clickedIndex = $(this).data("id");
-    var parentId = $('#editmodal').prop('name');
+    let clickedIndex = $(this).data("id");
+    let parentId = $('#editmodal').prop('name');
     IDLookup(parentId, function (foundClass) {
       // database update
       foundClass.classTimes.splice(clickedIndex, 1);
@@ -326,15 +326,15 @@ $(function () {
 
   // add a classtime
   $('#savetime').on("click", function () {
-    var editedId = $('#editmodal').prop('name');
-    var day = $("#dayselect option:selected").val(); // -1 if invalid
-    var time = $("#schedule").val(); // blank string if invalid
+    let editedId = $('#editmodal').prop('name');
+    let day = $("#dayselect option:selected").val(); // -1 if invalid
+    let time = $("#schedule").val(); // blank string if invalid
     if (day != -1 && time) {
       IDLookup(editedId, function (foundClass) {
-        var fTime = day + ":" + time;
+        let fTime = day + ":" + time;
         // only add if not already included
         if (!foundClass.classTimes.includes(fTime)) {
-          var updatedTimes = foundClass.classTimes;
+          let updatedTimes = foundClass.classTimes;
           // db update
           updatedTimes.push(fTime);
           editZoomerItem(editedId, {
@@ -358,8 +358,8 @@ $(function () {
 
   // save password
   $('#savepass').on("click", function () {
-    var updatedPassword = $('#password').val();
-    var zoomerID = $('#editmodal').prop('name');
+    let updatedPassword = $('#password').val();
+    let zoomerID = $('#editmodal').prop('name');
     editZoomerItem(zoomerID, {
       "password": updatedPassword
     }, function () {
@@ -369,15 +369,15 @@ $(function () {
   })
 
   $('#export').on("click", function () {
-    var zoomerID = $('#editmodal').prop('name');
+    let zoomerID = $('#editmodal').prop('name');
     IDLookup(zoomerID, function (foundClass) {
-      var exportClass = foundClass;
+      let exportClass = foundClass;
       delete exportClass.zoomerID;
       delete exportClass.customName;
 
-      var _myArray = JSON.stringify(foundClass, null, 4); //indentation in json format, human readable
+      let _myArray = JSON.stringify(foundClass, null, 4); //indentation in json format, human readable
 
-      var vLink = document.createElement('a'),
+      let vLink = document.createElement('a'),
         vBlob = new Blob([_myArray], {
           type: "octet/stream"
         }),
@@ -407,14 +407,14 @@ $(function () {
 })
 
 function importFun(e) {
-  var files = e.target.files,
+  let files = e.target.files,
     reader = new FileReader();
   reader.onload = _imp;
   reader.readAsText(files[0]);
 }
 
 function _imp() {
-  var _myImportedData = JSON.parse(this.result);
+  let _myImportedData = JSON.parse(this.result);
   _myImportedData.zoomerID = randomID();
   console.log(_myImportedData);
   addClass(_myImportedData, function () {
@@ -425,11 +425,11 @@ function _imp() {
 }
 
 function formatTime(time) {
-  var day = parseDayOfWeek(time[0]);
-  var hour = time[1] % 12 ? time[1] % 12 : 12;
-  var min = time[2];
-  var meridiem = parseInt(time[1] / 12) ? "PM" : "AM";
-  return day + " @ " + hour + ":" + min + " " + meridiem;
+  let day = parseDayOfWeek(time[0]);
+  let hour = time[1] % 12 ? time[1] % 12 : 12;
+  let min = time[2];
+  let meridiem = parseInt(time[1] / 12) ? "PM" : "AM";
+  return `${day} @ ${hour}:${min} ${meridiem}`;
 }
 
 function saveName(zoomerID, updatedName) {
@@ -442,21 +442,21 @@ function saveName(zoomerID, updatedName) {
 
 function addClassDisplay(classObject) {
   // Create div for the class: composed of button and breaks
-  var classRow = $(`<tr class="class d-flex align-items-center" id="${classObject.zoomerID}"></tr>`)
+  let classRow = $(`<tr class="class d-flex align-items-center" id="${classObject.zoomerID}"></tr>`)
 
-  var classDescriptor = $(`<td class= "col-5 text-truncate text-center namedisplay"></td>`)
+  let classDescriptor = $(`<td class= "col-5 text-truncate text-center namedisplay"></td>`)
 
-  var nameDiv = $(`<div class="namediv" style="text-align: center"></div>`).text((classObject.customName != undefined) ? classObject.customName : extractClassName(classObject, true))
+  let nameDiv = $(`<div class="namediv" style="text-align: center"></div>`).text((classObject.customName !== undefined) ? classObject.customName : extractClassName(classObject, true))
   nameDiv.attr('contenteditable', 'true');
   nameDiv.attr('spellcheck', 'false');
 
 
-  var classButton = $(`<button class="btn btn-primary btn-block join" style="display: flex;align-items: center;justify-content: center;">${(classObject.url == "") ? "No Link" : classObject.url}</button>`)
+  let classButton = $(`<button class="btn btn-primary btn-block join" style="display: flex;align-items: center;justify-content: center;">${(classObject.url == "") ? "No Link" : classObject.url}</button>`)
   // classButton.attr("data-content", classObject.url);
 
-  var temp = $(`<td class="col-5"></td>`).append(classButton);
+  let temp = $(`<td class="col-5"></td>`).append(classButton);
   classButton = temp;
-  var button = $(`<td class="col-1 clickable"></td>`)
+  let button = $(`<td class="col-1 clickable"></td>`)
 
   classDescriptor.append(nameDiv);
   classRow.append(classDescriptor, classButton, button.clone().addClass("del").append(`<i class="fa fa-trash"></i>`), button.clone().addClass("edit").append(`<i class="fa fa-cog"></i>`));

@@ -216,7 +216,7 @@ function deletePersonal(array, zoomerID) {
 
 function editZoomerItem(zoomerID, updatedObject, callback) {
   IDLookup(zoomerID, function (foundClass, foundIndex) {
-    if (foundClass != undefined) {
+    if (foundClass !== undefined) {
       if (foundIndex == -1) { // if the found index is -1, it's a class
         var updatedClass = foundClass;
         for (const key in updatedObject) {
