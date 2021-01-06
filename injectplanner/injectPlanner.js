@@ -29,7 +29,7 @@ function fillClasses(plannerBoxes) {
 						if (myclass.isLink) {
 							link.href = myclass.url
 						} else {
-							link.href = createURLfromID(myclass.url, myclass.password)
+							link.href = createURLfromID(myclass.url, myclass.password, myclass.username)
 						}
 						link.target = "_blank"
 						// if (myclass.password != undefined) {
@@ -75,7 +75,7 @@ function fillPersonal(plannerBoxes) {
 						if (personalEntry.isLink) {
 							link.href = personalEntry.url
 						} else {
-							link.href = createURLfromID(personalEntry.url, personalEntry.password)
+							link.href = createURLfromID(personalEntry.url, personalEntry.password, personalEntry.username)
 						}
 						link.target = "_blank"
 

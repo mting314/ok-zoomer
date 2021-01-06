@@ -115,7 +115,7 @@ $(function () {
           window.open(foundClass.url);
         }
       } else {
-        window.open(createURLfromID(foundClass.url, foundClass.password))
+        window.open(createURLfromID(foundClass.url, foundClass.password, foundClass.username))
       }
     });
 

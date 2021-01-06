@@ -279,7 +279,7 @@ function createZoomLink(zoomerItem) {
   if (zoomerItem.isLink) {
     zoomLink = $(`<a href="${zoomerItem.url}" class = "zoom-link" target="_blank"></a>`);
   } else {
-    zoomLink = $(`<a href="${createURLfromID(zoomerItem.url, zoomerItem.password)}" class = "zoom-link" target="_blank"></a>`);
+    zoomLink = $(`<a href="${createURLfromID(zoomerItem.url, zoomerItem.password, zoomerItem.username)}" class = "zoom-link" target="_blank"></a>`);
   }
 
 
