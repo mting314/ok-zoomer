@@ -127,7 +127,7 @@ chrome.notifications.onButtonClicked.addListener(function (notifId, btnIdx) {
       if (foundClass) {
         if (!foundClass.isLink) {
           chrome.tabs.create({
-            url: createURLfromID(foundClass.url, foundClass.password)
+            url: createURLfromID(foundClass.url, foundClass.password, foundClass.username)
           }, function (tab) {
             console.log(tab)
           })

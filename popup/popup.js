@@ -232,12 +232,22 @@ $(function () {
           $('#remindinput').blur();
         }
 
+        $('#nameinput').attr("value", foundClass.username ?? '')
+
         if (foundClass.password) {
           $('#password').attr("spellcheck", false);
           $('#password').attr("value", foundClass.password);
           // the following is included so thxe label rides above 
           $('#password').select();
           $('#password').blur();
+        }
+
+        if (foundClass.username) {
+          $('#nameinput').attr("spellcheck", false);
+          $('#nameinput').attr("value", foundClass.username);
+          // the following is included so thxe label rides above 
+          $('#nameinput').select();
+          $('#nameinput').blur();
         }
         $('#editpasscontainer').css('display', 'block');
         $('#exportcontainer').css('display', 'block');
@@ -304,6 +314,20 @@ $(function () {
       }, function () {
         editAlarms(editedId);
         console.log(editedId + " now has remind time set to " + $('#remindinput').val());
+      })
+    })
+  })
+
+  $('#nameinput').change(function () {
+    let editedId = $('#editmodal').prop('name');
+    IDLookup(editedId, function (foundClass) {
+      editZoomerItem(editedId, {
+        'username': $('#nameinput').val(),
+      }, function () {
+        // editAlarms(editedId);
+        // unlike changing remind times, we obviously don't have to change anything about the alarms
+        // if you're using a different name
+        console.log(editedId + " now has remind time set to " + $('#nameinput').val());
       })
     })
   })

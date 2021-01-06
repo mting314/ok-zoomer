@@ -31,18 +31,23 @@ var getParams = function (url) {
   return params;
 };
 
-function createURLfromID(roomID, password) {
+function createURLfromID(roomID, password, username=undefined) {
   var zoomIDURL = `zoommtg://zoom.us/join?action=join&confno=${roomID}`
   if (password) {
     var URIpassword = encodeURIComponent(password);
     zoomIDURL += (password !== undefined) ? `&pwd=${URIpassword}` : "";
+  }
+
+  if(username) {
+    var URIusername = encodeURIComponent(username);
+    zoomIDURL += (username !== undefined) ? `&uname=${URIusername}` : "";
   }
   return zoomIDURL;
 }
 
 // https://stackoverflow.com/a/40995732 - how to callback after filling an array
 function getAllClasses(callback) {
-  var classList = [];
+  let classList = [];
   chrome.storage.sync.get("classIDs", function (result) {
     // if there are IDs, start filling list
     if (result.classIDs != undefined && result.classIDs.length != 0) {
