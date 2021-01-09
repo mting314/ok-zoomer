@@ -68,6 +68,28 @@ function getAllClasses(callback) {
   });
 }
 
+function getAllPersonalEntries(callback) {
+  let classList = [];
+  chrome.storage.sync.get("personalEntryIDs", function (result) {
+    // if there are IDs, start filling list
+    if (result.personalEntryIDs != undefined && result.personalEntryIDs.length != 0) {
+      let c = result.personalEntryIDs.length; // initialize a counter
+      result.personalEntryIDs.forEach(element => {
+        chrome.storage.sync.get(element.toString(), function (foundClass) {
+          classList.push(foundClass[element.toString()]);
+          if (!--c) { // all async calls are finished
+            callback(classList);
+          }
+        });
+      })
+    }
+    // else return an empty array
+    else {
+      callback([]);
+    }
+  });
+}
+
 // TODO: eventually I need to finish highlighting classes in progress in popup
 // function classInProgress(classObject) {
 //   var now = new Date();
@@ -241,14 +263,11 @@ function IDLookup(zoomerID, callback) {
       callback(foundItem, -1);
       return;
     } else {
-      chrome.storage.sync.get({
-          personal: []
-        },
-        function (data) {
-          console.log(data.personal);
-          foundItem = findElement(data.personal, "zoomerID", zoomerID)
+      getAllPersonalEntries(function (PEList) {
+          foundItem = findElement(PEList, "zoomerID", zoomerID);
+          console.log(foundItem);
           if (foundItem != undefined) {
-            callback(foundItem, data.personal.indexOf(foundItem));
+            callback(foundItem, -2);
             return;
           } else {
             callback(undefined);

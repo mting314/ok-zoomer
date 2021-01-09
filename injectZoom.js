@@ -41,14 +41,14 @@ function createPasswordText(classPassword) {
 	// TODO: what if same Zoom link for lecture class, and for OH personal entry?
 	// Maybe pass a URL parameter to differentiate?
 	getAllClasses(function (classList) {
-		chrome.storage.sync.get("personal", function (result) {
+		getAllPersonalEntries(function (result) {
 			var currentURL = window.location.href.substring(0, window.location.href.indexOf('#'));
 			const regex = /j\/\d{9,11}/;
 			const found = currentURL.match(regex);
 			if (found != null) {
 				var foundID = found[0].match(/\d/g).join("");
 				var currentClass = findElement(classList, 'url', foundID);
-				var currentPersonal = findElement(result.personal, 'url', foundID);
+				var currentPersonal = findElement(result, 'url', foundID);
 			}
 
 			info = createClassText(currentClass) ?? createClassText(currentPersonal);

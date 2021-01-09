@@ -52,8 +52,8 @@ function fillClasses(plannerBoxes) {
 
 
 function fillPersonal(plannerBoxes) {
-	chrome.storage.sync.get("personal", function (result) {
-		result.personal.forEach(personalEntry => {
+	getAllPersonalEntries(function (result) {
+		result.forEach(personalEntry => {
 			for (let item of plannerBoxes) {
 				// only check planner boxes that have a single text node, which is the title of the personal entry
 				if (item.childNodes.length === 1) {

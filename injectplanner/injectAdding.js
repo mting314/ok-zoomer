@@ -1,4 +1,9 @@
-const millisInDay = 24*60*60*1000;
+const millisInDay = 24 * 60 * 60 * 1000;
+
+// Returns true if two arrays have nonempty intersection, false otherwise
+function hasIntersection(array1, array2){
+  return array1.filter(value => array2.includes(value)).length !== 0;
+}
 
 function getLastWord(words) {
   let n = words.split(" ");
@@ -157,7 +162,7 @@ function addClass(port, obj) {
               try {
                 port.postMessage(msg);
               } catch (err) {
-          
+
                 if (err.message == "Attempting to use a disconnected port object") {
                   let newport = chrome.runtime.connect({
                     name: "benis"
@@ -374,19 +379,27 @@ function createAddLink(type) {
 
 
   // inject to Personal Entries table
-  chrome.storage.sync.get('personal', function (result) {
+  getAllPersonalEntries(function(result) {
     let counter = 0;
     while ($(`tr#ctl00_MainContent_personalEntryListView_ctrl${counter}_iItemRow`).length != 0) {
       let personalRow = $(`tr#ctl00_MainContent_personalEntryListView_ctrl${counter}_iItemRow`).first()
 
       // check if already in planner
       let found = false;
-      result.personal.forEach(personalEntry => {
-        if (equalEntries(personalEntry.entryInfo, extractPersonal(personalRow))) {
+      // First, check if there is an OZ personal entry that is EXACTLY identitical to the dates/times listed in one personal entry in the class planner
+      // This prioritizes when you have a dedicated OZ entry for that row
+
+      // BTW, OZEntry means "Ok Zoomer Entry", the entry stored in the Chrome Extension sync storage
+      result.forEach(OZEntry => {
+        currentEntry = extractPersonal(personalRow)
+        if (equalEntries(OZEntry.entryInfo, currentEntry) || (OZEntry.entryInfo.name === currentEntry.name && hasIntersection(OZEntry.classTimes, extractPersonalTimes(currentEntry)))   ) {
           found = true;
-          personalRow.find("td:eq(1)").append(createZoomLink(personalEntry))
+          personalRow.find("td:eq(1)").append(createZoomLink(OZEntry))
           return;
         }
+      // TODO: Check if only 1 day and time match, dont need the entire days+times set to match
+      // It'll help for when you need 2 personal entries for 2 separate office hours that don't happen at the same time each day
+
       });
       if (!found) {
         personalRow.find("td:eq(1)").append(createAddLink("addpersonal"))

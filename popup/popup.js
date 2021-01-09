@@ -12,7 +12,7 @@ $(function () {
         classIDs: []
       });
       chrome.storage.sync.set({
-        personal: []
+        personalEntryIDs: []
       });
 
       // by default, alarms are turned ON
@@ -25,11 +25,8 @@ $(function () {
 
   // Display classes
   getAllClasses(function (classList) {
-    chrome.storage.sync.get({
-        personal: []
-      },
-      function (data) {
-        let totalList = classList.concat(data.personal)
+    getAllPersonalEntries(function (data) {
+        let totalList = classList.concat(data)
         if (totalList.length != 0) {
           $("#absence").css('display', 'none');
           totalList.forEach((element) => {
@@ -49,7 +46,7 @@ $(function () {
   }, function (style) {
     let darkOn = style.darkOn;
     if (darkOn) {
-      $('#lightswitch').prop('checked', true);
+      // $('#lightswitch').prop('checked', true);
       $('body, #nav, .table, .modal-content, footer').addClass("darkmode");
     }
     chrome.storage.sync.set({
@@ -61,19 +58,28 @@ $(function () {
 
   })
 
-  // Dark Mode [toggle]
-  $('#lightswitch').on("click", function () {
-    chrome.storage.sync.get({
-      'darkOn': true
-    }, function (style) {
-      let darkOn = !style.darkOn;
-      chrome.storage.sync.set({
-        'darkOn': darkOn
-      });
-    })
-    $('body, #nav, .modal-content, .table, footer').toggleClass("darkmode");
-  });
+  $('#cleardb').on("click", function () {
+    // this is sort of a nuclear option, but hey it works and I'm lazy
 
+    chrome.storage.sync.clear(function () {
+      chrome.runtime.sendMessage({
+        type: 'speedchat',
+      });
+      // start arrays off empty to avoid undefined issues later
+      chrome.storage.sync.set({
+        classIDs: []
+      });
+      chrome.storage.sync.set({
+        personalEntryIDs: []
+      });
+
+      // by default, alarms are turned ON
+      chrome.storage.sync.set({
+        alarms: true
+      });
+      window.close('', '_parent', '');
+    })
+  })
 
   // Delete Class 
   $("#classlist").on("click", ".del", function () {
@@ -131,9 +137,7 @@ $(function () {
 
   // Submit class id
   $('#enterClassURL').on("click", function () {
-    chrome.storage.sync.get({
-      'personal': {}
-    }, function (data) {
+
       // Reset error message
       $('#error-message').text('');
       let urlData;
@@ -175,7 +179,7 @@ $(function () {
       };
 
       // database update
-      addPersonal(data.personal, newPersonal, function () {
+      addPersonal(newPersonal, function () {
         // visual update
         $("#absence").css('display', 'none');
         addClassDisplay(newPersonal);
@@ -185,7 +189,7 @@ $(function () {
         $('#classURL').val('');
         $('#className').val('');
       });
-    })
+
   })
 
   $("#classlist").on("keypress", ".namedisplay", function (e) {
@@ -396,20 +400,10 @@ $(function () {
     let zoomerID = $('#editmodal').prop('name');
     IDLookup(zoomerID, function (foundClass) {
       let exportClass = foundClass;
-      delete exportClass.zoomerID;
+      // delete exportClass.zoomerID;
       delete exportClass.customName;
 
-      let _myArray = JSON.stringify(foundClass, null, 4); //indentation in json format, human readable
-
-      let vLink = document.createElement('a'),
-        vBlob = new Blob([_myArray], {
-          type: "octet/stream"
-        }),
-        vName = `${extractClassName(foundClass, true)}.json`,
-        vUrl = window.URL.createObjectURL(vBlob);
-      vLink.setAttribute('href', vUrl);
-      vLink.setAttribute('download', vName);
-      vLink.click();
+      exportZoomerItem(exportClass);
       $("#exportmsg").css("color", "#1E90FF");
       $("#exportmsg").text("Exported to JSON")
     })
@@ -421,31 +415,161 @@ $(function () {
     function (data) {
       $('#speedchat').text(`"${data.speedchat}"`);
     })
+
+  // setup import (single) class button
   $("#fakeImp").on("click", function () {
     $('#importOrig').trigger("click")
   })
 
   $('#importOrig').change(importFun)
 
+
+  // setup export all classes button
+  $("#exportAll").on("click", function () {
+    let entriesList = [];
+    getAllClasses(function (classList) {
+      getAllPersonalEntries(function (personalEntries) {
+        // Add each class to entriesList
+        entriesList = entriesList.concat(classList)
+        // And then all personal entries
+        entriesList = entriesList.concat(personalEntries)
+        if (entriesList.length === 0) {
+          // warn user that they have no classes or entries
+          let $alertBox = $("#change-alert")
+          $alertBox.addClass("alert-danger");
+          $alertBox.text("You don't have any classes or entries to export!")
+          $alertBox.fadeTo(5000, 500).slideUp(500, function () {
+            $alertBox.slideUp(500);
+          });
+        } else {
+          exportZoomerItem(entriesList, multiple = true);
+        }
+
+      })
+    })
+  });
+
   $("#change-alert").hide();
 })
 
-function importFun(e) {
-  let files = e.target.files,
-    reader = new FileReader();
-  reader.onload = _imp;
-  reader.readAsText(files[0]);
+
+// IMPORT AND EXPORT FUNCTIONS
+
+// import
+
+function importFun() {
+  let files = this.files;
+  let importedClassIDs = [];
+  let importedPersonalIDs = [];
+  let idRegex = /_[CP]([\d]*?)\./;
+  // when exporting classes, we made sure to end the filename with the zoomer ID.
+  // take advantage of that to 
+
+  for (var i = 0; i < files.length; i++) {
+    let file = files[i];
+    let matches = file.name.match(idRegex);
+    if (matches !== null) {
+      if (matches[0].includes('C')) {
+        importedClassIDs.push(matches[1])
+      } else {
+        importedPersonalIDs.push(matches[1])
+      }
+    }
+  }
+
+  for (var i = 0; i < files.length; i++) {
+    let reader = new FileReader();
+    let file = files[i];
+    let matches = file.name.match(idRegex);
+
+    if (matches !== null) { // it's a class (ends with _123456789.json)
+      reader.onload = function (e) {
+        // get file content  
+        let bin = e.target.result;
+        parseClassEntry(JSON.parse(bin));
+        // readFile(index + 1)
+      }
+
+    }
+    reader.readAsText(file);
+
+  }
+
+
+  $("#absence").css('display', 'none');
+
+  $("#importOrig").val(''); //make sure to clear input value after every import
+
+  chrome.storage.sync.get(['classIDs'], function (result) {
+    console.log('Value currently is ' + result.classIDs);
+
+    let new_array = result.classIDs.concat(importedClassIDs);
+    // new_array.push(_myImportedDataArray[index].zoomerID);
+
+    chrome.storage.sync.set({
+      classIDs: new_array
+    }, function () {
+      console.log(`added ${new_array} to class IDs`);
+    });
+  });
+
+  chrome.storage.sync.get(['personalEntryIDs'], function (result) {
+    console.log('Value currently is ' + result.personalEntryIDs);
+
+    let new_array = result.personalEntryIDs.concat(importedPersonalIDs);
+    // new_array.push(_myImportedDataArray[index].zoomerID);
+
+    chrome.storage.sync.set({
+      personalEntryIDs: new_array
+    }, function () {
+      console.log(`added ${new_array} to class IDs`);
+    });
+  });
+
 }
 
-function _imp() {
-  let _myImportedData = JSON.parse(this.result);
-  _myImportedData.zoomerID = randomID();
-  console.log(_myImportedData);
-  addClass(_myImportedData, function () {
+function parseClassEntry(_myImportedClass) {
+
+  addItemOnly(_myImportedClass, function () {
+    // visual update
+    addClassDisplay(_myImportedClass);
+
     $("#absence").css('display', 'none');
-    addClassDisplay(_myImportedData);
-    $("#importOrig").val(''); //make sure to clear input value after every import
-  })
+  });
+
+}
+
+
+function exportZoomerItem(zoomerItem, multiple = false) {
+
+  if (multiple) {
+    var zip = new JSZip();
+    for (index in zoomerItem) {
+      zoomerItem[index].zoomerID = randomID();
+      zip.file(`${extractClassName(zoomerItem[index], true)}_${zoomerItem[index].classInfo !== undefined ? "C" : "P"}${zoomerItem[index].zoomerID}.json`, JSON.stringify(zoomerItem[index], null, 4))
+    }
+    zip.generateAsync({
+        type: "blob"
+      })
+      .then(function (content) {
+        // see FileSaver.js
+        saveAs(content, "zoomerItems.zip");
+      });
+  } else {
+
+    zoomerItem.zoomerID = randomID();
+    let _myArray = JSON.stringify(zoomerItem, null, 4); //indentation in json format, human readable
+    
+    let vLink = document.createElement('a'),
+      vBlob = new Blob([_myArray], {
+        type: "octet/stream"
+      }),
+      vName = multiple ? "zoomerItems.json" : `${extractClassName(zoomerItem, true)}_${zoomerItem.zoomerID}.json`,
+      vUrl = window.URL.createObjectURL(vBlob);
+    vLink.setAttribute('href', vUrl);
+    vLink.setAttribute('download', vName);
+    vLink.click();
+  }
 }
 
 function formatTime(time) {

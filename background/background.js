@@ -21,17 +21,19 @@ async function launch() {
       }
     }
   })
-  chrome.storage.sync.get("personal", function (result) {
+
+  chrome.storage.sync.get("personalEntryIDs", function (result) {
     if (Object.keys(result).length === 0) {
       chrome.storage.sync.set({
-        personal: []
+        personalEntryIDs: []
       });
     } else {
-      for (var i = 0; i < result.personal.length; i++) {
-        createAlarms(result.personal[i])
+      for (var i = 0; i < result.personalEntryIDs.length; i++) {
+        editAlarms(result.personalEntryIDs[i])
       }
     }
   })
+
 
   // by default, alarms are turned ON
   await chrome.storage.sync.set({
