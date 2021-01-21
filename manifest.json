@@ -1,6 +1,6 @@
 {
   "name": "Ok, Zoomer",
-  "version": "0.0.3",
+  "version": "0.0.7",
   "description": "Zoom to your UCLA Zoom classes",
   "permissions": ["storage", "alarms", "notifications", "tabs"],
   "background": {

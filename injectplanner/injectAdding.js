@@ -96,7 +96,8 @@ function addClass(port, obj) {
     active_enrl_fl: 'n',
     class_prim_act_fl: 'n',
     id: 'kRnfwF2eOadis08vDX5eZCmwt+Cd17YQA+uPMRwtPEg=',
-    searchKey: "sorry,Ican't"
+    searchKey: "sorry,Ican't",
+    honors_type_cd: "%",
   }
   // check if this row is the "first" in a class's individual table
   // essentially, this checks if a class is a "primary" one, i.e. a 
